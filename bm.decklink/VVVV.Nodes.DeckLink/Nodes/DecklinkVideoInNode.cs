@@ -350,10 +350,13 @@ namespace VVVV.DeckLink.Nodes
             this.currentFramePresentCount[0] = result.PresentationCount;
 
             //Perform pixel conversion if applicable
-            if (this.outputMode[0] == TextureOutputMode.UncompressedPS && isNew)
+            if (this.outputMode[0] == TextureOutputMode.UncompressedPS)
             {
-                DX11Texture2D converted = this.pixelShaderTargetConverter[context].Apply(inputTexture);
-                this.textureOutput[0][context] = converted;
+                if (isNew)
+                {
+                    DX11Texture2D converted = this.pixelShaderTargetConverter[context].Apply(inputTexture);
+                    this.textureOutput[0][context] = converted;
+                }
             }
             else
             {
