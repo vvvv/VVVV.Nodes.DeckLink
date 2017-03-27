@@ -12,6 +12,11 @@ namespace VVVV.DeckLink
     public struct FrameDataResult
     {
         /// <summary>
+        /// Result type
+        /// </summary>
+        public readonly FrameDataResultType ResultType;
+
+        /// <summary>
         /// Current frame
         /// </summary>
         public readonly DecklinkFrameData CurrentFrame;
@@ -26,11 +31,24 @@ namespace VVVV.DeckLink
         /// </summary>
         public readonly int PresentationCount;
 
-        public FrameDataResult(DecklinkFrameData currentFrame, bool isNewFrame, int presentationCount)
+        private FrameDataResult(FrameDataResultType resultType, DecklinkFrameData currentFrame, bool isNewFrame, int presentationCount)
         {
+            this.ResultType = resultType;
             this.CurrentFrame = currentFrame;
             this.IsNew = isNewFrame;
             this.PresentationCount = presentationCount;
+        }
+
+        /// <summary>
+        /// Returns a raw image (cpu side)
+        /// </summary>
+        /// <param name="currentFrame">Current frame </param>
+        /// <param name="isNewFrame">Tells if frame is new</param>
+        /// <param name="presentationCount">Frame presentation count</param>
+        /// <returns>Frame data result</returns>
+        public static FrameDataResult RawImage(DecklinkFrameData currentFrame, bool isNewFrame, int presentationCount)
+        {
+            return new FrameDataResult(FrameDataResultType.RawImage, currentFrame, isNewFrame, presentationCount);
         }
     }
 }

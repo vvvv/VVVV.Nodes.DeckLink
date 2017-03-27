@@ -23,6 +23,7 @@
     <Compile Include="Lib\Capture\Capture.cs" />
     <Compile Include="Lib\Capture\CaptureDeviceInformation.cs" />
     <Compile Include="Lib\Capture\CaptureParameters.cs" />
+    <Compile Include="Lib\Capture\FrameDataResultType.cs" />
     <Compile Include="Lib\Utils\SpreadExtentions.cs" />
     <Compile Include="Nodes\CaptureParametersNode.cs" />
     <Compile Include="Lib\Capture\CaptureStatistics.cs" />

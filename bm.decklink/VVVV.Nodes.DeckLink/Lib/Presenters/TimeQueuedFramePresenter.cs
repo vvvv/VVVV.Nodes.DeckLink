@@ -132,7 +132,7 @@ namespace VVVV.DeckLink.Presenters
             //Return a null frame, maybe create an empty black one?
             if (this.currentPresentationFrame == null && this.frameQueue.Count == 0)
             {
-                return new FrameDataResult(null, false, 0);
+                return FrameDataResult.RawImage(null, false, 0);
             }
 
             //Some frames are in the queue
@@ -144,7 +144,7 @@ namespace VVVV.DeckLink.Presenters
                     var frame = this.DequeueFrame();
                     this.currentPresentationFrame = new PresentationFrame(frame);
                     this.currentPresentationFrame.IncrementPresentationCount();
-                    return new FrameDataResult(this.currentPresentationFrame.Frame, true, this.currentPresentationFrame.PresentationCount);
+                    return FrameDataResult.RawImage(this.currentPresentationFrame.Frame, true, this.currentPresentationFrame.PresentationCount);
                 }
                 else
                 {
@@ -161,12 +161,12 @@ namespace VVVV.DeckLink.Presenters
                         var frame = this.DequeueFrame();
                         this.currentPresentationFrame = new PresentationFrame(frame);
                         this.currentPresentationFrame.IncrementPresentationCount();
-                        return new FrameDataResult(this.currentPresentationFrame.Frame, true, this.currentPresentationFrame.PresentationCount);
+                        return FrameDataResult.RawImage(this.currentPresentationFrame.Frame, true, this.currentPresentationFrame.PresentationCount);
                     }
                     else
                     {
                         this.currentPresentationFrame.IncrementPresentationCount();
-                        return new FrameDataResult(this.currentPresentationFrame.Frame, false, this.currentPresentationFrame.PresentationCount);
+                        return FrameDataResult.RawImage(this.currentPresentationFrame.Frame, false, this.currentPresentationFrame.PresentationCount);
                     }
                 }
             }
@@ -174,7 +174,7 @@ namespace VVVV.DeckLink.Presenters
             {
                 //Still mark that frame as a new present
                 this.currentPresentationFrame.IncrementPresentationCount();
-                return new FrameDataResult(this.currentPresentationFrame.Frame, false, this.currentPresentationFrame.PresentationCount);
+                return FrameDataResult.RawImage(this.currentPresentationFrame.Frame, false, this.currentPresentationFrame.PresentationCount);
             }
         }
 

@@ -40,7 +40,7 @@ namespace VVVV.DeckLink.Presenters
 
         public FrameDataResult GetPresentationFrame()
         {
-            var result = new FrameDataResult(this.frame, isNewFrame, 1);
+            var result = FrameDataResult.RawImage(this.frame, isNewFrame, 1);
             this.isNewFrame = false;
             this.lastFramePresented = true;
             return result;
