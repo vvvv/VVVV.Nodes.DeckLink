@@ -13,6 +13,7 @@ using VVVV.DX11;
 using VVVV.DeckLink.Direct3D11;
 using VVVV.DeckLink.Presenters;
 using VVVV.DeckLink.Utils;
+using VVVV.DX11.Lib.Devices;
 
 namespace VVVV.DeckLink.Nodes
 {
@@ -78,11 +79,19 @@ namespace VVVV.DeckLink.Nodes
         private CaptureParameters currentParameters = CaptureParameters.Default;
         private CaptureStatistics statistics = new CaptureStatistics();
 
+        private DX11RenderContext renderDevice;
+
         private DecklinkCaptureThread captureThread;
         private DX11Resource<YuvToRGBConverter> pixelShaderConverter = new DX11Resource<YuvToRGBConverter>();
         private DX11Resource<YuvToRGBConverterWithTarget> pixelShaderTargetConverter = new DX11Resource<YuvToRGBConverterWithTarget>();
         private DX11Resource<DX11DynamicTexture2D> rawTexture = new DX11Resource<DX11DynamicTexture2D>();
         #endregion fields & pins
+
+        public VideoInDeckLinkNode()
+        {
+            this.renderDevice = DX11GlobalDevice.DeviceManager.RenderContexts[0];
+        }
+
         //called when data for any output pin is requested
         public void Evaluate(int SpreadMax)
 		{
@@ -105,7 +114,7 @@ namespace VVVV.DeckLink.Nodes
                     this.captureThread = null;
                 }
 
-                this.captureThread = new DecklinkCaptureThread(this.deviceIndex[0], newParameters); 
+                this.captureThread = new DecklinkCaptureThread(this.deviceIndex[0],this.renderDevice, newParameters); 
                 this.statusOutput[0] = this.captureThread.DeviceInformation.Message;
 
 
@@ -139,7 +148,7 @@ namespace VVVV.DeckLink.Nodes
                             this.captureThread.Dispose();
                         }
 
-                        this.captureThread = new DecklinkCaptureThread(this.deviceIndex[0], this.currentParameters);
+                        this.captureThread = new DecklinkCaptureThread(this.deviceIndex[0],this.renderDevice, this.currentParameters);
                         this.statusOutput[0] = this.captureThread.DeviceInformation.Message;
 
                         if (this.captureThread.DeviceInformation.IsValid)

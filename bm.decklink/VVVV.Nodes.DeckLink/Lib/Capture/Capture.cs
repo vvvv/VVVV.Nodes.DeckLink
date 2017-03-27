@@ -80,7 +80,7 @@ namespace VVVV.DeckLink
         public event EventHandler RawFrameReceived;
         public event EventHandler FrameAvailable;
 
-        public DecklinkCaptureThread(int deviceIndex, CaptureParameters captureParameters)
+        public DecklinkCaptureThread(int deviceIndex, DX11RenderContext renderDevice, CaptureParameters captureParameters)
         {
             DeviceFactory df=null;
             this.PerformConversion = captureParameters.OutputMode == TextureOutputMode.UncompressedBMD;
@@ -112,9 +112,13 @@ namespace VVVV.DeckLink
             {
                 this.framePresenter = new QueuedFramePresenter(this.videoConverter, captureParameters.PresentationCount, captureParameters.FrameQueuePoolSize,captureParameters.FrameQueueMaxSize);
             }
-            else
+            else if (captureParameters.FrameQueueMode == FrameQueueMode.Timed)
             {
                 this.framePresenter = new TimeQueuedFramePresenter(this.videoConverter, captureParameters.PresentationCount, captureParameters.FrameQueuePoolSize, captureParameters.FrameQueueMaxSize);
+            }
+            else
+            {
+                this.framePresenter = new DiscardImmutableFramePresenter(renderDevice, this.videoConverter, captureParameters.FrameQueueMaxSize);
             }
         }
 

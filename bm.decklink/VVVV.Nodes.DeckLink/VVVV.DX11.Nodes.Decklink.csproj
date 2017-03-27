@@ -24,6 +24,8 @@
     <Compile Include="Lib\Capture\CaptureDeviceInformation.cs" />
     <Compile Include="Lib\Capture\CaptureParameters.cs" />
     <Compile Include="Lib\Capture\FrameDataResultType.cs" />
+    <Compile Include="Lib\Direct3D11\ImmutableTextureFactory.cs" />
+    <Compile Include="Lib\Presenters\DiscardImmutableFramePresenter.cs" />
     <Compile Include="Lib\Utils\SpreadExtentions.cs" />
     <Compile Include="Nodes\CaptureParametersNode.cs" />
     <Compile Include="Lib\Capture\CaptureStatistics.cs" />
@@ -32,7 +34,6 @@
     <Compile Include="Lib\FrameQueueMode.cs" />
     <Compile Include="Lib\Capture\ConvertedFrame.cs" />
     <Compile Include="Lib\Capture\DecklinkFrameData.cs" />
-    <Compile Include="Lib\Direct3D11\DX11FrameTexture.cs" />
     <Compile Include="Lib\IDiscardCounter.cs" />
     <Compile Include="Lib\TextureCopyMode.cs" />
     <Compile Include="Lib\Presenters\DiscardFramePresenter.cs" />
