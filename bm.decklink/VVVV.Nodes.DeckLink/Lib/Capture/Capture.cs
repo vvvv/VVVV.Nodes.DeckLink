@@ -80,19 +80,10 @@ namespace VVVV.DeckLink
         public event EventHandler RawFrameReceived;
         public event EventHandler FrameAvailable;
 
-		public DecklinkCaptureThread()
-		{
-			Width = 0;
-			Height = 0;
-            running = false;
-		}
-
-        public DecklinkCaptureThread(int deviceIndex, FrameQueueMode queueMode,
-            int presentationCount, _BMDVideoInputFlags videoInputFlags, bool performConversion, int poolSize,
-            int maxQueueSize)
+        public DecklinkCaptureThread(int deviceIndex, CaptureParameters captureParameters)
         {
             DeviceFactory df=null;
-            this.PerformConversion = performConversion;
+            this.PerformConversion = captureParameters.OutputMode == TextureOutputMode.UncompressedBMD;
 
             TaskUtils.RunSync(() =>
             {
@@ -108,22 +99,22 @@ namespace VVVV.DeckLink
             if (df.DeviceInformation.IsValid)
             {
                 this.device = df.InputDevice;
-                this.videoInputFlags = videoInputFlags;
+                this.videoInputFlags = captureParameters.AutoDetect ? _BMDVideoInputFlags.bmdVideoInputEnableFormatDetection : _BMDVideoInputFlags.bmdVideoInputFlagDefault;
                 this.AutoDetectFormatEnabled = videoInputFlags == _BMDVideoInputFlags.bmdVideoInputEnableFormatDetection;
                 this.slicedInput = df.slicedInput;
             }
             
-            if (queueMode == FrameQueueMode.Discard)
+            if (captureParameters.FrameQueueMode == FrameQueueMode.Discard)
             {
                 this.framePresenter = new DiscardFramePresenter(this.videoConverter);
             }
-            else if (queueMode == FrameQueueMode.Queued)
+            else if (captureParameters.FrameQueueMode == FrameQueueMode.Queued)
             {
-                this.framePresenter = new QueuedFramePresenter(this.videoConverter, presentationCount, poolSize,maxQueueSize);
+                this.framePresenter = new QueuedFramePresenter(this.videoConverter, captureParameters.PresentationCount, captureParameters.FrameQueuePoolSize,captureParameters.FrameQueueMaxSize);
             }
             else
             {
-                this.framePresenter = new TimeQueuedFramePresenter(this.videoConverter, presentationCount, poolSize, maxQueueSize);
+                this.framePresenter = new TimeQueuedFramePresenter(this.videoConverter, captureParameters.PresentationCount, captureParameters.FrameQueuePoolSize, captureParameters.FrameQueueMaxSize);
             }
         }
 

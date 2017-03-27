@@ -22,6 +22,9 @@
   <ItemGroup>
     <Compile Include="Lib\Capture\Capture.cs" />
     <Compile Include="Lib\Capture\CaptureDeviceInformation.cs" />
+    <Compile Include="Lib\Capture\CaptureParameters.cs" />
+    <Compile Include="Lib\Utils\SpreadExtentions.cs" />
+    <Compile Include="Nodes\CaptureParametersNode.cs" />
     <Compile Include="Lib\Capture\CaptureStatistics.cs" />
     <Compile Include="Lib\Capture\FrameDataResult.cs" />
     <Compile Include="Lib\Capture\FramePool.cs" />
@@ -37,6 +40,7 @@
     <Compile Include="Lib\Presenters\TimeQueuedFramePresenter.cs" />
     <Compile Include="Lib\Presenters\QueuedFramePresenter.cs" />
     <Compile Include="Lib\TextureOutputMode.cs" />
+    <Compile Include="Lib\Utils\NonZeroPositiveInteger.cs" />
     <Compile Include="Lib\Utils\Timer.cs" />
     <Compile Include="Lib\Capture\RawCaptureFrame.cs" />
     <Compile Include="Lib\Capture\DecklinkVideoFrameConverter.cs" />

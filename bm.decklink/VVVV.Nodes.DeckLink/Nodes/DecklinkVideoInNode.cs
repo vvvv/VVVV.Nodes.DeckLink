@@ -12,6 +12,7 @@ using VVVV.PluginInterfaces.V2;
 using VVVV.DX11;
 using VVVV.DeckLink.Direct3D11;
 using VVVV.DeckLink.Presenters;
+using VVVV.DeckLink.Utils;
 
 namespace VVVV.DeckLink.Nodes
 {
@@ -25,20 +26,23 @@ namespace VVVV.DeckLink.Nodes
 		[Input("Device")]
 		protected IDiffSpread<int> deviceIndex;
 
-        [Input("Output Mode")]
+        [Input("Catpure Parameters")]
+        protected ISpread<CaptureParameters> captureParameters;
+
+        /*[Input("Output Mode")]
         protected ISpread<TextureOutputMode> outputMode;
 
         [Input("Upload Mode")]
-        protected IDiffSpread<FrameQueueMode> queueMode;
+        protected IDiffSpread<FrameQueueMode> queueMode;*/
 
         /*[Input("Copy Mode")]
         protected ISpread<TextureCopyMode> copyMode;*/
 
-        [Input("Auto Detect Mode", DefaultValue =1)]
+       /* [Input("Auto Detect Mode", DefaultValue =1)]
         protected IDiffSpread<bool> autoDetect;
 
         [Input("Display Mode", IsBang =true)]
-        protected IDiffSpread<_BMDDisplayMode> displayMode;
+        protected IDiffSpread<_BMDDisplayMode> displayMode;*/
 
         [Input("Apply Display Mode")]
         protected IDiffSpread<bool> applyDisplayMode;
@@ -49,7 +53,7 @@ namespace VVVV.DeckLink.Nodes
         [Input("Reset Device", IsBang = true)]
         protected ISpread<bool> resetDevice;
 
-        [Input("Frame Present Count", DefaultValue =1)]
+        /*[Input("Frame Present Count", DefaultValue =1)]
         protected IDiffSpread<int> framePresentCount;
 
         [Input("Frame Queue Max Size", DefaultValue = 10)]
@@ -59,7 +63,7 @@ namespace VVVV.DeckLink.Nodes
         protected IDiffSpread<int> frameQueuePoolSize;
 
         [Input("Max Lateness (ms)", DefaultValue = 100)]
-        protected IDiffSpread<double> maxLateness;
+        protected IDiffSpread<double> maxLateness;*/
 
         [Input("Flush Queue", IsBang =true)]
         protected ISpread<bool> flushFrameQueue;
@@ -97,6 +101,8 @@ namespace VVVV.DeckLink.Nodes
         [Output("Statistics")]
         protected ISpread<CaptureStatistics> captureStatisticsOutput;
 
+        private bool first = true;
+        private CaptureParameters currentParameters = CaptureParameters.Default;
         private CaptureStatistics statistics = new CaptureStatistics();
 
         private DecklinkCaptureThread captureThread;
@@ -104,20 +110,6 @@ namespace VVVV.DeckLink.Nodes
         private DX11Resource<YuvToRGBConverterWithTarget> pixelShaderTargetConverter = new DX11Resource<YuvToRGBConverterWithTarget>();
         private DX11Resource<DX11DynamicTexture2D> rawTexture = new DX11Resource<DX11DynamicTexture2D>();
         #endregion fields & pins
-
-        private void CreateCaptureThread()
-        {
-            this.captureThread = new DecklinkCaptureThread(this.deviceIndex[0],
-                this.queueMode[0], this.framePresentCount[0] > 0 ? this.framePresentCount[0] : 1,
-                this.autoDetect[0] ? _BMDVideoInputFlags.bmdVideoInputEnableFormatDetection : _BMDVideoInputFlags.bmdVideoInputFlagDefault,
-                this.outputMode[0] == TextureOutputMode.UncompressedBMD, 
-                this.frameQueuePoolSize[0] > 0 ? this.frameQueuePoolSize[0] : 1,
-                this.frameQueueMaxSize[0] > 0 ? this.frameQueueMaxSize[0] : 1);
-            this.statusOutput[0] = this.captureThread.DeviceInformation.Message;
-            
-        }
-
-
         //called when data for any output pin is requested
         public void Evaluate(int SpreadMax)
 		{
@@ -129,9 +121,10 @@ namespace VVVV.DeckLink.Nodes
 
 
             bool newDevice = false;
-            if (this.autoDetect.IsChanged || this.deviceIndex.IsChanged || 
-                this.resetDevice[0] || this.queueMode.IsChanged ||this.frameQueuePoolSize.IsChanged
-                ||  this.framePresentCount.IsChanged || this.outputMode.IsChanged)
+
+            CaptureParameters newParameters = this.captureParameters.DefaultIfNilOrNull(0, CaptureParameters.Default);
+
+            if (this.first == true || this.deviceIndex.IsChanged || this.currentParameters.NeedDeviceReset(newParameters) || this.resetDevice[0])
             {
                 if (this.captureThread != null)
                 {
@@ -139,7 +132,9 @@ namespace VVVV.DeckLink.Nodes
                     this.captureThread = null;
                 }
 
-                this.CreateCaptureThread();
+                this.captureThread = new DecklinkCaptureThread(this.deviceIndex[0], newParameters); 
+                this.statusOutput[0] = this.captureThread.DeviceInformation.Message;
+
 
 
                 if (this.captureThread.DeviceInformation.IsValid)
@@ -153,23 +148,27 @@ namespace VVVV.DeckLink.Nodes
                 this.statistics.ResetCounters();
 
                 newDevice = true;
+                first = false;
             }
+
+            this.currentParameters = newParameters;
 
             if (this.captureThread != null)
             {
-                if (!this.autoDetect[0])
+                if (!this.currentParameters.AutoDetect)
                 {
                     //To reset display mode, we need to reinit
                     if (this.applyDisplayMode[0])
                     {
-                        if (this.displayMode[0] != this.captureThread.CurrentDisplayMode)
+                        if (this.currentParameters.DisplayMode != this.captureThread.CurrentDisplayMode)
                         {
                             this.captureThread.FrameAvailable -= this.cap_NewFrame;
                             this.captureThread.Dispose();
                         }
 
-                        this.CreateCaptureThread();
-                        
+                        this.captureThread = new DecklinkCaptureThread(this.deviceIndex[0], this.currentParameters);
+                        this.statusOutput[0] = this.captureThread.DeviceInformation.Message;
+
                         if (this.captureThread.DeviceInformation.IsValid)
                         {
                             this.captureThread.FrameAvailable += this.cap_NewFrame;
@@ -185,7 +184,7 @@ namespace VVVV.DeckLink.Nodes
                 {
                     if (this.FPinEnabled[0])
                     {
-                        this.captureThread.StartCapture(this.displayMode[0]);
+                        this.captureThread.StartCapture(this.currentParameters.DisplayMode);
                     }
                     else
                     {
@@ -228,7 +227,7 @@ namespace VVVV.DeckLink.Nodes
 
                 if (this.captureThread.FramePresenter is TimeQueuedFramePresenter)
                 {
-                    ((TimeQueuedFramePresenter)this.captureThread.FramePresenter).MaxFrameLateness = this.maxLateness[0];
+                    ((TimeQueuedFramePresenter)this.captureThread.FramePresenter).MaxFrameLateness = this.currentParameters.MaxLateness;
                     this.statistics.CurrentDelay = ((TimeQueuedFramePresenter)this.captureThread.FramePresenter).CurrentDelay;
                 }
 
@@ -331,7 +330,7 @@ namespace VVVV.DeckLink.Nodes
             this.statistics.CurrentFramePresentCount = result.PresentationCount;
 
             //Perform pixel conversion if applicable
-            if (this.outputMode[0] == TextureOutputMode.UncompressedPS)
+            if (this.currentParameters.OutputMode == TextureOutputMode.UncompressedPS)
             {
                 if (isNew)
                 {
