@@ -1,0 +1,74 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(SolutionDir)\vvvv.DX11.Build.targets" />
+  <PropertyGroup>
+    <ProjectGuid>{5EDB3C6E-2685-44F6-BD71-678CFC10AB31}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>VVVV.DeckLink</RootNamespace>
+    <AssemblyName>VVVV.DX11.Nodes.DeckLink</AssemblyName>
+    <OutputPath>$(OutputPath)\nodes\plugins\decklink\</OutputPath>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Xml" />
+    <Reference Include="System.Drawing" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Lib\Capture\Capture.cs" />
+    <Compile Include="Lib\Capture\CaptureDeviceInformation.cs" />
+    <Compile Include="Lib\Capture\FrameDataResult.cs" />
+    <Compile Include="Lib\Capture\FramePool.cs" />
+    <Compile Include="Lib\FrameQueueMode.cs" />
+    <Compile Include="Lib\Capture\ConvertedFrame.cs" />
+    <Compile Include="Lib\Capture\DecklinkFrameData.cs" />
+    <Compile Include="Lib\Direct3D11\DX11FrameTexture.cs" />
+    <Compile Include="Lib\IDiscardCounter.cs" />
+    <Compile Include="Lib\TextureCopyMode.cs" />
+    <Compile Include="Lib\Presenters\DiscardFramePresenter.cs" />
+    <Compile Include="Lib\IFlushable.cs" />
+    <Compile Include="Lib\Presenters\IDecklinkFramePresenter.cs" />
+    <Compile Include="Lib\Presenters\TimeQueuedFramePresenter.cs" />
+    <Compile Include="Lib\Presenters\QueuedFramePresenter.cs" />
+    <Compile Include="Lib\TextureOutputMode.cs" />
+    <Compile Include="Lib\Utils\Timer.cs" />
+    <Compile Include="Lib\Capture\RawCaptureFrame.cs" />
+    <Compile Include="Lib\Capture\DecklinkVideoFrameConverter.cs" />
+    <Compile Include="Lib\Capture\DeviceFactory.cs" />
+    <Compile Include="Lib\Utils\TaskUtils.cs" />
+    <Compile Include="Lib\Direct3D11\YuvToRGBConverterWithTarget.cs" />
+    <Compile Include="Nodes\ListDevicesNode.cs" />
+    <Compile Include="Nodes\DecklinkVideoInNode.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Lib\Direct3D11\ShaderUtils.cs" />
+    <Compile Include="Lib\Direct3D11\YuvToRGBConverter.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <COMReference Include="DeckLinkAPI">
+      <Guid>{D864517A-EDD5-466D-867D-C819F1C052BB}</Guid>
+      <VersionMajor>1</VersionMajor>
+      <VersionMinor>0</VersionMinor>
+      <Lcid>0</Lcid>
+      <WrapperTool>tlbimp</WrapperTool>
+      <Isolated>False</Isolated>
+      <EmbedInteropTypes>True</EmbedInteropTypes>
+    </COMReference>
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="effects\YUV2RGB.fx" />
+  </ItemGroup>
+  <ItemGroup />
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>
