@@ -4,7 +4,10 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using DeckLinkAPI;
+using FeralTic.DX11;
+using FeralTic.DX11.Resources;
 using VVVV.Decklink.Utils;
+using VVVV.DeckLink.Direct3D11;
 using VVVV.DX11.Nodes;
 
 namespace VVVV.DeckLink.Presenters
@@ -12,21 +15,28 @@ namespace VVVV.DeckLink.Presenters
     /// <summary>
     /// Queued frame presenter, enforces a minimum presentation count
     /// </summary>
-    public class TimeQueuedFramePresenter : IDecklinkFramePresenter, IDisposable, IFlushable, IDiscardCounter, ILatencyReporter
+    public class TimeQueuedImmutableFramePresenter : IDecklinkFramePresenter, IDisposable, IFlushable, IDiscardCounter, ILatencyReporter
     {
-        private class PresentationFrame
+        private class TexturePresentationFrame
         {
             private int presentationCount;
             private DecklinkFrameData frameData;
+            private DX11Texture2D textureData;
 
-            public PresentationFrame(DecklinkFrameData frameData)
+            public TexturePresentationFrame(DecklinkTextureFrameData textureFrameData)
             {
-                this.frameData = frameData;
+                this.frameData = textureFrameData.RawFrame;
+                this.textureData = textureFrameData.Texture;
             }
 
             public DecklinkFrameData Frame
             {
                 get { return this.frameData; }
+            }
+
+            public DX11Texture2D Texture
+            {
+                get { return this.textureData; }
             }
 
             public int PresentationCount
@@ -38,21 +48,38 @@ namespace VVVV.DeckLink.Presenters
             {
                 this.presentationCount++;
             }
+
+            public void DisposeTexture()
+            {
+                if (textureData != null)
+                {
+                    textureData.Resource.Dispose();
+                    textureData.SRV.Dispose();
+                    textureData = null;
+                }
+            }
         }
 
         private readonly int maxQueueSize;
         private readonly int initialPoolSize;
         private readonly int presentationCount;
         private readonly DecklinkVideoFrameConverter videoConverter;
+        private readonly DX11RenderContext renderDevice;
+
         private FramePool framePool;
-        private double currentDelay;
+        private Queue<DecklinkTextureFrameData> frameQueue = new Queue<DecklinkTextureFrameData>();
 
-        private Queue<DecklinkFrameData> frameQueue = new Queue<DecklinkFrameData>();
-
-        private PresentationFrame currentPresentationFrame;
+        private TexturePresentationFrame currentPresentationFrame;
         private object syncRoot = new object();
 
         private int discardCount;
+
+        private double currentDelay;
+
+        public double MaxFrameLateness
+        {
+            private get; set;
+        }
 
         public int QueueSize
         {
@@ -69,12 +96,7 @@ namespace VVVV.DeckLink.Presenters
             get { return this.currentDelay; }
         }
 
-        public double MaxFrameLateness
-        {
-            private get; set;
-        }
-
-        private DecklinkFrameData DequeueFrame()
+        private DecklinkTextureFrameData DequeueFrame()
         {
             TimeSpan currentTime = Timer.Elapsed;
             //double deltaMilli = currentTime 
@@ -87,18 +109,21 @@ namespace VVVV.DeckLink.Presenters
                 else
                 {
                     var frame = this.frameQueue.Dequeue();
-                    var delta = currentTime - frame.ReceivedTimeStamp;
+                    var delta = currentTime - frame.RawFrame.ReceivedTimeStamp;
 
                     while (this.frameQueue.Count > 0) // if queue now empty, just return that specific frame
                     {
-                        delta = currentTime - frame.ReceivedTimeStamp;
+                        delta = currentTime - frame.RawFrame.ReceivedTimeStamp;
 
                         //if this frame is too late
                         if (delta.TotalMilliseconds >= this.MaxFrameLateness)
                         {
-                            
+                            if (frame != null)
+                            {
+                                frame.DisposeTexture();
+                            }
                             //Recycle and get new frame
-                            this.framePool.Recycle(frame);
+                            this.framePool.Recycle(frame.RawFrame);
                             frame = this.frameQueue.Dequeue(); 
                         }
                         else
@@ -115,13 +140,16 @@ namespace VVVV.DeckLink.Presenters
             }
         }
 
-        public TimeQueuedFramePresenter(DecklinkVideoFrameConverter videoConverter, int presentationCount, int initialPoolSize, int maxQueueSize)
+        public TimeQueuedImmutableFramePresenter(DX11RenderContext renderDevice, DecklinkVideoFrameConverter videoConverter, int presentationCount, int initialPoolSize, int maxQueueSize)
         {
+            if (renderDevice == null)
+                throw new ArgumentNullException("renderDevice");
             if (videoConverter == null)
                 throw new ArgumentNullException("videoConverter");
             if (presentationCount < 1)
                 throw new ArgumentOutOfRangeException("presentationCount", "Muse be at least one");
 
+            this.renderDevice = renderDevice;
             this.videoConverter = videoConverter;
             this.presentationCount = presentationCount;
             this.framePool = new FramePool(initialPoolSize);
@@ -144,9 +172,9 @@ namespace VVVV.DeckLink.Presenters
                 if (this.currentPresentationFrame == null)
                 {
                     var frame = this.DequeueFrame();
-                    this.currentPresentationFrame = new PresentationFrame(frame);
+                    this.currentPresentationFrame = new TexturePresentationFrame(frame);
                     this.currentPresentationFrame.IncrementPresentationCount();
-                    return FrameDataResult.RawImage(this.currentPresentationFrame.Frame, true, this.currentPresentationFrame.PresentationCount);
+                    return FrameDataResult.Texture2D(this.currentPresentationFrame.Texture, true, this.currentPresentationFrame.PresentationCount);
                 }
                 else
                 {
@@ -157,18 +185,19 @@ namespace VVVV.DeckLink.Presenters
                     {
                         lock (syncRoot)
                         {
+                            currentPresentationFrame.DisposeTexture();
                             this.framePool.Recycle(this.currentPresentationFrame.Frame);
                         }
 
                         var frame = this.DequeueFrame();
-                        this.currentPresentationFrame = new PresentationFrame(frame);
+                        this.currentPresentationFrame = new TexturePresentationFrame(frame);
                         this.currentPresentationFrame.IncrementPresentationCount();
-                        return FrameDataResult.RawImage(this.currentPresentationFrame.Frame, true, this.currentPresentationFrame.PresentationCount);
+                        return FrameDataResult.Texture2D(this.currentPresentationFrame.Texture, true, this.currentPresentationFrame.PresentationCount);
                     }
                     else
                     {
                         this.currentPresentationFrame.IncrementPresentationCount();
-                        return FrameDataResult.RawImage(this.currentPresentationFrame.Frame, false, this.currentPresentationFrame.PresentationCount);
+                        return FrameDataResult.Texture2D(this.currentPresentationFrame.Texture, false, this.currentPresentationFrame.PresentationCount);
                     }
                 }
             }
@@ -176,12 +205,15 @@ namespace VVVV.DeckLink.Presenters
             {
                 //Still mark that frame as a new present
                 this.currentPresentationFrame.IncrementPresentationCount();
-                return FrameDataResult.RawImage(this.currentPresentationFrame.Frame, false, this.currentPresentationFrame.PresentationCount);
+                return FrameDataResult.Texture2D(this.currentPresentationFrame.Texture, false, this.currentPresentationFrame.PresentationCount);
             }
         }
 
         public void PushFrame(IDeckLinkVideoInputFrame videoFrame, bool performConvertion)
         {
+            if (this.renderDevice.Device.Disposed)
+                return;
+
             //Drop frame if queue is full
             if (this.frameQueue.Count >= this.maxQueueSize)
             {
@@ -195,17 +227,20 @@ namespace VVVV.DeckLink.Presenters
                 frameData = this.framePool.Acquire();
             }
 
+            DX11Texture2D newTexture;
             if (performConvertion)
             {
                 frameData.UpdateAndConvert(this.videoConverter, videoFrame);
+                newTexture = ImmutableTextureFactory.CreateConvertedFrame(this.renderDevice, frameData.ConvertedFrameData);
             }
             else
             {
                 frameData.UpdateAndCopy(videoFrame);
+                newTexture = ImmutableTextureFactory.CreateRawFrame(this.renderDevice, frameData.RawFrameData);
             }
             System.Runtime.InteropServices.Marshal.ReleaseComObject(videoFrame);
 
-            this.frameQueue.Enqueue(frameData);
+            this.frameQueue.Enqueue(new DecklinkTextureFrameData(frameData, newTexture));
         }
 
         public void Dispose()
@@ -218,9 +253,12 @@ namespace VVVV.DeckLink.Presenters
             if (this.currentPresentationFrame != null)
             {
                 this.currentPresentationFrame.Frame.Dispose();
+                this.currentPresentationFrame.Texture.Resource.Dispose();
+                this.currentPresentationFrame.Texture.SRV.Dispose();
                 this.currentPresentationFrame = null;
             }
             this.framePool.Dispose();
+            
         }
 
         public void Flush()

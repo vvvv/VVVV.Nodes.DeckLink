@@ -30,7 +30,7 @@ namespace VVVV.DeckLink.Nodes
         [Input("Catpure Parameters")]
         protected ISpread<CaptureParameters> captureParameters;
 
-        [Input("Apply Display Mode")]
+        [Input("Apply Display Mode", IsBang =true)]
         protected IDiffSpread<bool> applyDisplayMode;
 
         [Input("Reset Counters", IsBang =true)]
@@ -207,10 +207,10 @@ namespace VVVV.DeckLink.Nodes
                     this.statistics.FramesDroppedCount = ((IDiscardCounter)this.captureThread.FramePresenter).DiscardCount;
                 }
 
-                if (this.captureThread.FramePresenter is TimeQueuedFramePresenter)
+                if (this.captureThread.FramePresenter is ILatencyReporter)
                 {
-                    ((TimeQueuedFramePresenter)this.captureThread.FramePresenter).MaxFrameLateness = this.currentParameters.MaxLateness;
-                    this.statistics.CurrentDelay = ((TimeQueuedFramePresenter)this.captureThread.FramePresenter).CurrentDelay;
+                    ((ILatencyReporter)this.captureThread.FramePresenter).MaxFrameLateness = this.currentParameters.MaxLateness;
+                    this.statistics.CurrentDelay = ((ILatencyReporter)this.captureThread.FramePresenter).CurrentDelay;
                 }
 
                 this.isModeSupported[0] = this.captureThread.ModeSupport != _BMDDisplayModeSupport.bmdDisplayModeNotSupported;

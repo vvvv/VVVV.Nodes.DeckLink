@@ -116,9 +116,13 @@ namespace VVVV.DeckLink
             {
                 this.framePresenter = new TimeQueuedFramePresenter(this.videoConverter, captureParameters.PresentationCount, captureParameters.FrameQueuePoolSize, captureParameters.FrameQueueMaxSize);
             }
-            else
+            else if (captureParameters.FrameQueueMode == FrameQueueMode.DiscardImmutable)
             {
                 this.framePresenter = new DiscardImmutableFramePresenter(renderDevice, this.videoConverter, captureParameters.FrameQueueMaxSize);
+            }
+            else
+            {
+                this.framePresenter = new TimeQueuedImmutableFramePresenter(renderDevice, this.videoConverter, captureParameters.PresentationCount, captureParameters.FrameQueuePoolSize, captureParameters.FrameQueueMaxSize);
             }
         }
 

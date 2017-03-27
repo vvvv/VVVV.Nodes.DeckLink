@@ -27,6 +27,11 @@ namespace VVVV.DeckLink
         /// Immutable discard mode, use last frames, but perform texture upload in background
         /// </summary>
         DiscardImmutable,
+        /// <summary>
+        /// Timed mode, will discard frames if they timestamp is too old versus presentation time
+        /// Performs upload in immutable fashion
+        /// </summary>
+        TimedImmutable,
     }
 
 }
