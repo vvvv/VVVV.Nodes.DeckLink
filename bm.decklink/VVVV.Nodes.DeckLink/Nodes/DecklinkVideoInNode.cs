@@ -29,21 +29,6 @@ namespace VVVV.DeckLink.Nodes
         [Input("Catpure Parameters")]
         protected ISpread<CaptureParameters> captureParameters;
 
-        /*[Input("Output Mode")]
-        protected ISpread<TextureOutputMode> outputMode;
-
-        [Input("Upload Mode")]
-        protected IDiffSpread<FrameQueueMode> queueMode;*/
-
-        /*[Input("Copy Mode")]
-        protected ISpread<TextureCopyMode> copyMode;*/
-
-       /* [Input("Auto Detect Mode", DefaultValue =1)]
-        protected IDiffSpread<bool> autoDetect;
-
-        [Input("Display Mode", IsBang =true)]
-        protected IDiffSpread<_BMDDisplayMode> displayMode;*/
-
         [Input("Apply Display Mode")]
         protected IDiffSpread<bool> applyDisplayMode;
 
@@ -52,18 +37,6 @@ namespace VVVV.DeckLink.Nodes
 
         [Input("Reset Device", IsBang = true)]
         protected ISpread<bool> resetDevice;
-
-        /*[Input("Frame Present Count", DefaultValue =1)]
-        protected IDiffSpread<int> framePresentCount;
-
-        [Input("Frame Queue Max Size", DefaultValue = 10)]
-        protected IDiffSpread<int> frameQueueMaxSize;
-
-        [Input("Frame Queue Pool Size", DefaultValue = 10)]
-        protected IDiffSpread<int> frameQueuePoolSize;
-
-        [Input("Max Lateness (ms)", DefaultValue = 100)]
-        protected IDiffSpread<double> maxLateness;*/
 
         [Input("Flush Queue", IsBang =true)]
         protected ISpread<bool> flushFrameQueue;
@@ -321,29 +294,37 @@ namespace VVVV.DeckLink.Nodes
                 return;
 
             var inputTexture = this.rawTexture.Contains(context) ? this.rawTexture[context] : null;
-            this.captureThread.AcquireTexture(context, ref inputTexture);
-            this.rawTexture[context] = inputTexture;
 
-            var result = this.captureThread.Copy(inputTexture);
-            bool isNew = result.IsNew;
+            //Acquire texture and copy content
+            var result = this.captureThread.AcquireTexture(context, ref inputTexture);
+
+            //Remove old texture if not required anymore
+            if (inputTexture == null)
+            {
+                this.rawTexture.Data.Remove(context);
+            }
+            else
+            {
+                this.rawTexture[context] = inputTexture;
+            }
 
             this.statistics.CurrentFramePresentCount = result.PresentationCount;
 
             //Perform pixel conversion if applicable
             if (this.currentParameters.OutputMode == TextureOutputMode.UncompressedPS)
             {
-                if (isNew)
+                if (result.IsNew)
                 {
-                    DX11Texture2D converted = this.pixelShaderTargetConverter[context].Apply(inputTexture);
+                    DX11Texture2D converted = this.pixelShaderTargetConverter[context].Apply(result.Texture);
                     this.textureOutput[0][context] = converted;
                 }
             }
             else
             {
-                this.textureOutput[0][context] = inputTexture;
+                this.textureOutput[0][context] = result.Texture;
             }
 
-            if (isNew)
+            if (result.IsNew)
                 this.statistics.FramesCopiedCount++;
         }
     }

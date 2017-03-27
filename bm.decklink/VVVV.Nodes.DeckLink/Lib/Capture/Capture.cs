@@ -227,7 +227,42 @@ namespace VVVV.DeckLink
             }
         }
 
-        public void AcquireTexture(DX11RenderContext context, ref DX11DynamicTexture2D texture)
+        public FrameDataResult AcquireTexture(DX11RenderContext context, ref DX11DynamicTexture2D texture)
+        {
+            this.textureUpdateWatch.Stop();
+            this.FrameTextureTime = this.textureUpdateWatch.Elapsed.TotalMilliseconds;
+            this.textureUpdateWatch.Restart();
+
+            var result = this.framePresenter.GetPresentationFrame();
+
+            //Raw image, update and copy
+            if (result.ResultType == FrameDataResultType.RawImage)
+            {
+                this.UpdateTexture(context, ref texture);
+
+                if (result.IsNew)
+                {
+                    this.Copy(result.CurrentFrame, texture);
+                }
+                return FrameDataResult.Texture2D(texture, result.IsNew, result.PresentationCount);
+            }
+            else if (result.ResultType == FrameDataResultType.Texture)
+            {
+                //Dispose old texture and return a null
+                if (texture != null)
+                {
+                    texture.Dispose();
+                    texture = null;
+                }
+                return result;
+            }
+            else //Never happens, but for clarity set result type in condition
+            {
+                throw new InvalidOperationException("Result type should have been either texture or raw image");
+            }
+        }
+
+        private void UpdateTexture(DX11RenderContext context, ref DX11DynamicTexture2D texture)
         {
             lock (syncRoot)
             {
@@ -250,29 +285,23 @@ namespace VVVV.DeckLink
 
         }
 
-        public unsafe FrameDataResult Copy(DX11DynamicTexture2D tex)
+        private unsafe FrameDataResult Copy(DecklinkFrameData frameData, DX11DynamicTexture2D tex)
         {
-            this.textureUpdateWatch.Stop();
-            this.FrameTextureTime = this.textureUpdateWatch.Elapsed.TotalMilliseconds;
-            this.textureUpdateWatch.Restart();
             lock (syncRoot)
             {
                 int w = this.isLastFrameConverted ? this.Width : this.Width / 2;
 
                 //Get last frame
                 var result = this.framePresenter.GetPresentationFrame();
-
-                if (result.IsNew && result.CurrentFrame != null)
+                if (this.isLastFrameConverted)
                 {
-                    if (this.isLastFrameConverted)
-                    {
-                        result.CurrentFrame.ConvertedFrameData.MapAndCopyFrame(tex);
-                    }
-                    else
-                    {
-                        result.CurrentFrame.RawFrameData.MapAndCopyFrame(tex);
-                    }
+                    result.CurrentFrame.ConvertedFrameData.MapAndCopyFrame(tex);
                 }
+                else
+                {
+                    result.CurrentFrame.RawFrameData.MapAndCopyFrame(tex);
+                }
+
                 return result;
             }
         }
