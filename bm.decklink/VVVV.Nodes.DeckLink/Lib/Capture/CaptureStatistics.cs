@@ -50,5 +50,13 @@ namespace VVVV.DeckLink
         /// Delay between the time a frame got acquired and time is has been assigned for presentation
         /// </summary>
         public double CurrentDelay;
+
+        public void ResetCounters()
+        {
+            this.FramesCapturedCount = 0;
+            this.FramesCopiedCount = 0;
+            this.FramesDroppedCount = 0;
+            this.CurrentDelay = 0;
+        }
     }
 }

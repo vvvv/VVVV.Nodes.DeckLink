@@ -79,12 +79,6 @@ namespace VVVV.DeckLink.Nodes
         [Output("Is Running")]
         protected ISpread<bool> running;
 
-        [Output("Frames Captured Count")]
-        protected ISpread<int> framesCapturedCount;
-
-        [Output("Frames Copied Count")]
-        protected ISpread<int> framesCopiedCount;
-
         [Output("Is Mode Supported")]
         protected ISpread<bool> isModeSupported;
 
@@ -97,26 +91,13 @@ namespace VVVV.DeckLink.Nodes
         [Output("Display Name")]
         protected ISpread<string> displayName;
 
-        [Output("Frames Queue Size")]
-        protected ISpread<int> framesQueueSize;
-
-        [Output("Current Frame Present Count")]
-        protected ISpread<int> currentFramePresentCount;
-
-        [Output("Frames Dropped Count")]
-        protected ISpread<int> framesDroppedCount;
-
-        [Output("Delay between frames")]
-        protected ISpread<double> delayBetweenFrames;
-
-        [Output("Delay between texture updates")]
-        protected ISpread<double> delayBetweenTextureUpdates;
-
-        [Output("Current Delay")]
-        protected ISpread<double> currentDelay;
-
         [Output("Status")]
 		protected ISpread<string> statusOutput;
+
+        [Output("Statistics")]
+        protected ISpread<CaptureStatistics> captureStatisticsOutput;
+
+        private CaptureStatistics statistics = new CaptureStatistics();
 
         private DecklinkCaptureThread captureThread;
         private DX11Resource<YuvToRGBConverter> pixelShaderConverter = new DX11Resource<YuvToRGBConverter>();
@@ -169,9 +150,8 @@ namespace VVVV.DeckLink.Nodes
                 {
                     this.captureThread = null;
                 }
-                this.framesCapturedCount[0] = 0;
-                this.framesCopiedCount[0] = 0;
-                this.framesDroppedCount[0] = 0;
+                this.statistics.ResetCounters();
+
                 newDevice = true;
             }
 
@@ -218,8 +198,7 @@ namespace VVVV.DeckLink.Nodes
 
             if (this.resetCounters.SliceCount > 0 && resetCounters[0])
             {
-                this.framesCapturedCount[0] = 0;
-                this.framesCopiedCount[0] = 0;
+                this.statistics.ResetCounters();
 
                 if (this.captureThread != null)
                 {
@@ -244,13 +223,13 @@ namespace VVVV.DeckLink.Nodes
             {
                 if (this.captureThread.FramePresenter is IDiscardCounter)
                 {
-                    this.framesDroppedCount[0] = ((IDiscardCounter)this.captureThread.FramePresenter).DiscardCount;
+                    this.statistics.FramesDroppedCount = ((IDiscardCounter)this.captureThread.FramePresenter).DiscardCount;
                 }
 
                 if (this.captureThread.FramePresenter is TimeQueuedFramePresenter)
                 {
                     ((TimeQueuedFramePresenter)this.captureThread.FramePresenter).MaxFrameLateness = this.maxLateness[0];
-                    this.currentDelay[0] = ((TimeQueuedFramePresenter)this.captureThread.FramePresenter).CurrentDelay;
+                    this.statistics.CurrentDelay = ((TimeQueuedFramePresenter)this.captureThread.FramePresenter).CurrentDelay;
                 }
 
                 this.isModeSupported[0] = this.captureThread.ModeSupport != _BMDDisplayModeSupport.bmdDisplayModeNotSupported;
@@ -260,9 +239,9 @@ namespace VVVV.DeckLink.Nodes
                 this.running[0] = this.captureThread.IsRunning;
                 this.modelName[0] = this.captureThread.DeviceInformation.ModelName;
                 this.displayName[0] = this.captureThread.DeviceInformation.DisplayName;
-                this.framesQueueSize[0] = this.captureThread.FramePresenter.QueueSize;
-                this.delayBetweenFrames[0] = this.captureThread.FrameDelayTime;
-                this.delayBetweenTextureUpdates[0] = this.captureThread.FrameTextureTime;
+                this.statistics.FramesQueueSize = this.captureThread.FramePresenter.QueueSize;
+                this.statistics.DelayBetweenFrames = this.captureThread.FrameDelayTime;
+                this.statistics.DelayBetweenTextureUpdates = this.captureThread.FrameTextureTime;
                 
             }
             else
@@ -274,14 +253,16 @@ namespace VVVV.DeckLink.Nodes
                 this.running[0] = false;
                 this.modelName[0] = "";
                 this.displayName[0] = "";
-                this.delayBetweenFrames[0] =0.0;
-                this.delayBetweenTextureUpdates[0] = 0.0;
+                this.statistics.DelayBetweenFrames =0.0;
+                this.statistics.DelayBetweenTextureUpdates = 0.0;
             }
+
+            this.captureStatisticsOutput[0] = this.statistics;
 		}
 
         private void cap_NewFrame(object sender, EventArgs e)
         {
-            this.framesCapturedCount[0] = this.framesCapturedCount[0] + 1;
+            this.statistics.FramesCapturedCount++;
         }
 
 		public void Dispose()
@@ -347,7 +328,7 @@ namespace VVVV.DeckLink.Nodes
             var result = this.captureThread.Copy(inputTexture);
             bool isNew = result.IsNew;
 
-            this.currentFramePresentCount[0] = result.PresentationCount;
+            this.statistics.CurrentFramePresentCount = result.PresentationCount;
 
             //Perform pixel conversion if applicable
             if (this.outputMode[0] == TextureOutputMode.UncompressedPS)
@@ -364,7 +345,7 @@ namespace VVVV.DeckLink.Nodes
             }
 
             if (isNew)
-                this.framesCopiedCount[0] = this.framesCopiedCount[0] + 1;
+                this.statistics.FramesCopiedCount++;
         }
     }
 }
