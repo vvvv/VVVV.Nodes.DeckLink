@@ -27,7 +27,7 @@ namespace VVVV.DeckLink.Nodes
 		[Input("Device")]
 		protected IDiffSpread<int> deviceIndex;
 
-        [Input("Catpure Parameters")]
+        [Input("Capture Parameters")]
         protected ISpread<CaptureParameters> captureParameters;
 
         [Input("Apply Display Mode", IsBang =true)]

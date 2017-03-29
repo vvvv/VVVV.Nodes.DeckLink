@@ -99,7 +99,7 @@ namespace VVVV.DeckLink.Presenters
                     int currentCount = this.currentPresentationFrame.PresentationCount;
 
                     //Discard that frame and get a new one
-                    if (currentCount >= this.presentationCount)
+                    if (currentCount > this.presentationCount)
                     {
                         lock (syncRoot)
                         {
