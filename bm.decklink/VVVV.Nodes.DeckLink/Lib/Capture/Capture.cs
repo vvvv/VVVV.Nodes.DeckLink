@@ -102,27 +102,27 @@ namespace VVVV.DeckLink
                 this.videoInputFlags = captureParameters.AutoDetect ? _BMDVideoInputFlags.bmdVideoInputEnableFormatDetection : _BMDVideoInputFlags.bmdVideoInputFlagDefault;
                 this.AutoDetectFormatEnabled = videoInputFlags == _BMDVideoInputFlags.bmdVideoInputEnableFormatDetection;
                 this.slicedInput = df.slicedInput;
-            }
-            
-            if (captureParameters.FrameQueueMode == FrameQueueMode.Discard)
-            {
-                this.framePresenter = new DiscardFramePresenter(this.videoConverter);
-            }
-            else if (captureParameters.FrameQueueMode == FrameQueueMode.Queued)
-            {
-                this.framePresenter = new QueuedFramePresenter(this.videoConverter, captureParameters.PresentationCount, captureParameters.FrameQueuePoolSize,captureParameters.FrameQueueMaxSize);
-            }
-            else if (captureParameters.FrameQueueMode == FrameQueueMode.Timed)
-            {
-                this.framePresenter = new TimeQueuedFramePresenter(this.videoConverter, captureParameters.PresentationCount, captureParameters.FrameQueuePoolSize, captureParameters.FrameQueueMaxSize);
-            }
-            else if (captureParameters.FrameQueueMode == FrameQueueMode.DiscardImmutable)
-            {
-                this.framePresenter = new DiscardImmutableFramePresenter(renderDevice, this.videoConverter, captureParameters.FrameQueueMaxSize);
-            }
-            else
-            {
-                this.framePresenter = new TimeQueuedImmutableFramePresenter(renderDevice, this.videoConverter, captureParameters.PresentationCount, captureParameters.FrameQueuePoolSize, captureParameters.FrameQueueMaxSize);
+
+                if (captureParameters.FrameQueueMode == FrameQueueMode.Discard)
+                {
+                    this.framePresenter = new DiscardFramePresenter(this.videoConverter);
+                }
+                else if (captureParameters.FrameQueueMode == FrameQueueMode.Queued)
+                {
+                    this.framePresenter = new QueuedFramePresenter(this.videoConverter, captureParameters.PresentationCount, captureParameters.FrameQueuePoolSize, captureParameters.FrameQueueMaxSize);
+                }
+                else if (captureParameters.FrameQueueMode == FrameQueueMode.Timed)
+                {
+                    this.framePresenter = new TimeQueuedFramePresenter(this.videoConverter, captureParameters.PresentationCount, captureParameters.FrameQueuePoolSize, captureParameters.FrameQueueMaxSize);
+                }
+                else if (captureParameters.FrameQueueMode == FrameQueueMode.DiscardImmutable)
+                {
+                    this.framePresenter = new DiscardImmutableFramePresenter(renderDevice, this.videoConverter, captureParameters.FrameQueueMaxSize);
+                }
+                else
+                {
+                    this.framePresenter = new TimeQueuedImmutableFramePresenter(renderDevice, this.videoConverter, captureParameters.PresentationCount, captureParameters.FrameQueuePoolSize, captureParameters.FrameQueueMaxSize);
+                }
             }
         }
 

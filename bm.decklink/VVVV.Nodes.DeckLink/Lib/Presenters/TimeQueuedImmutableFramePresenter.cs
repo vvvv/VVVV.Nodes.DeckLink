@@ -15,7 +15,12 @@ namespace VVVV.DeckLink.Presenters
     /// <summary>
     /// Queued frame presenter, enforces a minimum presentation count
     /// </summary>
-    public class TimeQueuedImmutableFramePresenter : IDecklinkFramePresenter, IDisposable, IFlushable, IDiscardCounter, ILatencyReporter
+    public class TimeQueuedImmutableFramePresenter : IDecklinkFramePresenter, 
+        IDisposable, 
+        IFlushable, 
+        IDiscardCounter, 
+        ILatencyReporter,
+        IStatusQueueReporter
     {
         private class TexturePresentationFrame
         {
@@ -94,6 +99,19 @@ namespace VVVV.DeckLink.Presenters
         public double CurrentDelay
         {
             get { return this.currentDelay; }
+        }
+
+        public IReadOnlyList<TimeSpan> QueueData
+        {
+            get
+            {
+                List<TimeSpan> queueData = new List<TimeSpan>();
+                lock (syncRoot)
+                {
+                    queueData.AddRange(this.frameQueue.Select(f => f.RawFrame.ReceivedTimeStamp));
+                }
+                return queueData;
+            }
         }
 
         private DecklinkTextureFrameData DequeueFrame()
@@ -240,7 +258,11 @@ namespace VVVV.DeckLink.Presenters
             }
             System.Runtime.InteropServices.Marshal.ReleaseComObject(videoFrame);
 
-            this.frameQueue.Enqueue(new DecklinkTextureFrameData(frameData, newTexture));
+            lock (syncRoot)
+            {
+                this.frameQueue.Enqueue(new DecklinkTextureFrameData(frameData, newTexture));
+            }
+            
         }
 
         public void Dispose()

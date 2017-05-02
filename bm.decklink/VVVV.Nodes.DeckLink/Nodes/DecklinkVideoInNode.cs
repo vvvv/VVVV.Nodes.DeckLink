@@ -15,6 +15,8 @@ using VVVV.DeckLink.Presenters;
 using VVVV.DeckLink.Utils;
 using VVVV.DX11.Lib.Devices;
 
+using System.Linq;
+
 namespace VVVV.DeckLink.Nodes
 {
 
@@ -41,6 +43,9 @@ namespace VVVV.DeckLink.Nodes
 
         [Input("Flush Queue", IsBang =true)]
         protected ISpread<bool> flushFrameQueue;
+
+        [Input("Reference Clock")]
+        protected ISpread<double> referenceClock;
 
         [Input("Enabled")]
         protected IDiffSpread<bool> FPinEnabled;
@@ -74,6 +79,9 @@ namespace VVVV.DeckLink.Nodes
 
         [Output("Statistics")]
         protected ISpread<CaptureStatistics> captureStatisticsOutput;
+
+        [Output("Queue Data")]
+        protected ISpread<double> queueData;
 
         private bool first = true;
         private CaptureParameters currentParameters = CaptureParameters.Default;
@@ -213,6 +221,13 @@ namespace VVVV.DeckLink.Nodes
                     this.statistics.CurrentDelay = ((ILatencyReporter)this.captureThread.FramePresenter).CurrentDelay;
                 }
 
+                if (this.captureThread.FramePresenter is IStatusQueueReporter)
+                {
+                    IStatusQueueReporter sqr = (IStatusQueueReporter)this.captureThread.FramePresenter;
+                    this.queueData.AssignFrom(sqr.QueueData.Select(qd => qd.TotalMilliseconds));
+                   
+                }
+
                 this.isModeSupported[0] = this.captureThread.ModeSupport != _BMDDisplayModeSupport.bmdDisplayModeNotSupported;
                 this.currentMode[0] = this.captureThread.CurrentDisplayMode.ToString();
                 this.width[0] = this.captureThread.Width;
@@ -290,6 +305,9 @@ namespace VVVV.DeckLink.Nodes
 
         public void Update(DX11RenderContext context)
         {
+            if (this.captureThread == null)
+                return;
+
             if (!this.pixelShaderConverter.Contains(context))
             {
                 this.pixelShaderConverter[context] = new YuvToRGBConverter(context);
