@@ -114,6 +114,19 @@ namespace VVVV.DeckLink.Presenters
             }
         }
 
+        public IReadOnlyList<int> QueueId
+        {
+            get
+            {
+                List<int> queueData = new List<int>();
+                lock (syncRoot)
+                {
+                    queueData.AddRange(this.frameQueue.Select(f => f.RawFrame.id));
+                }
+                return queueData;
+            }
+        }
+
         private DecklinkTextureFrameData DequeueFrame()
         {
             TimeSpan currentTime = Timer.Elapsed;
@@ -164,8 +177,6 @@ namespace VVVV.DeckLink.Presenters
                 throw new ArgumentNullException("renderDevice");
             if (videoConverter == null)
                 throw new ArgumentNullException("videoConverter");
-            if (presentationCount < 1)
-                throw new ArgumentOutOfRangeException("presentationCount", "Muse be at least one");
 
             this.renderDevice = renderDevice;
             this.videoConverter = videoConverter;
@@ -199,8 +210,9 @@ namespace VVVV.DeckLink.Presenters
                     int currentCount = this.currentPresentationFrame.PresentationCount;
 
                     //Discard that frame and get a new one
-                    if (currentCount > this.presentationCount)
+                    if (currentCount >= this.presentationCount)
                     {
+                        var frameDispose = currentPresentationFrame;
                         lock (syncRoot)
                         {
                             currentPresentationFrame.DisposeTexture();

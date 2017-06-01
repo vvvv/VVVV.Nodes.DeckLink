@@ -37,7 +37,7 @@ namespace VVVV.DeckLink
         /// How many times a frame needs to be presented on the screen.
         /// Setter will enforce a minimum of 1
         /// </summary>
-        public NonZeroPositiveInteger PresentationCount;
+        public int PresentationCount;
 
         /// <summary>
         /// Maximum size for a frame queue

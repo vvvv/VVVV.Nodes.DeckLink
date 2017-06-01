@@ -18,6 +18,7 @@ namespace VVVV.DeckLink
         private RawFrameData rawCapturedFrame;
         private ConvertedFrame convertedFrame;
         private TimeSpan receivedTimeStamp;
+        public int id;
 
         public RawFrameData RawFrameData
         {
@@ -32,6 +33,8 @@ namespace VVVV.DeckLink
         {
             get { return this.receivedTimeStamp; }
         }
+
+
 
         public DecklinkFrameData() : this(1,1)
         {

@@ -47,6 +47,11 @@ namespace VVVV.DeckLink
         public double DelayBetweenTextureUpdates;
 
         /// <summary>
+        /// Delay between frame is receive on decklink api till time we give back control
+        /// </summary>
+        public double FrameProcessTime;
+
+        /// <summary>
         /// Delay between the time a frame got acquired and time is has been assigned for presentation
         /// </summary>
         public double CurrentDelay;

@@ -35,6 +35,9 @@ namespace VVVV.DeckLink.Nodes
         [Output("Delay between texture updates")]
         protected ISpread<double> delayBetweenTextureUpdates;
 
+        [Output("Frame Process Time")]
+        protected ISpread<double> frameProcessTime;
+
         [Output("Current Delay")]
         protected ISpread<double> currentDelay;
 
@@ -48,6 +51,7 @@ namespace VVVV.DeckLink.Nodes
             this.framesCopiedCount.SliceCount = SpreadMax;
             this.framesDroppedCount.SliceCount = SpreadMax;
             this.framesQueueSize.SliceCount = SpreadMax;
+            this.frameProcessTime.SliceCount = SpreadMax;
 
             for (int i = 0; i < SpreadMax; i++)
             {
@@ -60,6 +64,7 @@ namespace VVVV.DeckLink.Nodes
                 this.framesCopiedCount[i] = stats.FramesCopiedCount;
                 this.framesDroppedCount[i] = stats.FramesDroppedCount;
                 this.framesQueueSize[i] = stats.FramesQueueSize;
+                this.frameProcessTime[i] = stats.FrameProcessTime;
             }
         }
     }

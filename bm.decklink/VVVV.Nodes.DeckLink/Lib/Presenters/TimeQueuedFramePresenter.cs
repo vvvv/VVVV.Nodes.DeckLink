@@ -119,8 +119,6 @@ namespace VVVV.DeckLink.Presenters
         {
             if (videoConverter == null)
                 throw new ArgumentNullException("videoConverter");
-            if (presentationCount < 1)
-                throw new ArgumentOutOfRangeException("presentationCount", "Muse be at least one");
 
             this.videoConverter = videoConverter;
             this.presentationCount = presentationCount;

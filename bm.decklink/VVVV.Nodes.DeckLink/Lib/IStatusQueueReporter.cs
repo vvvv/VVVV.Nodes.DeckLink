@@ -12,5 +12,6 @@ namespace VVVV.DeckLink
     public interface IStatusQueueReporter
     {
         IReadOnlyList<TimeSpan> QueueData { get; }
+        IReadOnlyList<int> QueueId { get; }
     }
 }

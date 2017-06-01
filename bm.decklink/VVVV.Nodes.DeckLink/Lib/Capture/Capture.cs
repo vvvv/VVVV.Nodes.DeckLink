@@ -76,6 +76,7 @@ namespace VVVV.DeckLink
 
         public double FrameDelayTime;
         public double FrameTextureTime;
+        public double FrameProcessTime;
 
         public event EventHandler RawFrameReceived;
         public event EventHandler FrameAvailable;
@@ -194,6 +195,15 @@ namespace VVVV.DeckLink
 
             this.running = false;
         }
+
+        private int availFrameCount;
+        public int AvailableFrameCount
+        {
+            get
+            {
+                return availFrameCount;
+            }
+        }
     
         public void VideoInputFormatChanged(_BMDVideoInputFormatChangedEvents notificationEvents, IDeckLinkDisplayMode newDisplayMode, _BMDDetectedVideoInputFormatFlags detectedSignalFlags)
         {
@@ -208,16 +218,32 @@ namespace VVVV.DeckLink
 
         private bool isLastFrameConverted;
 
+        public int fakeDelay = 0;
+
+        private Stopwatch processWatch = Stopwatch.StartNew();
+
         public void VideoInputFrameArrived(IDeckLinkVideoInputFrame videoFrame, IDeckLinkAudioInputPacket audioPacket)
         {
             this.sw.Stop();
             this.FrameDelayTime = this.sw.Elapsed.TotalMilliseconds;
             this.sw.Restart();
+
+            processWatch.Restart();
+
             if (this.RawFrameReceived != null)
             {
                 this.RawFrameReceived(this, new EventArgs());
             }
 
+            uint res;
+            this.device.GetAvailableVideoFrameCount(out res);
+            this.availFrameCount = (int)res;
+
+            if (fakeDelay > 0)
+            {
+                Thread.Sleep(fakeDelay);
+            }
+            
             lock (syncRoot)
             {
                 this.Width = videoFrame.GetWidth();
@@ -233,6 +259,9 @@ namespace VVVV.DeckLink
             {
                 this.FrameAvailable(this, new EventArgs());
             }
+
+            processWatch.Stop();
+            this.FrameProcessTime = processWatch.Elapsed.TotalMilliseconds;
         }
 
         public FrameDataResult AcquireTexture(DX11RenderContext context, ref DX11DynamicTexture2D texture)

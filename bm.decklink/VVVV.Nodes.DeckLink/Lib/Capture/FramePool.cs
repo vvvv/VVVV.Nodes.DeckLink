@@ -14,6 +14,7 @@ namespace VVVV.DeckLink
         private List<DecklinkFrameData> framePool = new List<DecklinkFrameData>();
         private Stack<DecklinkFrameData> availableFrames;
         private readonly int initialSize;
+        private int id;
 
         /// <summary>
         /// Current pool size
@@ -45,14 +46,18 @@ namespace VVVV.DeckLink
         /// <returns></returns>
         public DecklinkFrameData Acquire()
         {
+            this.id++;
             if (this.availableFrames.Count > 0)
             {
-                return this.availableFrames.Pop();
+                DecklinkFrameData frame = this.availableFrames.Pop();
+                frame.id = this.id;
+                return frame;
             }
             else
             {
                 DecklinkFrameData frame = new DecklinkFrameData();
                 this.framePool.Add(frame);
+                frame.id = this.id;
                 return frame;
             }
         }

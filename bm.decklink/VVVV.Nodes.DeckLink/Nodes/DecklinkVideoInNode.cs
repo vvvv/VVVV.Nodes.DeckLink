@@ -47,6 +47,9 @@ namespace VVVV.DeckLink.Nodes
         [Input("Reference Clock")]
         protected ISpread<double> referenceClock;
 
+        [Input("Fake Delay", Visibility =PinVisibility.OnlyInspector)]
+        protected ISpread<int> fakeDelay;
+
         [Input("Enabled")]
         protected IDiffSpread<bool> FPinEnabled;
 
@@ -64,6 +67,9 @@ namespace VVVV.DeckLink.Nodes
 
         [Output("Is Mode Supported")]
         protected ISpread<bool> isModeSupported;
+
+        [Output("Available Frame Count")]
+        protected ISpread<int> availFrameCount;
 
         [Output("Current Mode")]
         protected ISpread<string> currentMode;
@@ -210,6 +216,8 @@ namespace VVVV.DeckLink.Nodes
 
             if (this.captureThread != null)
             {
+                this.captureThread.fakeDelay = this.fakeDelay[0];
+
                 if (this.captureThread.FramePresenter is IDiscardCounter)
                 {
                     this.statistics.FramesDroppedCount = ((IDiscardCounter)this.captureThread.FramePresenter).DiscardCount;
@@ -238,6 +246,8 @@ namespace VVVV.DeckLink.Nodes
                 this.statistics.FramesQueueSize = this.captureThread.FramePresenter.QueueSize;
                 this.statistics.DelayBetweenFrames = this.captureThread.FrameDelayTime;
                 this.statistics.DelayBetweenTextureUpdates = this.captureThread.FrameTextureTime;
+                this.statistics.FrameProcessTime = this.captureThread.FrameProcessTime;
+                this.availFrameCount[0] = this.captureThread.AvailableFrameCount;
                 
             }
             else

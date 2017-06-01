@@ -65,8 +65,6 @@ namespace VVVV.DeckLink.Presenters
         {
             if (videoConverter == null)
                 throw new ArgumentNullException("videoConverter");
-            if (presentationCount < 1)
-                throw new ArgumentOutOfRangeException("presentationCount", "Muse be at least one");
 
             this.videoConverter = videoConverter;
             this.presentationCount = presentationCount;
@@ -99,7 +97,7 @@ namespace VVVV.DeckLink.Presenters
                     int currentCount = this.currentPresentationFrame.PresentationCount;
 
                     //Discard that frame and get a new one
-                    if (currentCount > this.presentationCount)
+                    if (currentCount >= this.presentationCount)
                     {
                         lock (syncRoot)
                         {
