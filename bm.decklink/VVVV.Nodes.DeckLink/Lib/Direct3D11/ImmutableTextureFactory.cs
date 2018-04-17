@@ -19,7 +19,7 @@ namespace VVVV.DeckLink.Direct3D11
                 ArraySize = 1,
                 BindFlags = BindFlags.ShaderResource,
                 CpuAccessFlags = CpuAccessFlags.None,
-                Format = SlimDX.DXGI.Format.R8G8B8A8_UNorm,
+                Format = SlimDX.DXGI.Format.B8G8R8A8_UNorm,
                 Height = rawFrame.Height,
                 Width = rawFrame.Width,
                 MipLevels = 1,
