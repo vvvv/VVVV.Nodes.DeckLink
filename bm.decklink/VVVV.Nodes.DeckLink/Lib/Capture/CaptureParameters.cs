@@ -67,7 +67,7 @@ namespace VVVV.DeckLink
                 return new CaptureParameters()
                 {
                     AutoDetect = true,
-                    FrameQueueMode = FrameQueueMode.Discard,
+                    FrameQueueMode = FrameQueueMode.DiscardImmutable,
                     DisplayMode = _BMDDisplayMode.bmdModePAL,
                     FrameQueueMaxSize = 10,
                     FrameQueuePoolSize = 10,

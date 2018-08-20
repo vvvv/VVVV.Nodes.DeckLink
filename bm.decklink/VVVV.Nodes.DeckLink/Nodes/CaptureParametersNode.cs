@@ -15,7 +15,7 @@ namespace VVVV.DeckLink.Nodes
         [Input("Output Mode")]
         protected ISpread<TextureOutputMode> outputMode;
 
-        [Input("Upload Mode")]
+        [Input("Upload Mode", DefaultEnumEntry = "DiscardImmutable")]
         protected IDiffSpread<FrameQueueMode> queueMode;
 
         [Input("Auto Detect Mode", DefaultValue = 1)]
