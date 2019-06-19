@@ -32,6 +32,10 @@ namespace VVVV.DeckLink
         /// Performs upload in immutable fashion
         /// </summary>
         TimedImmutable,
+        // <summary>
+        // Wait for frames - NOT YET IMPLEMENTED!
+        // </summary>
+        Wait
     }
 
 }

@@ -109,18 +109,20 @@ namespace VVVV.DeckLink.Nodes
         //called when data for any output pin is requested
         public void Evaluate(int SpreadMax)
 		{
-            if (this.textureOutput[0] == null) { this.textureOutput[0] = new DX11Resource<DX11Texture2D>(); }
-
+            // Setup Outputs
+            if (this.textureOutput[0] == null) {
+                this.textureOutput[0] = new DX11Resource<DX11Texture2D>();
+            }
             textureOutput.SliceCount = 1;
             statusOutput.SliceCount = 1;
             isModeSupported.SliceCount = 1;
 
-
             bool newDevice = false;
-
             CaptureParameters newParameters = this.captureParameters.DefaultIfNilOrNull(0, CaptureParameters.Default);
-
-            if (this.first == true || this.deviceIndex.IsChanged || this.currentParameters.NeedDeviceReset(newParameters) || this.resetDevice[0])
+            if (this.first == true || 
+                this.deviceIndex.IsChanged || 
+                this.currentParameters.NeedDeviceReset(newParameters) || 
+                this.resetDevice[0])
             {
                 if (this.captureThread != null)
                 {
@@ -131,8 +133,6 @@ namespace VVVV.DeckLink.Nodes
                 this.captureThread = new DecklinkCaptureThread(this.deviceIndex[0],this.renderDevice, newParameters); 
                 this.statusOutput[0] = this.captureThread.DeviceInformation.Message;
 
-
-
                 if (this.captureThread.DeviceInformation.IsValid)
                 {
                     this.captureThread.FrameAvailable += this.cap_NewFrame;
@@ -141,8 +141,8 @@ namespace VVVV.DeckLink.Nodes
                 {
                     this.captureThread = null;
                 }
-                this.statistics.ResetCounters();
 
+                this.statistics.ResetCounters();
                 newDevice = true;
                 first = false;
             }
@@ -162,7 +162,7 @@ namespace VVVV.DeckLink.Nodes
                             this.captureThread.Dispose();
                         }
 
-                        this.captureThread = new DecklinkCaptureThread(this.deviceIndex[0],this.renderDevice, this.currentParameters);
+                        this.captureThread = new DecklinkCaptureThread(this.deviceIndex[0], this.renderDevice, this.currentParameters);
                         this.statusOutput[0] = this.captureThread.DeviceInformation.Message;
 
                         if (this.captureThread.DeviceInformation.IsValid)
@@ -236,7 +236,7 @@ namespace VVVV.DeckLink.Nodes
                    
                 }
 
-                this.isModeSupported[0] = this.captureThread.ModeSupport != _BMDDisplayModeSupport.bmdDisplayModeNotSupported;
+                this.isModeSupported[0] = this.captureThread.ModeSupport != _BMDDisplayModeSupport_v10_11.bmdDisplayModeNotSupported_v10_11;
                 this.currentMode[0] = this.captureThread.CurrentDisplayMode.ToString();
                 this.width[0] = this.captureThread.Width;
                 this.height[0] = this.captureThread.Height;

@@ -55,7 +55,6 @@ namespace VVVV.DeckLink
         /// </summary>
         public double MaxLateness;
 
-
         /// <summary>
         /// Default parameters.
         /// Use auto detect, 10 queue sizes , discard and decklink native conversion

@@ -16,7 +16,7 @@ using VVVV.DeckLink.Utils;
 namespace VVVV.DeckLink
 {
     public class DecklinkCaptureThread : IDisposable, IDeckLinkInputCallback
-	{
+    {
         [DllImport("kernel32.dll", SetLastError = true, EntryPoint = "CopyMemory")]
         public static extern void CopyMemory(IntPtr destination, IntPtr source, int length);
 
@@ -37,7 +37,7 @@ namespace VVVV.DeckLink
         private Stopwatch textureUpdateWatch = Stopwatch.StartNew();
 
         public int Width { get; private set; }
-		public int Height { get; private set; }
+        public int Height { get; private set; }
 
         public CaptureDeviceInformation DeviceInformation
         {
@@ -49,7 +49,7 @@ namespace VVVV.DeckLink
             get { return this.running; }
         }
 
-        public _BMDDisplayModeSupport ModeSupport
+        public _BMDDisplayModeSupport_v10_11 ModeSupport
         {
             get; private set;
         }
@@ -81,9 +81,13 @@ namespace VVVV.DeckLink
         public event EventHandler RawFrameReceived;
         public event EventHandler FrameAvailable;
 
+        private bool isLastFrameConverted;
+        public int fakeDelay = 0;
+        private Stopwatch processWatch = Stopwatch.StartNew();
+
         public DecklinkCaptureThread(int deviceIndex, DX11RenderContext renderDevice, CaptureParameters captureParameters)
         {
-            DeviceFactory df=null;
+            DeviceFactory df = null;
             this.PerformConversion = captureParameters.OutputMode == TextureOutputMode.UncompressedBMD;
 
             TaskUtils.RunSync(() =>
@@ -103,27 +107,40 @@ namespace VVVV.DeckLink
                 this.videoInputFlags = captureParameters.AutoDetect ? _BMDVideoInputFlags.bmdVideoInputEnableFormatDetection : _BMDVideoInputFlags.bmdVideoInputFlagDefault;
                 this.AutoDetectFormatEnabled = videoInputFlags == _BMDVideoInputFlags.bmdVideoInputEnableFormatDetection;
                 this.slicedInput = df.slicedInput;
+                switch(captureParameters.FrameQueueMode)
+                {
+                    case FrameQueueMode.Discard:
+                        this.framePresenter = new DiscardFramePresenter(this.videoConverter);
+                        break;
+                    case FrameQueueMode.Queued:
+                        this.framePresenter = new QueuedFramePresenter(this.videoConverter, 
+                                                                       captureParameters.PresentationCount, 
+                                                                       captureParameters.FrameQueuePoolSize, 
+                                                                       captureParameters.FrameQueueMaxSize);
+                        break;
+                    case FrameQueueMode.Timed:
+                        this.framePresenter = new TimeQueuedFramePresenter(this.videoConverter, 
+                                                                           captureParameters.PresentationCount, 
+                                                                           captureParameters.FrameQueuePoolSize, 
+                                                                           captureParameters.FrameQueueMaxSize);
+                        break;
+                    case FrameQueueMode.DiscardImmutable:
+                        this.framePresenter = new DiscardImmutableFramePresenter(renderDevice, 
+                                                                                 this.videoConverter, 
+                                                                                 captureParameters.FrameQueueMaxSize);
+                        break;
+                    case FrameQueueMode.Wait:
+                        this.framePresenter = new WaitFramePresenter(this.videoConverter);
+                        break;
+                    default:
+                        this.framePresenter = new TimeQueuedImmutableFramePresenter(renderDevice, 
+                                                                                    this.videoConverter, 
+                                                                                    captureParameters.PresentationCount, 
+                                                                                    captureParameters.FrameQueuePoolSize, 
+                                                                                    captureParameters.FrameQueueMaxSize);
+                        break;
+                }
 
-                if (captureParameters.FrameQueueMode == FrameQueueMode.Discard)
-                {
-                    this.framePresenter = new DiscardFramePresenter(this.videoConverter);
-                }
-                else if (captureParameters.FrameQueueMode == FrameQueueMode.Queued)
-                {
-                    this.framePresenter = new QueuedFramePresenter(this.videoConverter, captureParameters.PresentationCount, captureParameters.FrameQueuePoolSize, captureParameters.FrameQueueMaxSize);
-                }
-                else if (captureParameters.FrameQueueMode == FrameQueueMode.Timed)
-                {
-                    this.framePresenter = new TimeQueuedFramePresenter(this.videoConverter, captureParameters.PresentationCount, captureParameters.FrameQueuePoolSize, captureParameters.FrameQueueMaxSize);
-                }
-                else if (captureParameters.FrameQueueMode == FrameQueueMode.DiscardImmutable)
-                {
-                    this.framePresenter = new DiscardImmutableFramePresenter(renderDevice, this.videoConverter, captureParameters.FrameQueueMaxSize);
-                }
-                else
-                {
-                    this.framePresenter = new TimeQueuedImmutableFramePresenter(renderDevice, this.videoConverter, captureParameters.PresentationCount, captureParameters.FrameQueuePoolSize, captureParameters.FrameQueueMaxSize);
-                }
             }
         }
 
@@ -134,26 +151,42 @@ namespace VVVV.DeckLink
 
             Task t = Task.Run(() =>
             {
-                _BMDDisplayModeSupport displayModeSupported;
-                IDeckLinkDisplayMode outputDisplayMode;
-                this.device.DoesSupportVideoMode(initialDisplayMode, this.inputPixelFormat, this.videoInputFlags, out displayModeSupported, out outputDisplayMode);
-                this.ModeSupport = displayModeSupported;
-                
-                if (displayModeSupported != _BMDDisplayModeSupport.bmdDisplayModeNotSupported)
+                // --- NEW:
+                int supported;
+                _BMDVideoConnection connection = _BMDVideoConnection.bmdVideoConnectionUnspecified;
+                _BMDSupportedVideoModeFlags flags = _BMDSupportedVideoModeFlags.bmdSupportedVideoModeDefault;
+                this.device.DoesSupportVideoMode(connection, initialDisplayMode, this.inputPixelFormat, flags, out supported);
+                bool isSupported = Convert.ToBoolean(supported);
+                if (isSupported)
                 {
                     this.device.SetCallback(this);
                     this.ApplyDisplayMode(initialDisplayMode, this.videoInputFlags);
-                    this.CurrentDisplayMode = outputDisplayMode.GetDisplayMode();
+                    // @TODO
+                    //this.CurrentDisplayMode = outputDisplayMode.GetDisplayMode();
                     this.device.StartStreams();
                     this.running = true;
                 }
+
+                // --- OLD:
+                //_BMDDisplayModeSupport_v10_11 displayModeSupported;
+                //IDeckLinkDisplayMode outputDisplayMode;
+                //this.device.DoesSupportVideoMode(initialDisplayMode, this.inputPixelFormat, this.videoInputFlags, out displayModeSupported, out outputDisplayMode);
+                //this.ModeSupport = displayModeSupported;
+                //if (displayModeSupported != _BMDDisplayModeSupport_v10_11.bmdDisplayModeNotSupported_v10_11)
+                //{
+                //    this.device.SetCallback(this);
+                //    this.ApplyDisplayMode(initialDisplayMode, this.videoInputFlags);
+                //    this.CurrentDisplayMode = outputDisplayMode.GetDisplayMode();
+                //    this.device.StartStreams();
+                //    this.running = true;
+                //}
             });
             Task.WaitAll(t);
         }
 
         public void SetDisplayMode(_BMDDisplayMode displayMode, _BMDVideoInputFlags videoInputFlags)
         {
-            lock(syncRoot)
+            lock (syncRoot)
             {
                 if (this.running)
                 {
@@ -168,18 +201,32 @@ namespace VVVV.DeckLink
 
         private void ApplyDisplayMode(_BMDDisplayMode newDisplayMode, _BMDVideoInputFlags videoInputFlags)
         {
-            _BMDDisplayModeSupport displayModeSupported;
-            IDeckLinkDisplayMode outputDisplayMode;
-
-            this.device.DoesSupportVideoMode(newDisplayMode, this.inputPixelFormat, videoInputFlags, out displayModeSupported, out outputDisplayMode);
-            this.ModeSupport = displayModeSupported;
-            this.CurrentDisplayMode = outputDisplayMode.GetDisplayMode();
-
-
-            if (displayModeSupported != _BMDDisplayModeSupport.bmdDisplayModeNotSupported)
+            // @TODO
+            // --- NEW:
+            int supported;
+            _BMDVideoConnection connection = _BMDVideoConnection.bmdVideoConnectionUnspecified;
+            _BMDSupportedVideoModeFlags flags = _BMDSupportedVideoModeFlags.bmdSupportedVideoModeDefault;
+            this.device.DoesSupportVideoMode(connection, newDisplayMode, this.inputPixelFormat, flags, out supported);
+            bool isSupported = Convert.ToBoolean(supported);
+            if (isSupported)
             {
-                this.device.EnableVideoInput(newDisplayMode, this.inputPixelFormat, this.videoInputFlags);
+                this.device.SetCallback(this);
+                this.ApplyDisplayMode(newDisplayMode, this.videoInputFlags);
+                //this.CurrentDisplayMode = outputDisplayMode.GetDisplayMode(); // @TODO
+                this.device.StartStreams();
+                this.running = true;
             }
+
+            // --- OLD:
+            //_BMDDisplayModeSupport displayModeSupported;
+            //IDeckLinkDisplayMode outputDisplayMode;
+            //this.device.DoesSupportVideoMode(newDisplayMode, this.inputPixelFormat, videoInputFlags, out displayModeSupported, out outputDisplayMode);
+            //this.ModeSupport = displayModeSupported;
+            //this.CurrentDisplayMode = outputDisplayMode.GetDisplayMode();
+            //if (displayModeSupported != _BMDDisplayModeSupport.bmdDisplayModeNotSupported)
+            //{
+            //    this.device.EnableVideoInput(newDisplayMode, this.inputPixelFormat, this.videoInputFlags);
+            //}
         }
 
         public void StopCapture()
@@ -204,7 +251,7 @@ namespace VVVV.DeckLink
                 return availFrameCount;
             }
         }
-    
+
         public void VideoInputFormatChanged(_BMDVideoInputFormatChangedEvents notificationEvents, IDeckLinkDisplayMode newDisplayMode, _BMDDetectedVideoInputFormatFlags detectedSignalFlags)
         {
             lock (syncRoot)
@@ -216,50 +263,35 @@ namespace VVVV.DeckLink
             }
         }
 
-        private bool isLastFrameConverted;
-
-        public int fakeDelay = 0;
-
-        private Stopwatch processWatch = Stopwatch.StartNew();
-
         public void VideoInputFrameArrived(IDeckLinkVideoInputFrame videoFrame, IDeckLinkAudioInputPacket audioPacket)
         {
             this.sw.Stop();
             this.FrameDelayTime = this.sw.Elapsed.TotalMilliseconds;
             this.sw.Restart();
-
             processWatch.Restart();
-
             if (this.RawFrameReceived != null)
             {
                 this.RawFrameReceived(this, new EventArgs());
             }
-
             uint res;
             this.device.GetAvailableVideoFrameCount(out res);
             this.availFrameCount = (int)res;
-
             if (fakeDelay > 0)
             {
                 Thread.Sleep(fakeDelay);
             }
-            
             lock (syncRoot)
             {
                 this.Width = videoFrame.GetWidth();
                 this.Height = videoFrame.GetHeight();
-
                 this.framePresenter.PushFrame(videoFrame, this.PerformConversion);
-
                 System.Runtime.InteropServices.Marshal.ReleaseComObject(videoFrame);
                 this.isLastFrameConverted = this.PerformConversion;
             }
-
             if (this.FrameAvailable != null)
             {
                 this.FrameAvailable(this, new EventArgs());
             }
-
             processWatch.Stop();
             this.FrameProcessTime = processWatch.Elapsed.TotalMilliseconds;
         }
@@ -269,14 +301,11 @@ namespace VVVV.DeckLink
             this.textureUpdateWatch.Stop();
             this.FrameTextureTime = this.textureUpdateWatch.Elapsed.TotalMilliseconds;
             this.textureUpdateWatch.Restart();
-
             var result = this.framePresenter.GetPresentationFrame();
-
             //Raw image, update and copy
             if (result.ResultType == FrameDataResultType.RawImage)
             {
                 this.UpdateTexture(context, ref texture);
-
                 if (result.IsNew)
                 {
                     this.Copy(result.CurrentFrame, texture);
@@ -312,7 +341,6 @@ namespace VVVV.DeckLink
                         texture = null;
                     }
                 }
-
                 if (texture == null)
                 {
                     var fmt = this.PerformConversion ? SlimDX.DXGI.Format.B8G8R8A8_UNorm : SlimDX.DXGI.Format.R8G8B8A8_UNorm;
@@ -327,7 +355,6 @@ namespace VVVV.DeckLink
             lock (syncRoot)
             {
                 int w = this.isLastFrameConverted ? this.Width : this.Width / 2;
-
                 //Get last frame
                 var result = this.framePresenter.GetPresentationFrame();
                 if (this.isLastFrameConverted)
@@ -338,7 +365,6 @@ namespace VVVV.DeckLink
                 {
                     result.CurrentFrame.RawFrameData.MapAndCopyFrame(tex);
                 }
-
                 return result;
             }
         }
@@ -346,14 +372,12 @@ namespace VVVV.DeckLink
         public void Dispose()
         {
             this.StopCapture();
-
             TaskUtils.RunSync(() =>
             {
                 DeviceFactory.ReleaseDevice(slicedInput);
                 int refCount = Marshal.ReleaseComObject(this.device);
             });
-
-            if( this.framePresenter is IDisposable)
+            if (this.framePresenter is IDisposable)
             {
                 ((IDisposable)this.framePresenter).Dispose();
             }
