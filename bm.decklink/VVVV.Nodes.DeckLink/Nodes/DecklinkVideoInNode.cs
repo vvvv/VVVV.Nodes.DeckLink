@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 
 using DeckLinkAPI;
-
+using System.Reflection;
 using FeralTic.DX11.Resources;
 using FeralTic.DX11;
 
@@ -16,14 +16,18 @@ using VVVV.DeckLink.Utils;
 using VVVV.DX11.Lib.Devices;
 
 using System.Linq;
+using System.ComponentModel.Composition;
 
 namespace VVVV.DeckLink.Nodes
 {
 
 	[PluginInfo(Name = "VideoIn", Category = "DeckLink", Version = "DX11.Texture", Author = "vux", Tags = "blackmagic, capture")]
-	public class VideoInDeckLinkNode : IPluginEvaluate, IDX11ResourceHost, IDisposable
-	{
-
+	public class VideoInDeckLinkNode : 
+        IPluginEvaluate, 
+        IDX11ResourceHost,
+        IDisposable,
+        IPartImportsSatisfiedNotification
+    {
 		#region fields & pins
 
 		[Input("Device")]
@@ -89,6 +93,9 @@ namespace VVVV.DeckLink.Nodes
         [Output("Queue Data")]
         protected ISpread<double> queueData;
 
+        [Output("Version", Visibility = PinVisibility.Hidden, IsSingle = true)]
+        public ISpread<string> FVersion;
+
         private bool first = true;
         private CaptureParameters currentParameters = CaptureParameters.Default;
         private CaptureStatistics statistics = new CaptureStatistics();
@@ -104,6 +111,15 @@ namespace VVVV.DeckLink.Nodes
         public VideoInDeckLinkNode()
         {
             this.renderDevice = DX11GlobalDevice.DeviceManager.RenderContexts[0];
+        }
+
+        public void OnImportsSatisfied()
+        {
+            var assembly = System.Reflection.Assembly.GetExecutingAssembly();
+            var version = (AssemblyInformationalVersionAttribute)assembly
+                .GetCustomAttribute(typeof(AssemblyInformationalVersionAttribute));
+            var versionString = version.InformationalVersion;
+            FVersion[0] = versionString;
         }
 
         //called when data for any output pin is requested
@@ -146,9 +162,7 @@ namespace VVVV.DeckLink.Nodes
                 newDevice = true;
                 first = false;
             }
-
             this.currentParameters = newParameters;
-
             if (this.captureThread != null)
             {
                 if (!this.currentParameters.AutoDetect)
@@ -161,10 +175,8 @@ namespace VVVV.DeckLink.Nodes
                             this.captureThread.FrameAvailable -= this.cap_NewFrame;
                             this.captureThread.Dispose();
                         }
-
                         this.captureThread = new DecklinkCaptureThread(this.deviceIndex[0], this.renderDevice, this.currentParameters);
                         this.statusOutput[0] = this.captureThread.DeviceInformation.Message;
-
                         if (this.captureThread.DeviceInformation.IsValid)
                         {
                             this.captureThread.FrameAvailable += this.cap_NewFrame;
@@ -175,7 +187,6 @@ namespace VVVV.DeckLink.Nodes
                         }
                     }
                 }
-
                 if (this.FPinEnabled.IsChanged || newDevice)
                 {
                     if (this.FPinEnabled[0])
@@ -187,17 +198,13 @@ namespace VVVV.DeckLink.Nodes
                         this.captureThread.StopCapture();
                     }
                 }
-
-
             }
 
             if (this.resetCounters.SliceCount > 0 && resetCounters[0])
             {
                 this.statistics.ResetCounters();
-
                 if (this.captureThread != null)
                 {
-
                     if (this.captureThread.FramePresenter is IDiscardCounter)
                     {
                         ((IDiscardCounter)this.captureThread.FramePresenter).Reset();
@@ -217,25 +224,21 @@ namespace VVVV.DeckLink.Nodes
             if (this.captureThread != null)
             {
                 this.captureThread.fakeDelay = this.fakeDelay[0];
-
                 if (this.captureThread.FramePresenter is IDiscardCounter)
                 {
                     this.statistics.FramesDroppedCount = ((IDiscardCounter)this.captureThread.FramePresenter).DiscardCount;
                 }
-
                 if (this.captureThread.FramePresenter is ILatencyReporter)
                 {
                     ((ILatencyReporter)this.captureThread.FramePresenter).MaxFrameLateness = this.currentParameters.MaxLateness;
                     this.statistics.CurrentDelay = ((ILatencyReporter)this.captureThread.FramePresenter).CurrentDelay;
                 }
-
                 if (this.captureThread.FramePresenter is IStatusQueueReporter)
                 {
                     IStatusQueueReporter sqr = (IStatusQueueReporter)this.captureThread.FramePresenter;
                     this.queueData.AssignFrom(sqr.QueueData.Select(qd => qd.TotalMilliseconds));
                    
                 }
-
                 this.isModeSupported[0] = this.captureThread.ModeSupport != _BMDDisplayModeSupport_v10_11.bmdDisplayModeNotSupported_v10_11;
                 this.currentMode[0] = this.captureThread.CurrentDisplayMode.ToString();
                 this.width[0] = this.captureThread.Width;
@@ -247,8 +250,8 @@ namespace VVVV.DeckLink.Nodes
                 this.statistics.DelayBetweenFrames = this.captureThread.FrameDelayTime;
                 this.statistics.DelayBetweenTextureUpdates = this.captureThread.FrameTextureTime;
                 this.statistics.FrameProcessTime = this.captureThread.FrameProcessTime;
+                this.statistics.FPS = Convert.ToInt32(this.captureThread.FPS);
                 this.availFrameCount[0] = this.captureThread.AvailableFrameCount;
-                
             }
             else
             {
@@ -259,10 +262,10 @@ namespace VVVV.DeckLink.Nodes
                 this.running[0] = false;
                 this.modelName[0] = "";
                 this.displayName[0] = "";
+                this.statistics.FPS = 0;
                 this.statistics.DelayBetweenFrames =0.0;
                 this.statistics.DelayBetweenTextureUpdates = 0.0;
             }
-
             this.captureStatisticsOutput[0] = this.statistics;
 		}
 
