@@ -41,6 +41,9 @@ namespace VVVV.DeckLink.Nodes
         [Output("Current Delay")]
         protected ISpread<double> currentDelay;
 
+        [Output("FPS")]
+        protected ISpread<double> framesPerSecond;
+
         public void Evaluate(int SpreadMax)
         {
             this.currentDelay.SliceCount = SpreadMax;
@@ -52,6 +55,7 @@ namespace VVVV.DeckLink.Nodes
             this.framesDroppedCount.SliceCount = SpreadMax;
             this.framesQueueSize.SliceCount = SpreadMax;
             this.frameProcessTime.SliceCount = SpreadMax;
+            this.framesPerSecond.SliceCount = SpreadMax;
 
             for (int i = 0; i < SpreadMax; i++)
             {
@@ -65,6 +69,7 @@ namespace VVVV.DeckLink.Nodes
                 this.framesDroppedCount[i] = stats.FramesDroppedCount;
                 this.framesQueueSize[i] = stats.FramesQueueSize;
                 this.frameProcessTime[i] = stats.FrameProcessTime;
+                this.framesPerSecond[i] = stats.FPS;
             }
         }
     }
