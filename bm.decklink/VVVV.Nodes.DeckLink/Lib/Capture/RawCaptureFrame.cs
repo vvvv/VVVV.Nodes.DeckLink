@@ -70,9 +70,7 @@ namespace VVVV.DeckLink
         {
             int width = videoFrame.GetWidth();
             int height = videoFrame.GetHeight();
-
             int frameSize = width / 2 * 4 * height;
-
             if (frameSize != frame.DataLength)
             {
                 frame.Dispose();

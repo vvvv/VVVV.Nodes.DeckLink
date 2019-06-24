@@ -12,17 +12,20 @@ namespace VVVV.DeckLink
     public enum FrameQueueMode
     {
         /// <summary>
+        /// DEPRECATED
         /// Discard mode, will always use last frame
         /// </summary>
-        Discard,
+        Discard_DEPRECATED,
         /// <summary>
+        /// DEPRECATED
         /// Queued mode, will keep frames in a FIFO fashion
         /// </summary>
-        Queued,
+        Queued_DEPRECATED,
         /// <summary>
+        /// DEPRECATED
         /// Timed mode, will discard frames if they timestamp is too old versus presentation time
         /// </summary>
-        Timed,
+        Timed_DEPRECATED,
         /// <summary>
         /// Immutable discard mode, use last frames, but perform texture upload in background
         /// </summary>
@@ -33,7 +36,8 @@ namespace VVVV.DeckLink
         /// </summary>
         TimedImmutable,
         // <summary>
-        // Wait for frames - NOT YET IMPLEMENTED!
+        // NOT YET IMPLEMENTED!
+        // Wait for frames.
         // </summary>
         Wait
     }

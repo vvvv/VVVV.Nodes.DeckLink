@@ -56,6 +56,11 @@ namespace VVVV.DeckLink
         /// </summary>
         public double CurrentDelay;
 
+        /// <summary>
+        /// Frames per second
+        /// </summary>
+        public int FPS;
+
         public void ResetCounters()
         {
             this.FramesCapturedCount = 0;
