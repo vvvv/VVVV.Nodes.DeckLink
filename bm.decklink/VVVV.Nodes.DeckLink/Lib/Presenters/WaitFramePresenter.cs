@@ -16,10 +16,8 @@ namespace VVVV.DeckLink.Presenters
         private readonly DecklinkVideoFrameConverter videoConverter;
         private DecklinkFrameData frame = new DecklinkFrameData();
         private bool isNewFrame = true;
-        private IDeckLinkVideoInputFrame inputVideoFrame;
-        private bool peformConvertion = false;
         // @TODO: evaluate the need of this! Shorten Thread.Sleep() by this factor
-        private float overheadModifier = 0.00f;
+        WaitHandle waitHandle = new AutoResetEvent(false);
 
         public int QueueSize
         {
@@ -45,14 +43,20 @@ namespace VVVV.DeckLink.Presenters
         public void PushFrame(IDeckLinkVideoInputFrame videoFrame, bool performConvertion)
         {
             // Delay execution
-            long timeScale = 1000;
-            long frameTime, frameDuration;
+            //long timeScale = 1000;
+            //long frameTime, frameDuration;
             // @TODO check difference between frame timing functions 
-            videoFrame.GetHardwareReferenceTimestamp(timeScale, out frameTime, out frameDuration);
+            //videoFrame.GetHardwareReferenceTimestamp(timeScale, out frameTime, out frameDuration);
             //videoFrame.GetStreamTime(out frameTime, out frameDuration, timeScale);
-            int delay = Convert.ToInt32(frameDuration);
-            WaitHandle waitHandle = new ManualResetEvent(false);
-            ThreadPool.QueueUserWorkItem(new WaitCallback(state => WaitForPushFrame(state, delay)), waitHandle);
+            //int delay = Convert.ToInt32(frameDuration);
+            ThreadPool.QueueUserWorkItem(new WaitCallback(state => WaitForPushFrame(state, 0, videoFrame, performConvertion)), waitHandle);
+            WaitHandle.WaitAll(new WaitHandle[] { waitHandle });
+            waitHandle.Dispose();
+        }
+
+        void WaitForPushFrame(Object state, int duration, IDeckLinkVideoInputFrame videoFrame, bool performConvertion)
+        {
+            AutoResetEvent ev = (AutoResetEvent)state;
             if (performConvertion)
             {
                 this.frame.UpdateAndConvert(this.videoConverter, videoFrame);
@@ -63,13 +67,6 @@ namespace VVVV.DeckLink.Presenters
             }
             System.Runtime.InteropServices.Marshal.ReleaseComObject(videoFrame);
             this.isNewFrame = true;
-            waitHandle.WaitOne();
-        }
-
-        void WaitForPushFrame(Object state, int duration)
-        {
-            ManualResetEvent ev = (ManualResetEvent)state;
-            Thread.Sleep(duration - Convert.ToInt32(duration * this.overheadModifier));
             ev.Set();
         }
 

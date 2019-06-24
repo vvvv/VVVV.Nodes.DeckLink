@@ -128,11 +128,6 @@ namespace VVVV.DeckLink
                                                                                  captureParameters.FrameQueueMaxSize);
                         break;
                     case FrameQueueMode.Wait:
-                        //IDeckLinkDisplayMode currentDisplaymode;
-                        //this.device.GetDisplayMode(this.CurrentDisplayMode, out currentDisplaymode);
-                        //long timeScale, frameDuration;
-                        //currentDisplaymode.GetFrameRate(out frameDuration, out timeScale);
-                        //var fps = timeScale / (float)frameDuration;
                         this.framePresenter = new WaitFramePresenter(this.videoConverter);
                         break;
                     default:
