@@ -145,6 +145,10 @@ namespace VVVV.DeckLink.Nodes
                 eventWaitHandle.WaitOne();
             }
         }
+
+        private void MainLoop_OnUpdateView(Object sender, EventArgs args)
+        {
+        }
         #endregion
 
 
@@ -163,22 +167,12 @@ namespace VVVV.DeckLink.Nodes
             FHDEHost.MainLoop.OnRender += MainLoop_OnRender;
             FHDEHost.MainLoop.OnPresent += MainLoop_OnPresent;
             FHDEHost.MainLoop.OnResetCache += MainLoop_OnResetCache;
+            FHDEHost.MainLoop.OnUpdateView += MainLoop_OnUpdateView;
         }
 
         public void Evaluate(int SpreadMax)
         {
-            // Setup fake delay duration
-            if (this.captureThread != null) this.captureThread.FakeDelay = this.fakeDelay[0];
-            // Setup texture output
-            if (this.textureOutput[0] == null)
-            {
-                this.textureOutput[0] = new DX11Resource<DX11Texture2D>();
-            }
-            // When auto detection is disabled and the 'apply display mode' is banged
-            if (!this.currentParameters.AutoDetect && this.applyDisplayMode[0])
-            {
-                this.ChangeDisplayMode();
-            }
+            this.SetupTexture();
             this.UpdateCaptureParameters();
             this.UpdateOutputPins();
             this.UpdateStatistics();
@@ -218,7 +212,21 @@ namespace VVVV.DeckLink.Nodes
             {
                 this.pixelShaderConverter.Dispose();
             }
+            // Setup texture output
+            if (this.textureOutput[0] == null)
+            {
+                this.textureOutput[0] = new DX11Resource<DX11Texture2D>();
+            }
             this.needsInitialization = true;
+        }
+
+        private void SetupTexture()
+        {
+            // Setup texture output
+            if (this.textureOutput[0] == null)
+            {
+                this.textureOutput[0] = new DX11Resource<DX11Texture2D>();
+            }
         }
 
         private void ChangeDisplayMode()
@@ -341,8 +349,14 @@ namespace VVVV.DeckLink.Nodes
 
         private void ReactOnInputPins()
         {
-            // Reset counters
-            if (this.resetCounters.SliceCount > 0 && resetCounters[0])
+            // Capture thread fake delay duration from input
+            if (this.captureThread != null)
+            {
+                this.captureThread.FakeDelay = this.fakeDelay[0];
+            }
+            // Reset statistics 
+            if (this.resetCounters.SliceCount > 0 && 
+                this.resetCounters[0])
             {
                 this.statistics.Reset();
                 if (this.captureThread != null)
@@ -362,7 +376,8 @@ namespace VVVV.DeckLink.Nodes
                 }
             }
             // Device change or enable change
-            if (this.FPinEnabled.IsChanged || newDevice)
+            if (this.FPinEnabled.IsChanged || 
+                this.newDevice)
             {
                 if (this.FPinEnabled[0])
                 {
@@ -373,10 +388,16 @@ namespace VVVV.DeckLink.Nodes
                     this.captureThread.StopCapture();
                 }
             }
-            // React on reset
+            // React on reset pin bangging
             if (this.resetDevice[0])
             {
                 this.Reset();
+            }
+
+            // When auto detection is disabled and the 'apply display mode' is banged
+            if (!this.currentParameters.AutoDetect && this.applyDisplayMode[0])
+            {
+                this.ChangeDisplayMode();
             }
         }
         #endregion

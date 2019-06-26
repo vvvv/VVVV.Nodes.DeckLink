@@ -44,6 +44,7 @@ namespace VVVV.DeckLink
         private bool isLastFrameConverted;
         private Stopwatch processWatch = Stopwatch.StartNew();
         private _BMDDisplayModeSupport_v10_11 ModeSupport;
+        private int availFrameCount;
         #endregion
 
         #region Propertis
@@ -79,6 +80,14 @@ namespace VVVV.DeckLink
         public bool PerformConversion { get; private set; }
 
         public float FPS { get; private set; }
+
+        public int AvailableFrameCount
+        {
+            get
+            {
+                return availFrameCount;
+            }
+        }
         #endregion
 
         public DecklinkCaptureThread(int deviceIndex, DX11RenderContext renderDevice, CaptureParameters captureParameters)
@@ -198,7 +207,6 @@ namespace VVVV.DeckLink
             {
                 if (this.running)
                 {
-                    //this.CurrentDisplayMode = displayMode;
                     this.device.DisableVideoInput();
                     this.device.StopStreams();
                     this.ApplyDisplayMode(displayMode);
@@ -210,7 +218,6 @@ namespace VVVV.DeckLink
         private void ApplyDisplayMode(_BMDDisplayMode newDisplayMode)
         {
             bool isSupported = IsDisplayModeSupported(newDisplayMode);
-            //this.CurrentDisplayMode = newDisplayMode;
             if (isSupported)
             {
                 this.device.EnableVideoInput(newDisplayMode, this.inputPixelFormat, this.videoInputFlags);
@@ -231,14 +238,6 @@ namespace VVVV.DeckLink
             this.running = false;
         }
 
-        private int availFrameCount;
-        public int AvailableFrameCount
-        {
-            get
-            {
-                return availFrameCount;
-            }
-        }
 
         public void VideoInputFormatChanged(
             _BMDVideoInputFormatChangedEvents notificationEvents,
@@ -251,7 +250,6 @@ namespace VVVV.DeckLink
                 this.ApplyDisplayMode(newDisplayMode.GetDisplayMode());
                 this.device.FlushStreams();
                 this.device.StartStreams();
-                //this.CurrentDisplayMode = newDisplayMode.GetDisplayMode();
             }
         }
 
