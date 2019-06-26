@@ -27,9 +27,7 @@ namespace VVVV.DeckLink.Direct3D11
                 SampleDescription = new SlimDX.DXGI.SampleDescription(1, 0),
                 Usage = ResourceUsage.Immutable,
             };
-
             DataRectangle slice = new DataRectangle(rawFrame.Width * 4, new DataStream(rawFrame.DataPointer, rawFrame.DataLength, true, false));
-
             Texture2D frameTexture = new Texture2D(context.Device, textureDesc, slice);
             ShaderResourceView frameTextureView = new ShaderResourceView(context.Device, frameTexture);
             return DX11Texture2D.FromTextureAndSRV(context, frameTexture, frameTextureView); ;
@@ -50,9 +48,7 @@ namespace VVVV.DeckLink.Direct3D11
                 SampleDescription = new SlimDX.DXGI.SampleDescription(1, 0),
                 Usage = ResourceUsage.Immutable,
             };
-
             DataRectangle slice = new DataRectangle(rawFrame.Width * 2, new DataStream(rawFrame.DataPointer, rawFrame.DataLength, true, false));
-
             Texture2D frameTexture = new Texture2D(context.Device, textureDesc, slice);
             ShaderResourceView frameTextureView = new ShaderResourceView(context.Device, frameTexture);
             return DX11Texture2D.FromTextureAndSRV(context, frameTexture, frameTextureView); ;

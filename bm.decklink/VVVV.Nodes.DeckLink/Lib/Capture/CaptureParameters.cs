@@ -67,7 +67,7 @@ namespace VVVV.DeckLink
                 {
                     AutoDetect = true,
                     FrameQueueMode = FrameQueueMode.DiscardImmutable,
-                    DisplayMode = _BMDDisplayMode.bmdModePAL,
+                    DisplayMode = _BMDDisplayMode.bmdModeHD1080p6000,
                     FrameQueueMaxSize = 10,
                     FrameQueuePoolSize = 10,
                     MaxLateness = 100,

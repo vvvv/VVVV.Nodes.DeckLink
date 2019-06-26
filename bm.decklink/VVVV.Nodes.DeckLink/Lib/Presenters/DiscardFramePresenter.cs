@@ -10,16 +10,17 @@ namespace VVVV.DeckLink.Presenters
     /// <summary>
     /// Discard mode frame presentation, always present last frame, regardless of what happened
     /// </summary> 
-    public class DiscardFramePresenter : IDecklinkFramePresenter, IDisposable, IDiscardCounter
+    public class DiscardFramePresenter : IDecklinkQueuedFramePresenter, IDisposable, IDiscardCounter
     {
-        private readonly DecklinkVideoFrameConverter videoConverter;
-
-        private DecklinkFrameData frame = new DecklinkFrameData();
-
+        #region Variables
         private bool isNewFrame = false;
         private bool lastFramePresented = false;
         private int discardCount = 0;
+        private readonly DecklinkVideoFrameConverter videoConverter;
+        private DecklinkFrameData frame = new DecklinkFrameData();
+        #endregion
 
+        #region Properties
         public int QueueSize
         {
             get { return 0; }
@@ -29,12 +30,11 @@ namespace VVVV.DeckLink.Presenters
         {
             get { return this.discardCount; }
         }
+        #endregion
 
         public DiscardFramePresenter(DecklinkVideoFrameConverter videoConverter)
         {
-            if (videoConverter == null)
-                throw new ArgumentNullException("videoConverter");
-
+            if (videoConverter == null) throw new ArgumentNullException("videoConverter");
             this.videoConverter = videoConverter;
         }
 
@@ -52,7 +52,6 @@ namespace VVVV.DeckLink.Presenters
             {
                 this.discardCount++;
             }
-
             if (performConvertion)
             {
                 this.frame.UpdateAndConvert(this.videoConverter, videoFrame);

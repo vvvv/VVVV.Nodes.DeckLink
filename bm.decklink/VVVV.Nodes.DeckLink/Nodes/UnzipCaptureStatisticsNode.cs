@@ -69,7 +69,7 @@ namespace VVVV.DeckLink.Nodes
                 this.framesDroppedCount[i] = stats.FramesDroppedCount;
                 this.framesQueueSize[i] = stats.FramesQueueSize;
                 this.frameProcessTime[i] = stats.FrameProcessTime;
-                this.framesPerSecond[i] = stats.FPS;
+                this.framesPerSecond[i] = stats.DeckLinkFPS;
             }
         }
     }

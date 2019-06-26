@@ -24,7 +24,10 @@ namespace VVVV.DeckLink.Presenters
         /// </summary>
         /// <returns></returns>
         FrameDataResult GetPresentationFrame();
+    }
 
+    public interface IDecklinkQueuedFramePresenter : IDecklinkFramePresenter
+    {
         /// <summary>
         /// Queue size (if relevant, else just discard)
         /// </summary>

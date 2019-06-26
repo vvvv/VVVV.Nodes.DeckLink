@@ -12,7 +12,7 @@ namespace VVVV.DeckLink.Presenters
     /// <summary>
     /// Queued frame presenter, enforces a minimum presentation count
     /// </summary>
-    public class TimeQueuedFramePresenter : IDecklinkFramePresenter, IDisposable, IFlushable, IDiscardCounter, ILatencyReporter
+    public class TimeQueuedFramePresenter : IDecklinkQueuedFramePresenter, IDisposable, IFlushable, IDiscardCounter, ILatencyReporter
     {
         private class PresentationFrame
         {

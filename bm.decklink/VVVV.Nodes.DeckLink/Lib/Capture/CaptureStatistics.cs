@@ -57,16 +57,22 @@ namespace VVVV.DeckLink
         public double CurrentDelay;
 
         /// <summary>
-        /// Frames per second
+        /// Frames per second queried via DeckLink SDK
         /// </summary>
-        public int FPS;
+        public int DeckLinkFPS;
 
-        public void ResetCounters()
+        public void Reset()
         {
             this.FramesCapturedCount = 0;
             this.FramesCopiedCount = 0;
+            this.FramesQueueSize = 0;
+            this.CurrentFramePresentCount = 0;
             this.FramesDroppedCount = 0;
+            this.DelayBetweenFrames = 0.0;
+            this.DelayBetweenTextureUpdates = 0.0;
+            this.FrameProcessTime = 0.0;
             this.CurrentDelay = 0;
+            this.DeckLinkFPS = 0;
         }
     }
 }

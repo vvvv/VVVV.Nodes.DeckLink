@@ -14,7 +14,7 @@ namespace VVVV.DeckLink.Presenters
     /// Discard mode frame presentation, always present last frame, regardless of what happened.
     /// Creates an immutable texture in background, and takes care of disposing old frames (this is done during update)
     /// </summary> 
-    public class DiscardImmutableFramePresenter : IDecklinkFramePresenter, IDisposable, IDiscardCounter
+    public class DiscardImmutableFramePresenter : IDecklinkQueuedFramePresenter, IDisposable, IDiscardCounter
     {
         private bool isDisposed = false;
         private readonly DX11RenderContext renderContext;
