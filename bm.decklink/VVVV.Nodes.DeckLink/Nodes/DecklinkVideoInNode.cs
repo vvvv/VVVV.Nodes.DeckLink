@@ -127,6 +127,11 @@ namespace VVVV.DeckLink.Nodes
         // @TODO remove unnecessary event handlers
         private void MainLoop_OnPrepareGraph(Object sender, EventArgs args)
         {
+            if (this.captureThread != null &&
+                this.captureThread.FramePresenter is WaitFramePresenter)
+            {
+                eventWaitHandle.WaitOne();
+            }
         }
 
         private void MainLoop_OnRender(Object sender, EventArgs args)
@@ -139,11 +144,6 @@ namespace VVVV.DeckLink.Nodes
 
         private void MainLoop_OnResetCache(Object sender, EventArgs args)
         {
-            if (this.captureThread != null &&
-                this.captureThread.FramePresenter is WaitFramePresenter)
-            {
-                eventWaitHandle.WaitOne();
-            }
         }
 
         private void MainLoop_OnUpdateView(Object sender, EventArgs args)
@@ -197,6 +197,7 @@ namespace VVVV.DeckLink.Nodes
             {
                 this.captureThread.StopCapture();
                 this.captureThread.FrameAvailableHandler -= this.OnNewFrameReceived;
+                this.captureThread.FrameAvailableHandler -= this.OnNewRawFrameReceived;
                 this.captureThread.Dispose();
                 this.captureThread = null;
             }
@@ -235,12 +236,14 @@ namespace VVVV.DeckLink.Nodes
             if (this.currentParameters.DisplayMode != this.captureThread.CurrentDisplayMode)
             {
                 this.captureThread.FrameAvailableHandler -= this.OnNewFrameReceived;
+                this.captureThread.RawFrameReceivedHandler -= this.OnNewRawFrameReceived;
                 this.captureThread.Dispose();
             }
             this.captureThread = new DecklinkCaptureThread(this.deviceIndex[0], this.renderDevice, this.currentParameters);
             if (this.captureThread.DeviceInformation.IsValid)
             {
                 this.captureThread.FrameAvailableHandler += this.OnNewFrameReceived;
+                this.captureThread.RawFrameReceivedHandler += this.OnNewRawFrameReceived;
             }
             else
             {
@@ -263,6 +266,7 @@ namespace VVVV.DeckLink.Nodes
                 if (this.captureThread != null)
                 {
                     this.captureThread.FrameAvailableHandler -= this.OnNewFrameReceived;
+                    this.captureThread.RawFrameReceivedHandler -= this.OnNewRawFrameReceived;
                     this.captureThread.Dispose();
                     this.captureThread = null;
                 }
@@ -271,6 +275,7 @@ namespace VVVV.DeckLink.Nodes
                 if (this.captureThread.DeviceInformation.IsValid)
                 {
                     this.captureThread.FrameAvailableHandler += this.OnNewFrameReceived;
+                    this.captureThread.RawFrameReceivedHandler += this.OnNewRawFrameReceived;
                     _BMDVideoInputFlags flags = _BMDVideoInputFlags.bmdVideoInputFlagDefault;
                     this.captureThread.SetDisplayMode(newParameters.DisplayMode, flags);
                 }
@@ -404,12 +409,17 @@ namespace VVVV.DeckLink.Nodes
 
 
         #region CaptureThread event handler
-        private void OnNewFrameReceived(object sender, EventArgs e)
+        private void OnNewRawFrameReceived(object sender, EventArgs a)
         {
             this.statistics.FramesCapturedCount++;
             if (this.captureThread != null &&
                 this.captureThread.FramePresenter is WaitFramePresenter)
                 this.eventWaitHandle.Set();
+        }
+
+        private void OnNewFrameReceived(object sender, EventArgs e)
+        {
+            this.statistics.FramesCapturedCount++;
         }
         #endregion
 
