@@ -36,7 +36,7 @@ namespace VVVV.DeckLink.Nodes
 
 
         #region Fields & pins
-        [Input("Device")]
+        [Input("Device", DefaultValue = 1)]
         protected IDiffSpread<int> deviceIndex;
 
         [Input("Capture Parameters")]
