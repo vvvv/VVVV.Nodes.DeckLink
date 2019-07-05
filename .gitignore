@@ -7,3 +7,6 @@
 
 # Ignore the DeckLink SDK dir
 bm.decklink/Blackmagic_DeckLink_SDK_*/
+
+# Ignore the release folder
+bm.decklink/Release/
