@@ -10,4 +10,6 @@
 3. Open `VVVV.Nodes.BlackMagic.sln` and build the project
 
 ## Deploy
-The solution will build the `.dll` files right into the `Patches/` folder.
+The solution will build the `.dll` files right into the `Patches/` folder. Use
+`release.bat vvvv.nodes.blackmagic` to copy all the files into the `Release/`
+dir for usage with the vvvv packs dir.
