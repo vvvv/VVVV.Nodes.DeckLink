@@ -1,6 +1,8 @@
 # VVVV Decklink
 
 ## Setup
+:warning: Mind that you might need the latest BlackMagic Driver (11.2)
+
 1. Obtain the DeckLink SDK
     A. Download the BlackMagic SDK from
     [blackmagicdesign.com/developer](https://www.blackmagicdesign.com/de/developer/)
