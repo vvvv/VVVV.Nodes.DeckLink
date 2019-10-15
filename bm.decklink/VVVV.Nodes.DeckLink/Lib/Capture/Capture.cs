@@ -150,11 +150,17 @@ namespace VVVV.DeckLink
 
         private bool IsDisplayModeSupported(_BMDDisplayMode displayMode)
         {
-            int supported;
-            _BMDVideoConnection connection = _BMDVideoConnection.bmdVideoConnectionSDI;
-            _BMDSupportedVideoModeFlags flags = _BMDSupportedVideoModeFlags.bmdSupportedVideoModeDefault;
-            this.device.DoesSupportVideoMode(connection, displayMode, this.inputPixelFormat, flags, out supported);
-            return Convert.ToBoolean(supported);
+            try
+            {
+                int supported;
+                _BMDVideoConnection connection = _BMDVideoConnection.bmdVideoConnectionSDI;
+                _BMDSupportedVideoModeFlags flags = _BMDSupportedVideoModeFlags.bmdSupportedVideoModeDefault;
+                this.device.DoesSupportVideoMode(connection, displayMode, this.inputPixelFormat, flags, out supported);
+                return Convert.ToBoolean(supported);
+            } catch (Exception e)
+            {
+                return false;
+            }
         }
 
         public void StartCapture(_BMDDisplayMode initialDisplayMode)

@@ -359,8 +359,9 @@ namespace VVVV.DeckLink.Nodes
             {
                 this.captureThread.FakeDelay = this.fakeDelay[0];
             }
+
             // Reset statistics 
-            if (this.resetCounters.SliceCount > 0 && 
+            if (this.resetCounters.SliceCount > 0 &&
                 this.resetCounters[0])
             {
                 this.statistics.Reset();
@@ -372,6 +373,7 @@ namespace VVVV.DeckLink.Nodes
                     }
                 }
             }
+
             // Flush frame queue
             if (this.flushFrameQueue[0])
             {
@@ -380,9 +382,9 @@ namespace VVVV.DeckLink.Nodes
                     ((IFlushable)this.captureThread.FramePresenter).Flush();
                 }
             }
+
             // Device change or enable change
-            if (this.FPinEnabled.IsChanged || 
-                this.newDevice)
+            if (this.FPinEnabled.IsChanged || this.newDevice)
             {
                 if (this.FPinEnabled[0])
                 {
@@ -393,12 +395,12 @@ namespace VVVV.DeckLink.Nodes
                     this.captureThread.StopCapture();
                 }
             }
+
             // React on reset pin bangging
             if (this.resetDevice[0])
             {
                 this.Reset();
             }
-
             // When auto detection is disabled and the 'apply display mode' is banged
             if (!this.currentParameters.AutoDetect && this.applyDisplayMode[0])
             {
