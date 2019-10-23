@@ -16,19 +16,25 @@ namespace VVVV.DeckLink
         public readonly string DisplayName;
         public readonly bool IsValid;
         public readonly string Message;
+        public bool IsAutoModeDetectionSupported;
 
-        private CaptureDeviceInformation(string modelName, string displayName,
-            bool isValid, string message)
+        private CaptureDeviceInformation(
+            string modelName,
+            string displayName,
+            bool isValid,
+            string message,
+            bool isAutoModeDetectionSupported)
         {
             this.ModelName = modelName;
             this.DisplayName = displayName;
             this.IsValid = isValid;
             this.Message = message;
+            this.IsAutoModeDetectionSupported = isAutoModeDetectionSupported;
         }
 
         public static CaptureDeviceInformation Invalid(string message)
         {
-            return new CaptureDeviceInformation("", "", false, message);
+            return new CaptureDeviceInformation("", "", false, message, false);
         }
 
         public static CaptureDeviceInformation FromDevice(IDeckLink device)
@@ -37,7 +43,10 @@ namespace VVVV.DeckLink
             string displayName;
             device.GetModelName(out modelName);
             device.GetDisplayName(out displayName);
-            return new CaptureDeviceInformation(modelName, displayName, true, "Device Initialized");
+            var deckLinkAttributes = (IDeckLinkProfileAttributes)device;
+            deckLinkAttributes.GetFlag(_BMDDeckLinkAttributeID.BMDDeckLinkSupportsInputFormatDetection, out int isAutoDetectSupported);
+            bool autoDetecionIsSupported = isAutoDetectSupported != 0;
+            return new CaptureDeviceInformation(modelName, displayName, true, "Device Initialized", autoDetecionIsSupported);
         }
 
     }

@@ -157,9 +157,12 @@ namespace VVVV.DeckLink
                 _BMDSupportedVideoModeFlags flags = _BMDSupportedVideoModeFlags.bmdSupportedVideoModeDefault;
                 this.device.DoesSupportVideoMode(connection, displayMode, this.inputPixelFormat, flags, out supported);
                 return Convert.ToBoolean(supported);
-            } catch (Exception e)
+            } 
+            catch (NotImplementedException e)
             {
-                return false;
+                this.DeviceInformation.IsAutoModeDetectionSupported = false;
+                // Generally allow display mode
+                return true;
             }
         }
 
@@ -175,7 +178,7 @@ namespace VVVV.DeckLink
                     ModeSupport = _BMDDisplayModeSupport_v10_11.bmdDisplayModeSupported_v10_11;
                     this.device.SetCallback(this);
                     this.ApplyDisplayMode(initialDisplayMode);
-                    //this.CurrentDisplayMode = initialDisplayMode;
+                    this.CurrentDisplayMode = initialDisplayMode;
                     this.device.StartStreams();
                     this.running = true;
                 }

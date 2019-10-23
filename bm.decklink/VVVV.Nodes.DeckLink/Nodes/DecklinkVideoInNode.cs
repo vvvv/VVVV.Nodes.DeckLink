@@ -78,6 +78,9 @@ namespace VVVV.DeckLink.Nodes
         [Output("Is Mode Supported")]
         protected ISpread<bool> isModeSupported;
 
+        [Output("Is Auto Detect Mode Supported", IsSingle = true)]
+        protected ISpread<bool> FOut_IsAutoDetectSupported;
+
         [Output("Available Frame Count")]
         protected ISpread<int> availFrameCount;
 
@@ -98,6 +101,9 @@ namespace VVVV.DeckLink.Nodes
 
         [Output("Queue Data")]
         protected ISpread<double> queueData;
+
+        [Output("Decklink SDK Version", IsSingle = true)]
+        public ISpread<string> FAPIVersion;
 
         [Output("Version", Visibility = PinVisibility.Hidden, IsSingle = true)]
         public ISpread<string> FVersion;
@@ -133,22 +139,6 @@ namespace VVVV.DeckLink.Nodes
                 eventWaitHandle.WaitOne();
             }
         }
-
-        private void MainLoop_OnRender(Object sender, EventArgs args)
-        {
-        }
-
-        private void MainLoop_OnPresent(Object sender, EventArgs args)
-        {
-        }
-
-        private void MainLoop_OnResetCache(Object sender, EventArgs args)
-        {
-        }
-
-        private void MainLoop_OnUpdateView(Object sender, EventArgs args)
-        {
-        }
         #endregion
 
 
@@ -164,10 +154,11 @@ namespace VVVV.DeckLink.Nodes
             eventWaitHandle = new EventWaitHandle(false, EventResetMode.AutoReset);
             // Setup main loop event handlers
             FHDEHost.MainLoop.OnPrepareGraph += MainLoop_OnPrepareGraph;
-            FHDEHost.MainLoop.OnRender += MainLoop_OnRender;
-            FHDEHost.MainLoop.OnPresent += MainLoop_OnPresent;
-            FHDEHost.MainLoop.OnResetCache += MainLoop_OnResetCache;
-            FHDEHost.MainLoop.OnUpdateView += MainLoop_OnUpdateView;
+            // Decklink API Version
+            string apiVersionString;
+            IDeckLinkAPIInformation apiInfo = new CDeckLinkAPIInformation();
+            apiInfo.GetString(_BMDDeckLinkAPIInformationID.BMDDeckLinkAPIVersion, out apiVersionString);
+            FAPIVersion[0] = apiVersionString;
         }
 
         public void Evaluate(int SpreadMax)
@@ -272,6 +263,7 @@ namespace VVVV.DeckLink.Nodes
                 }
                 // Create new capture thread and validate it
                 this.captureThread = new DecklinkCaptureThread(this.deviceIndex[0], this.renderDevice, newParameters);
+                // Inform about auto detection feature of the card
                 if (this.captureThread.DeviceInformation.IsValid)
                 {
                     this.captureThread.FrameAvailableHandler += this.OnNewFrameReceived;
@@ -312,6 +304,7 @@ namespace VVVV.DeckLink.Nodes
                 this.displayName[0] = this.captureThread.DeviceInformation.DisplayName;
                 this.availFrameCount[0] = this.captureThread.AvailableFrameCount;
                 this.statusOutput[0] = this.captureThread.DeviceInformation.Message;
+                this.FOut_IsAutoDetectSupported[0] = this.captureThread.DeviceInformation.IsAutoModeDetectionSupported;
             }
             else
             {
