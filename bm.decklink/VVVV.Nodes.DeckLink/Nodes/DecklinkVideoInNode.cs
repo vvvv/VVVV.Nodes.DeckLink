@@ -34,91 +34,95 @@ namespace VVVV.DeckLink.Nodes
         private ILogger Flogger;
         #endregion 
 
-
-        #region Fields & pins
+        #region Inputs
         [Input("Device", DefaultValue = 1)]
-        protected IDiffSpread<int> deviceIndex;
+        protected IDiffSpread<int> FIn_DeviceIndex;
 
         [Input("Capture Parameters")]
-        protected ISpread<CaptureParameters> captureParameters;
+        protected ISpread<CaptureParameters> FIn_CaptureParameters;
 
         [Input("Apply Display Mode", IsBang = true)]
-        protected IDiffSpread<bool> applyDisplayMode;
+        protected IDiffSpread<bool> FIn_BangApplyDisplayMode;
 
         [Input("Reset Counters", IsBang = true)]
-        protected ISpread<bool> resetCounters;
+        protected ISpread<bool> FIn_BangResetCounters;
 
         [Input("Reset Device", IsBang = true)]
-        protected ISpread<bool> resetDevice;
+        protected ISpread<bool> FIn_BangResetDevice;
 
         [Input("Flush Queue", IsBang = true)]
-        protected ISpread<bool> flushFrameQueue;
+        protected ISpread<bool> FIn_BangFlushQueue;
 
         [Input("Reference Clock")]
-        protected ISpread<double> referenceClock;
+        protected ISpread<double> FIn_ReferenceClock;
 
         [Input("Fake Delay", Visibility = PinVisibility.OnlyInspector)]
-        protected ISpread<int> fakeDelay;
+        protected ISpread<int> FIn_FakeDelay;
 
         [Input("Enabled")]
-        protected IDiffSpread<bool> FPinEnabled;
+        protected IDiffSpread<bool> FIn_IsDeviceEnabled;
+        #endregion
 
+        #region Outputs
         [Output("Texture Out")]
-        protected ISpread<DX11Resource<DX11Texture2D>> textureOutput;
+        protected ISpread<DX11Resource<DX11Texture2D>> FOut_TextureOut;
 
-        [Output("Width")]
-        protected ISpread<int> width;
+        [Output("Texture Width")]
+        protected ISpread<int> FOut_TextureWidth;
 
-        [Output("Height")]
-        protected ISpread<int> height;
+        [Output("Texture Height")]
+        protected ISpread<int> FOut_TextureHeight;
 
         [Output("Is Running")]
-        protected ISpread<bool> running;
+        protected ISpread<bool> FOut_IsRunning;
 
-        [Output("Is Mode Supported")]
-        protected ISpread<bool> isModeSupported;
+        [Output("Is Mode Supported", IsSingle = true)]
+        protected ISpread<bool> FOut_IsDisplayModeSupported;
 
         [Output("Is Auto Detect Mode Supported", IsSingle = true)]
         protected ISpread<bool> FOut_IsAutoDetectSupported;
 
         [Output("Available Frame Count")]
-        protected ISpread<int> availFrameCount;
+        protected ISpread<int> FOut_AvailableFrameCount;
 
         [Output("Current Mode")]
-        protected ISpread<string> currentMode;
+        protected ISpread<string> FOut_CurrentMode;
 
         [Output("Model Name")]
-        protected ISpread<string> modelName;
+        protected ISpread<string> FOut_DeviceModelName;
 
-        [Output("Display Name")]
-        protected ISpread<string> displayName;
+        [Output("Device Name")]
+        protected ISpread<string> FOut_DeviceDisplayName;
 
         [Output("Status")]
-        protected ISpread<string> statusOutput;
+        protected ISpread<string> FOut_Status;
 
         [Output("Statistics")]
-        protected ISpread<CaptureStatistics> captureStatisticsOutput;
+        protected ISpread<CaptureStatistics> FOut_CaptureStatistics;
 
         [Output("Queue Data")]
-        protected ISpread<double> queueData;
+        protected ISpread<double> FOut_QueueData;
 
-        [Output("Decklink SDK Version", IsSingle = true)]
-        public ISpread<string> FAPIVersion;
+        [Output("Decklink SDK Version", Visibility = PinVisibility.OnlyInspector, IsSingle = true)]
+        public ISpread<string> FOut_DeckLinkAPIVersion;
 
-        [Output("Version", Visibility = PinVisibility.Hidden, IsSingle = true)]
-        public ISpread<string> FVersion;
+        [Output("Version", Visibility = PinVisibility.OnlyInspector, IsSingle = true)]
+        public ISpread<string> FOut_Version;
+        #endregion
 
+        #region Class variables
         private bool needsInitialization = true;
         private bool newDevice = false;
+
         private CaptureParameters currentParameters = CaptureParameters.Default;
-        private CaptureStatistics statistics = new CaptureStatistics();
-        private DX11RenderContext renderDevice;
+        private CaptureStatistics _captureStatistics = new CaptureStatistics();
         private DecklinkCaptureThread captureThread;
+        private EventWaitHandle eventWaitHandle;
+        private DX11RenderContext renderDevice;
         private DX11Resource<YuvToRGBConverter> pixelShaderConverter = new DX11Resource<YuvToRGBConverter>();
         private DX11Resource<YuvToRGBConverterWithTarget> pixelShaderTargetConverter = new DX11Resource<YuvToRGBConverterWithTarget>();
         private DX11Resource<DX11DynamicTexture2D> rawTexture = new DX11Resource<DX11DynamicTexture2D>();
-        private EventWaitHandle eventWaitHandle;
-        #endregion fields & pins
+        #endregion
 
 
         #region Constructor
@@ -130,14 +134,10 @@ namespace VVVV.DeckLink.Nodes
 
 
         #region Main loop event handlers
-        // @TODO remove unnecessary event handlers
         private void MainLoop_OnPrepareGraph(Object sender, EventArgs args)
         {
-            if (this.captureThread != null &&
-                this.captureThread.FramePresenter is WaitFramePresenter)
-            {
+            if (this.captureThread != null && this.captureThread.FramePresenter is WaitFramePresenter)
                 eventWaitHandle.WaitOne();
-            }
         }
         #endregion
 
@@ -149,7 +149,7 @@ namespace VVVV.DeckLink.Nodes
             var assembly = System.Reflection.Assembly.GetExecutingAssembly();
             var version = (AssemblyInformationalVersionAttribute)assembly.GetCustomAttribute(typeof(AssemblyInformationalVersionAttribute));
             var versionString = version.InformationalVersion;
-            FVersion[0] = versionString;
+            FOut_Version[0] = versionString;
             // Setup wait handle
             eventWaitHandle = new EventWaitHandle(false, EventResetMode.AutoReset);
             // Setup main loop event handlers
@@ -158,16 +158,19 @@ namespace VVVV.DeckLink.Nodes
             string apiVersionString;
             IDeckLinkAPIInformation apiInfo = new CDeckLinkAPIInformation();
             apiInfo.GetString(_BMDDeckLinkAPIInformationID.BMDDeckLinkAPIVersion, out apiVersionString);
-            FAPIVersion[0] = apiVersionString;
+            FOut_DeckLinkAPIVersion[0] = apiVersionString;
         }
 
         public void Evaluate(int SpreadMax)
         {
-            this.SetupTexture();
+            FOut_TextureOut.SliceCount = 1;
+            FOut_Status.SliceCount = 1;
+            FOut_IsDisplayModeSupported.SliceCount = 1;
+
             this.UpdateCaptureParameters();
             this.UpdateOutputPins();
-            this.UpdateStatistics();
             this.ReactOnInputPins();
+            this.UpdateStatistics();
         }
 
         public void Dispose()
@@ -180,225 +183,193 @@ namespace VVVV.DeckLink.Nodes
         #region Evaluate helper methods
         private void Reset()
         {
-            // Clean  wait handle
-            this.eventWaitHandle.Dispose();
-            this.eventWaitHandle = new EventWaitHandle(false, EventResetMode.AutoReset);
-            // Clean captureThread
+            /// Clean  wait handle
+            if (this.eventWaitHandle != null)
+                this.eventWaitHandle.Dispose();
+            /// Clean captureThread
             if (this.captureThread != null)
             {
+                this.captureThread.Dispose();
                 this.captureThread.StopCapture();
                 this.captureThread.FrameAvailableHandler -= this.OnNewFrameReceived;
                 this.captureThread.FrameAvailableHandler -= this.OnNewRawFrameReceived;
                 this.captureThread.Dispose();
                 this.captureThread = null;
             }
-            // Clean texture outputs
-            for (int i = 0; i < this.textureOutput.SliceCount; i++)
-            {
-                if (this.textureOutput[0] == null) continue;
-                this.textureOutput[0].Dispose();
-                this.textureOutput[0] = null;
-            }
-            // Clean YuvToRGB converter
-            if (this.pixelShaderConverter != null)
-            {
-                this.pixelShaderConverter.Dispose();
-            }
-            // Setup texture output
-            if (this.textureOutput[0] == null)
-            {
-                this.textureOutput[0] = new DX11Resource<DX11Texture2D>();
-            }
-            this.needsInitialization = true;
+            /// Clean texture outputs
+            for (int i = 0; i < this.FOut_TextureOut.SliceCount; i++)
+                this.FOut_TextureOut[i].Dispose(); 
+            /// Reinitialize
+            if (this.currentParameters != null)
+                this.Initialize(this.currentParameters);
         }
 
         private void SetupTexture()
         {
-            // Setup texture output
-            if (this.textureOutput[0] == null)
-            {
-                this.textureOutput[0] = new DX11Resource<DX11Texture2D>();
-            }
+            if (this.FOut_TextureOut[0] == null)
+                this.FOut_TextureOut[0] = new DX11Resource<DX11Texture2D>();
         }
 
         private void ChangeDisplayMode()
         {
             // Did the display mode actually change?
-            if (this.currentParameters.DisplayMode != this.captureThread.CurrentDisplayMode)
-            {
-                this.captureThread.FrameAvailableHandler -= this.OnNewFrameReceived;
-                this.captureThread.RawFrameReceivedHandler -= this.OnNewRawFrameReceived;
-                this.captureThread.Dispose();
-            }
-            this.captureThread = new DecklinkCaptureThread(this.deviceIndex[0], this.renderDevice, this.currentParameters);
-            if (this.captureThread.DeviceInformation.IsValid)
-            {
-                this.captureThread.FrameAvailableHandler += this.OnNewFrameReceived;
-                this.captureThread.RawFrameReceivedHandler += this.OnNewRawFrameReceived;
-            }
-            else
-            {
-                this.captureThread = null;
-            }
+            //if (this.currentParameters.DisplayMode != this.captureThread.CurrentDisplayMode)
+            //{
+            //    this.captureThread.FrameAvailableHandler -= this.OnNewFrameReceived;
+            //    this.captureThread.RawFrameReceivedHandler -= this.OnNewRawFrameReceived;
+            //    this.captureThread.Dispose();
+            //}
+            //this.captureThread = new DecklinkCaptureThread(this.FIn_DeviceIndex[0], this.renderDevice, this.currentParameters);
+            //if (this.captureThread.DeviceInformation.IsValid)
+            //{
+            //    this.captureThread.FrameAvailableHandler += this.OnNewFrameReceived;
+            //    this.captureThread.RawFrameReceivedHandler += this.OnNewRawFrameReceived;
+            //}
+            //else
+            //{
+            //    this.captureThread = null;
+            //}
         }
 
         private void UpdateCaptureParameters()
         {
-            CaptureParameters newParameters = this.captureParameters.DefaultIfNilOrNull(0, CaptureParameters.Default);
-            if (this.needsInitialization == true ||
-                this.deviceIndex.IsChanged ||
-                this.currentParameters.NeedDeviceReset(newParameters) ||
-                this.resetDevice[0])
-            {
-                // Setup wait handle
-                this.eventWaitHandle.Dispose();
-                this.eventWaitHandle = new EventWaitHandle(false, EventResetMode.AutoReset);
-                // Dispose old capture thread
-                if (this.captureThread != null)
-                {
-                    this.captureThread.FrameAvailableHandler -= this.OnNewFrameReceived;
-                    this.captureThread.RawFrameReceivedHandler -= this.OnNewRawFrameReceived;
-                    this.captureThread.Dispose();
-                    this.captureThread = null;
-                }
-                // Create new capture thread and validate it
-                this.captureThread = new DecklinkCaptureThread(this.deviceIndex[0], this.renderDevice, newParameters);
-                // Inform about auto detection feature of the card
-                if (this.captureThread.DeviceInformation.IsValid)
-                {
-                    this.captureThread.FrameAvailableHandler += this.OnNewFrameReceived;
-                    this.captureThread.RawFrameReceivedHandler += this.OnNewRawFrameReceived;
-                    _BMDVideoInputFlags flags = _BMDVideoInputFlags.bmdVideoInputFlagDefault;
-                    this.captureThread.SetDisplayMode(newParameters.DisplayMode, flags);
-                }
-                else
-                {
-                    this.captureThread = null;
-                }
-                // Reset statistics and set flags
-                this.statistics.Reset();
-                this.newDevice = true;
-                this.needsInitialization = false;
-            }
+            CaptureParameters newParameters = this.FIn_CaptureParameters.DefaultIfNilOrNull(0, CaptureParameters.Default);
+            if (this.captureThread == null)
+                this.Initialize(newParameters);
+            //if (this.needsInitialization == true ||
+            //    this.FIn_DeviceIndex.IsChanged ||
+            //    this.currentParameters.NeedDeviceReset(newParameters) ||
+            //    this.FIn_BangResetDevice[0])
+            //{
+            //    Initialize(newParameters);
+            //}
             this.currentParameters = newParameters;
+        }
+
+        private void Initialize(CaptureParameters newParameters)
+        {
+            // Setup wait handle
+            this.eventWaitHandle = new EventWaitHandle(false, EventResetMode.AutoReset);
+            // Setup texture
+            this.SetupTexture();
+            // Create new capture thread and validate it
+            this.captureThread = new DecklinkCaptureThread(this.FIn_DeviceIndex[0], this.renderDevice, newParameters);
+            // Inform about auto detection feature of the card
+            if (this.captureThread.DeviceInformation.IsValid)
+            {
+                this.captureThread.FrameAvailableHandler += this.OnNewFrameReceived;
+                this.captureThread.RawFrameReceivedHandler += this.OnNewRawFrameReceived;
+                _BMDVideoInputFlags flags = _BMDVideoInputFlags.bmdVideoInputFlagDefault;
+                this.captureThread.SetDisplayMode(newParameters.DisplayMode, flags);
+                if (this.FIn_IsDeviceEnabled[0])
+                    this.captureThread.StartCapture(this.currentParameters.DisplayMode);
+            }
+            else
+            {
+                FOut_Status[0] = this.captureThread.DeviceInformation.Message;
+                this.captureThread = null;
+            }
+            pixelShaderConverter = new DX11Resource<YuvToRGBConverter>();
+            pixelShaderTargetConverter = new DX11Resource<YuvToRGBConverterWithTarget>();
+            rawTexture = new DX11Resource<DX11DynamicTexture2D>();
+            // Reset statistics and set flags
+            this._captureStatistics.Clear();
         }
 
         private void UpdateOutputPins()
         {
-            textureOutput.SliceCount = 1;
-            statusOutput.SliceCount = 1;
-            isModeSupported.SliceCount = 1;
-            if (this.captureThread != null)
+            if (this.captureThread == null)
             {
-                if (this.captureThread.FramePresenter is IStatusQueueReporter)
-                {
-                    IStatusQueueReporter sqr = (IStatusQueueReporter)this.captureThread.FramePresenter;
-                    this.queueData.AssignFrom(sqr.QueueData.Select(qd => qd.TotalMilliseconds));
-                }
-                this.isModeSupported[0] = this.captureThread.isModeSupported;
-                this.currentMode[0] = this.captureThread.CurrentDisplayMode.ToString();
-                this.width[0] = this.captureThread.Width;
-                this.height[0] = this.captureThread.Height;
-                this.running[0] = this.captureThread.IsRunning;
-                this.modelName[0] = this.captureThread.DeviceInformation.ModelName;
-                this.displayName[0] = this.captureThread.DeviceInformation.DisplayName;
-                this.availFrameCount[0] = this.captureThread.AvailableFrameCount;
-                this.statusOutput[0] = this.captureThread.DeviceInformation.Message;
-                this.FOut_IsAutoDetectSupported[0] = this.captureThread.DeviceInformation.IsAutoModeDetectionSupported;
+                this.FOut_IsDisplayModeSupported[0] = false;
+                this.FOut_CurrentMode[0] = _BMDDisplayMode.bmdModeUnknown.ToString();
+                this.FOut_TextureWidth[0] = 0;
+                this.FOut_TextureHeight[0] = 0;
+                this.FOut_IsRunning[0] = false;
+                this.FOut_DeviceModelName[0] = "Not Set";
+                this.FOut_DeviceDisplayName[0] = "Not Set";
+                this.FOut_AvailableFrameCount[0] = 0;
+                this.FOut_Status[0] = "No Capture Thread";
+                return;
             }
-            else
+            if (this.captureThread.FramePresenter is IStatusQueueReporter)
             {
-                this.isModeSupported[0] = false;
-                //this.currentMode[0] = _BMDDisplayMode.bmdModeUnknown.ToString();
-                this.width[0] = 0;
-                this.height[0] = 0;
-                this.running[0] = false;
-                this.modelName[0] = "No Model";
-                this.displayName[0] = "No Display";
-                this.availFrameCount[0] = 0;
-                this.statusOutput[0] = "No Status";
+                IStatusQueueReporter sqr = (IStatusQueueReporter)this.captureThread.FramePresenter;
+                this.FOut_QueueData.AssignFrom(sqr.QueueData.Select(qd => qd.TotalMilliseconds));
             }
+            this.FOut_IsDisplayModeSupported[0] = this.captureThread.isModeSupported;
+            this.FOut_CurrentMode[0] = this.captureThread.CurrentDisplayMode.ToString();
+            this.FOut_TextureWidth[0] = this.captureThread.Width;
+            this.FOut_TextureHeight[0] = this.captureThread.Height;
+            this.FOut_IsRunning[0] = this.captureThread.IsRunning;
+            this.FOut_DeviceModelName[0] = this.captureThread.DeviceInformation.ModelName;
+            this.FOut_DeviceDisplayName[0] = this.captureThread.DeviceInformation.DisplayName;
+            this.FOut_AvailableFrameCount[0] = this.captureThread.AvailableFrameCount;
+            this.FOut_Status[0] = this.captureThread.DeviceInformation.Message;
+            this.FOut_IsAutoDetectSupported[0] = this.captureThread.DeviceInformation.IsAutoModeDetectionSupported;
         }
 
         private void UpdateStatistics()
         {
-            if (captureThread != null)
+            if (captureThread == null)
             {
-                var FramePresenter = this.captureThread.FramePresenter;
-                this.statistics.FramesDroppedCount = FramePresenter is DiscardFramePresenter
-                    ? ((IDiscardCounter)FramePresenter).DiscardCount
-                    : 0;
-                this.statistics.CurrentDelay = FramePresenter is ILatencyReporter
-                    ? ((ILatencyReporter)FramePresenter).CurrentDelay
-                    : 0;
-                this.statistics.FramesQueueSize = FramePresenter is IDecklinkQueuedFramePresenter
-                    ? ((IDecklinkQueuedFramePresenter)FramePresenter).QueueSize
-                    : 0;
-                this.statistics.DelayBetweenFrames = this.captureThread.FrameDelayTime;
-                this.statistics.DelayBetweenTextureUpdates = this.captureThread.FrameTextureTime;
-                this.statistics.DeckLinkFPS = Convert.ToInt32(this.captureThread.FPS);
+                this._captureStatistics.Clear();
+                return;
             }
-            else
-            {
-                this.statistics.Reset();
-            }
-            this.captureStatisticsOutput[0] = this.statistics;
+            var FramePresenter = this.captureThread.FramePresenter;
+            this._captureStatistics.FramesDroppedCount = FramePresenter is DiscardFramePresenter
+                ? ((IDiscardCounter)FramePresenter).DiscardCount
+                : 0;
+            this._captureStatistics.CurrentDelay = FramePresenter is ILatencyReporter
+                ? ((ILatencyReporter)FramePresenter).CurrentDelay
+                : 0;
+            this._captureStatistics.FramesQueueSize = FramePresenter is IDecklinkQueuedFramePresenter
+                ? ((IDecklinkQueuedFramePresenter)FramePresenter).QueueSize
+                : 0;
+            this._captureStatistics.DelayBetweenFrames = this.captureThread.FrameDelayTime;
+            this._captureStatistics.DelayBetweenTextureUpdates = this.captureThread.FrameTextureTime;
+            this._captureStatistics.DeckLinkFPS = Convert.ToInt32(this.captureThread.FPS);
+            this.FOut_CaptureStatistics[0] = this._captureStatistics;
         }
 
         private void ReactOnInputPins()
         {
-            // Capture thread fake delay duration from input
+            // Early return
             if (this.captureThread != null)
-            {
-                this.captureThread.FakeDelay = this.fakeDelay[0];
-            }
-
+                this.captureThread.FakeDelay = this.FIn_FakeDelay[0];
             // Reset statistics 
-            if (this.resetCounters.SliceCount > 0 &&
-                this.resetCounters[0])
+            if (this.FIn_BangResetCounters.SliceCount > 0 && this.FIn_BangResetCounters[0])
             {
-                this.statistics.Reset();
+                this._captureStatistics.Clear();
                 if (this.captureThread != null)
                 {
                     if (this.captureThread.FramePresenter is IDiscardCounter)
-                    {
                         ((IDiscardCounter)this.captureThread.FramePresenter).Reset();
-                    }
                 }
             }
 
             // Flush frame queue
-            if (this.flushFrameQueue[0])
+            if (this.FIn_BangFlushQueue[0])
             {
                 if (this.captureThread.FramePresenter is IFlushable)
-                {
                     ((IFlushable)this.captureThread.FramePresenter).Flush();
-                }
             }
 
             // Device change or enable change
-            if (this.FPinEnabled.IsChanged || this.newDevice)
+            if (this.FIn_IsDeviceEnabled.IsChanged || this.newDevice)
             {
-                if (this.FPinEnabled[0])
-                {
+                if (this.FIn_IsDeviceEnabled[0])
                     this.captureThread.StartCapture(this.currentParameters.DisplayMode);
-                }
                 else
-                {
                     this.captureThread.StopCapture();
-                }
             }
 
             // React on reset pin bangging
-            if (this.resetDevice[0])
-            {
+            if (this.FIn_BangResetDevice[0])
                 this.Reset();
-            }
+
             // When auto detection is disabled and the 'apply display mode' is banged
-            if (!this.currentParameters.AutoDetect && this.applyDisplayMode[0])
-            {
+            if (!this.currentParameters.AutoDetect && this.FIn_BangApplyDisplayMode[0])
                 this.ChangeDisplayMode();
-            }
         }
         #endregion
 
@@ -406,7 +377,7 @@ namespace VVVV.DeckLink.Nodes
         #region CaptureThread event handler
         private void OnNewRawFrameReceived(object sender, EventArgs a)
         {
-            this.statistics.FramesCapturedCount++;
+            this._captureStatistics.FramesCapturedCount++;
             if (this.captureThread != null &&
                 this.captureThread.FramePresenter is WaitFramePresenter)
                 this.eventWaitHandle.Set();
@@ -414,7 +385,7 @@ namespace VVVV.DeckLink.Nodes
 
         private void OnNewFrameReceived(object sender, EventArgs e)
         {
-            this.statistics.FramesCapturedCount++;
+            this._captureStatistics.FramesCapturedCount++;
         }
         #endregion
 
@@ -424,12 +395,12 @@ namespace VVVV.DeckLink.Nodes
         {
             if (force)
             {
-                for (int i = 0; i < this.textureOutput.SliceCount; i++)
+                for (int i = 0; i < this.FOut_TextureOut.SliceCount; i++)
                 {
-                    if (this.textureOutput[0] != null)
+                    if (this.FOut_TextureOut[0] != null)
                     {
-                        this.textureOutput[0].Dispose(context);
-                        this.textureOutput[0] = null;
+                        this.FOut_TextureOut[0].Dispose(context);
+                        this.FOut_TextureOut[0] = null;
                     }
                 }
                 if (this.pixelShaderConverter != null)
@@ -441,43 +412,38 @@ namespace VVVV.DeckLink.Nodes
 
         public void Update(DX11RenderContext context)
         {
+            // Early returs
             if (this.captureThread == null)
                 return;
-            if (!this.pixelShaderConverter.Contains(context))
-            {
+            if (!this.FIn_IsDeviceEnabled[0])
+                return;
+
+            if (this.pixelShaderConverter == null || !this.pixelShaderConverter.Contains(context))
                 this.pixelShaderConverter[context] = new YuvToRGBConverter(context);
-            }
             if (!this.pixelShaderTargetConverter.Contains(context))
-            {
                 this.pixelShaderTargetConverter[context] = new YuvToRGBConverterWithTarget(context, this.pixelShaderConverter[context]);
-            }
-            if (!this.FPinEnabled[0]) return;
             var inputTexture = this.rawTexture.Contains(context) ? this.rawTexture[context] : null;
             //Acquire texture and copy content
             var result = this.captureThread.AcquireTexture(context, ref inputTexture);
             //Remove old texture if not required anymore
             if (inputTexture == null)
-            {
                 this.rawTexture.Data.Remove(context);
-            }
             else
-            {
                 this.rawTexture[context] = inputTexture;
-            }
-            this.statistics.CurrentFramePresentCount = result.PresentationCount;
+            this._captureStatistics.CurrentFramePresentCount = result.PresentationCount;
             if (this.currentParameters.OutputMode == TextureOutputMode.UncompressedPS)
             {
                 if (result.IsNew)
                 {
                     DX11Texture2D converted = this.pixelShaderTargetConverter[context].Apply(result.Texture);
-                    this.textureOutput[0][context] = converted;
+                    this.FOut_TextureOut[0][context] = converted;
                 }
             }
             else
             {
-                this.textureOutput[0][context] = result.Texture;
+                this.FOut_TextureOut[0][context] = result.Texture;
             }
-            if (result.IsNew) this.statistics.FramesCopiedCount++;
+            if (result.IsNew) this._captureStatistics.FramesCopiedCount++;
         }
         #endregion
     }

@@ -37,6 +37,7 @@
     <Compile Include="Lib\Presenters\WaitFramePresenter.cs" />
     <Compile Include="Lib\Presenters\DiscardImmutableFramePresenter.cs" />
     <Compile Include="Lib\Presenters\TimeQueuedImmutableFramePresenter.cs" />
+    <Compile Include="Lib\VideoInputConnection.cs" />
     <Compile Include="Lib\Utils\SpreadExtentions.cs" />
     <Compile Include="Nodes\CaptureParametersNode.cs" />
     <Compile Include="Lib\Capture\CaptureStatistics.cs" />

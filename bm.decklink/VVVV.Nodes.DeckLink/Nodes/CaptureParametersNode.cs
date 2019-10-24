@@ -12,6 +12,9 @@ namespace VVVV.DeckLink.Nodes
         Help = "Joins a set of parameters for decklink capture")]
     public class CaptureParametersNode : IPluginEvaluate
     {
+        [Input("Video Input Connection")]
+        protected ISpread<VideoInputConnection> inputConnection;
+
         [Input("Output Mode")]
         protected ISpread<TextureOutputMode> outputMode;
 
@@ -45,6 +48,7 @@ namespace VVVV.DeckLink.Nodes
             {
                 this.output[i] = new CaptureParameters()
                 {
+                    VideoInputConnection = this.inputConnection[i],
                     AutoDetect = this.autoDetect[i],
                     DisplayMode = this.displayMode[i],
                     FrameQueueMaxSize = this.frameQueueMaxSize[i],

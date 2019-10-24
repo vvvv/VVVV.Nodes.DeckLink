@@ -29,6 +29,7 @@ namespace VVVV.DeckLink
         public event EventHandler RawFrameReceivedHandler;
         public event EventHandler FrameAvailableHandler;
 
+        private VideoInputConnection _videoInputConnection;
         private int fakeDelay = 0;
         private CaptureDeviceInformation deviceInfo;
         private IDeckLinkInput device;
@@ -103,6 +104,7 @@ namespace VVVV.DeckLink
                 }
             });
             this.deviceInfo = df.DeviceInformation;
+            this._videoInputConnection = captureParameters.VideoInputConnection;
             if (df.DeviceInformation.IsValid)
             {
                 this.device = df.InputDevice;
@@ -152,11 +154,22 @@ namespace VVVV.DeckLink
         {
             try
             {
-                int supported;
-                _BMDVideoConnection connection = _BMDVideoConnection.bmdVideoConnectionSDI;
+                _BMDVideoConnection connection;
+                switch (this._videoInputConnection)
+                {
+                    case VideoInputConnection.HDMI:
+                        connection = _BMDVideoConnection.bmdVideoConnectionHDMI;
+                        break;
+                    case VideoInputConnection.SDI:
+                        connection = _BMDVideoConnection.bmdVideoConnectionSDI;
+                        break;
+                    default:
+                        connection = _BMDVideoConnection.bmdVideoConnectionSDI;
+                        break;
+                }
                 _BMDSupportedVideoModeFlags flags = _BMDSupportedVideoModeFlags.bmdSupportedVideoModeDefault;
-                this.device.DoesSupportVideoMode(connection, displayMode, this.inputPixelFormat, flags, out supported);
-                return Convert.ToBoolean(supported);
+                this.device.DoesSupportVideoMode(connection, displayMode, this.inputPixelFormat, flags, out int isSupported);
+                return Convert.ToBoolean(isSupported);
             } 
             catch (NotImplementedException e)
             {

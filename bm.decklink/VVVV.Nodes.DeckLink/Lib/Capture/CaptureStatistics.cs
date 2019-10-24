@@ -61,7 +61,7 @@ namespace VVVV.DeckLink
         /// </summary>
         public int DeckLinkFPS;
 
-        public void Reset()
+        public void Clear()
         {
             this.FramesCapturedCount = 0;
             this.FramesCopiedCount = 0;
