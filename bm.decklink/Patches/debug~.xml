@@ -1,5 +1,5 @@
 <!DOCTYPE PATCH  SYSTEM "http://vvvv.org/versions/vvvv50beta38.1.dtd" >
-   <PATCH nodename="E:\git\nsynk\vvvv.nodes.blackmagic\bm.decklink\Patches\debug.v4p" systemname="DecklinkTest" filename="C:\Users\vux\Documents\vvvv_45beta34.2_x64\DecklinkTest.v4p" scrollx="555" scrolly="75">
+   <PATCH nodename="E:\git\nsynk\vvvv.nodes.blackmagic\bm.decklink\Patches\debug.v4p" systemname="DecklinkTest" filename="C:\Users\vux\Documents\vvvv_45beta34.2_x64\DecklinkTest.v4p" scrollx="585" scrolly="90">
    <BOUNDS type="Window" left="6750" top="2670" width="24960" height="15720">
    </BOUNDS>
    <PACK Name="addonpack" Version="38.1.0">
@@ -82,22 +82,12 @@
    </NODE>
    <LINK srcnodeid="17" srcpinname="Y Output Value" dstnodeid="16" dstpinname="Auto Detect Mode">
    </LINK>
-   <NODE systemname="Preview (DX11.Texture)" filename="%VVVV%\packs\dx11\nodes\plugins\base\VVVV.DX11.Nodes.dll" nodename="Preview (DX11.Texture)" componentmode="InABox" id="18">
-   <BOUNDS type="Node" left="3855" top="10335" width="100" height="100">
-   </BOUNDS>
-   <BOUNDS type="Box" left="3855" top="10335" width="6000" height="4500">
-   </BOUNDS>
-   <BOUNDS type="Window" left="23625" top="13980" width="6240" height="5085">
-   </BOUNDS>
-   <PIN pinname="Texture In" visible="1" slicecount="1" values="||">
-   </PIN>
-   </NODE>
    <NODE nodename="IOBox (Enumerations)" componentmode="InABox" id="20">
    <BOUNDS type="Box" left="8010" top="1620" width="2010" height="270">
    </BOUNDS>
    <BOUNDS type="Node" left="8010" top="1620" width="0" height="0">
    </BOUNDS>
-   <PIN pinname="Input Enum" slicecount="1" visible="1" values="bmdModeHD1080p50">
+   <PIN pinname="Input Enum" slicecount="1" visible="1" values="bmdModeHD720p50">
    </PIN>
    <PIN pinname="Default" slicecount="1" values="bmdMode1920x1440p50">
    </PIN>
@@ -139,7 +129,7 @@
    </PIN>
    <PIN pinname="Flush Queue" visible="1" slicecount="1" values="0">
    </PIN>
-   <PIN pinname="Reference Clock" visible="1" slicecount="1" values="0.15">
+   <PIN pinname="Reference Clock" visible="1" slicecount="1" values="4527.0657654">
    </PIN>
    <PIN pinname="Available Frame Count" visible="1">
    </PIN>
@@ -157,16 +147,12 @@
    </PIN>
    <PIN pinname="Texture Width" visible="1">
    </PIN>
+   <PIN pinname="Texture Out" visible="1">
+   </PIN>
    </NODE>
    <LINK srcnodeid="13" srcpinname="Y Output Value" dstnodeid="21" dstpinname="Device">
    </LINK>
    <LINK srcnodeid="14" srcpinname="Y Output Value" dstnodeid="21" dstpinname="Enabled">
-   </LINK>
-   <LINK srcnodeid="21" srcpinname="Texture Out" dstnodeid="18" dstpinname="Texture In" linkstyle="VHV">
-   <LINKPOINT x="4385" y="7608">
-   </LINKPOINT>
-   <LINKPOINT x="3370" y="8188">
-   </LINKPOINT>
    </LINK>
    <NODE nodename="IOBox (Value Advanced)" componentmode="InABox" id="22">
    <BOUNDS type="Box" left="5985" top="7890" width="480" height="480">
@@ -397,22 +383,6 @@
    </PIN>
    </NODE>
    <LINK srcnodeid="34" srcpinname="Y Output Value" dstnodeid="21" dstpinname="Flush Queue">
-   </LINK>
-   <NODE nodename="IOBox (Value Advanced)" componentmode="InABox" id="35">
-   <BOUNDS type="Box" left="8970" top="3510" width="795" height="240">
-   </BOUNDS>
-   <BOUNDS type="Node" left="8970" top="3510" width="0" height="0">
-   </BOUNDS>
-   <PIN pinname="Y Input Value" slicecount="1" visible="1" values="0.25">
-   </PIN>
-   <PIN pinname="Units" slicecount="1" values="||">
-   </PIN>
-   <PIN pinname="Precision" slicecount="1" values="4">
-   </PIN>
-   <PIN pinname="Descriptive Name" slicecount="1" values="|Reference Clock|">
-   </PIN>
-   </NODE>
-   <LINK srcnodeid="35" srcpinname="Y Output Value" dstnodeid="21" dstpinname="Reference Clock">
    </LINK>
    <NODE nodename="IOBox (Value Advanced)" componentmode="InABox" id="36">
    <BOUNDS type="Box" left="6435" top="4245" width="480" height="480">
@@ -741,5 +711,27 @@
    <LINK srcnodeid="21" srcpinname="Texture Height" dstnodeid="33" dstpinname="Y Input Value">
    </LINK>
    <LINK srcnodeid="21" srcpinname="Texture Width" dstnodeid="32" dstpinname="Y Input Value">
+   </LINK>
+   <NODE systemname="Renderer (DX11)" filename="%VVVV%\packs\dx11\nodes\plugins\base\VVVV.DX11.Nodes.dll" nodename="Renderer (DX11)" componentmode="InAWindow" id="58">
+   <BOUNDS type="Node" left="3285" top="12135" width="100" height="100">
+   </BOUNDS>
+   <BOUNDS type="Box" left="3285" top="12135" width="6000" height="4500">
+   </BOUNDS>
+   <BOUNDS type="Window" left="-21510" top="7395" width="21510" height="18780">
+   </BOUNDS>
+   <PIN pinname="Layers" visible="1">
+   </PIN>
+   </NODE>
+   <NODE systemname="FullscreenQuad (DX11.Layer)" filename="%VVVV%\packs\dx11\nodes\modules\FullscreenQuad (DX11.Layer).v4p" nodename="FullscreenQuad (DX11.Layer)" componentmode="Hidden" id="59">
+   <BOUNDS type="Node" left="3450" top="11280" width="100" height="100">
+   </BOUNDS>
+   <PIN pinname="Layer" visible="1">
+   </PIN>
+   <PIN pinname="Texture" visible="1">
+   </PIN>
+   </NODE>
+   <LINK srcnodeid="59" srcpinname="Layer" dstnodeid="58" dstpinname="Layers">
+   </LINK>
+   <LINK srcnodeid="21" srcpinname="Texture Out" dstnodeid="59" dstpinname="Texture">
    </LINK>
    </PATCH>

@@ -114,7 +114,7 @@ namespace VVVV.DeckLink.Nodes
         private bool needsInitialization = true;
         private bool newDevice = false;
 
-        private CaptureParameters currentParameters = CaptureParameters.Default;
+        private CaptureParameters _currentCaptureParameters = CaptureParameters.Default;
         private CaptureStatistics _captureStatistics = new CaptureStatistics();
         private DecklinkCaptureThread captureThread;
         private EventWaitHandle eventWaitHandle;
@@ -136,6 +136,8 @@ namespace VVVV.DeckLink.Nodes
         #region Main loop event handlers
         private void MainLoop_OnPrepareGraph(Object sender, EventArgs args)
         {
+            if (eventWaitHandle == null)
+                eventWaitHandle = new EventWaitHandle(false, EventResetMode.AutoReset);
             if (this.captureThread != null && this.captureThread.FramePresenter is WaitFramePresenter)
                 eventWaitHandle.WaitOne();
         }
@@ -173,6 +175,7 @@ namespace VVVV.DeckLink.Nodes
             this.UpdateStatistics();
         }
 
+
         public void Dispose()
         {
             this.Reset();
@@ -181,6 +184,40 @@ namespace VVVV.DeckLink.Nodes
 
 
         #region Evaluate helper methods
+        private void Initialize(CaptureParameters newParameters)
+        {
+            // Setup wait handle
+            this.eventWaitHandle = new EventWaitHandle(false, EventResetMode.AutoReset);
+            // Setup textures
+            for (int i = 0; i < this.FOut_TextureOut.SliceCount; i++)
+                this.FOut_TextureOut[i] = new DX11Resource<DX11Texture2D>();
+            // Create new capture thread and validate it
+            int deviceIndex = this.FIn_DeviceIndex[0];
+            this.captureThread = new DecklinkCaptureThread(deviceIndex, this.renderDevice, newParameters);
+            // Inform about auto detection feature of the card
+            if (this.captureThread.DeviceInformation.IsValid)
+            {
+                this.captureThread.FrameAvailableHandler += this.OnNewFrameReceived;
+                this.captureThread.RawFrameReceivedHandler += this.OnNewRawFrameReceived;
+                _BMDVideoInputFlags flags = _BMDVideoInputFlags.bmdVideoInputFlagDefault;
+                this.captureThread.SetDisplayMode(newParameters.DisplayMode, flags);
+                if (this.FIn_IsDeviceEnabled[0])
+                    this.captureThread.StartCapture(this._currentCaptureParameters.DisplayMode);
+                // Fake delay
+                this.captureThread.FakeDelay = this.FIn_FakeDelay[0];
+            }
+            else
+            {
+                FOut_Status[0] = this.captureThread.DeviceInformation.Message;
+                this.captureThread = null;
+            }
+            pixelShaderConverter = new DX11Resource<YuvToRGBConverter>();
+            pixelShaderTargetConverter = new DX11Resource<YuvToRGBConverterWithTarget>();
+            rawTexture = new DX11Resource<DX11DynamicTexture2D>();
+            // Reset statistics and set flags
+            this._captureStatistics.Clear();
+        }
+
         private void Reset()
         {
             /// Clean  wait handle
@@ -198,82 +235,25 @@ namespace VVVV.DeckLink.Nodes
             }
             /// Clean texture outputs
             for (int i = 0; i < this.FOut_TextureOut.SliceCount; i++)
-                this.FOut_TextureOut[i].Dispose(); 
+                if (this.FOut_TextureOut[i] != null)
+                    this.FOut_TextureOut[i].Dispose();
             /// Reinitialize
-            if (this.currentParameters != null)
-                this.Initialize(this.currentParameters);
-        }
-
-        private void SetupTexture()
-        {
-            if (this.FOut_TextureOut[0] == null)
-                this.FOut_TextureOut[0] = new DX11Resource<DX11Texture2D>();
-        }
-
-        private void ChangeDisplayMode()
-        {
-            // Did the display mode actually change?
-            //if (this.currentParameters.DisplayMode != this.captureThread.CurrentDisplayMode)
-            //{
-            //    this.captureThread.FrameAvailableHandler -= this.OnNewFrameReceived;
-            //    this.captureThread.RawFrameReceivedHandler -= this.OnNewRawFrameReceived;
-            //    this.captureThread.Dispose();
-            //}
-            //this.captureThread = new DecklinkCaptureThread(this.FIn_DeviceIndex[0], this.renderDevice, this.currentParameters);
-            //if (this.captureThread.DeviceInformation.IsValid)
-            //{
-            //    this.captureThread.FrameAvailableHandler += this.OnNewFrameReceived;
-            //    this.captureThread.RawFrameReceivedHandler += this.OnNewRawFrameReceived;
-            //}
-            //else
-            //{
-            //    this.captureThread = null;
-            //}
+            if (this._currentCaptureParameters != null)
+                this.Initialize(this._currentCaptureParameters);
         }
 
         private void UpdateCaptureParameters()
         {
             CaptureParameters newParameters = this.FIn_CaptureParameters.DefaultIfNilOrNull(0, CaptureParameters.Default);
-            if (this.captureThread == null)
-                this.Initialize(newParameters);
-            //if (this.needsInitialization == true ||
-            //    this.FIn_DeviceIndex.IsChanged ||
-            //    this.currentParameters.NeedDeviceReset(newParameters) ||
-            //    this.FIn_BangResetDevice[0])
-            //{
-            //    Initialize(newParameters);
-            //}
-            this.currentParameters = newParameters;
-        }
-
-        private void Initialize(CaptureParameters newParameters)
-        {
-            // Setup wait handle
-            this.eventWaitHandle = new EventWaitHandle(false, EventResetMode.AutoReset);
-            // Setup texture
-            this.SetupTexture();
-            // Create new capture thread and validate it
-            this.captureThread = new DecklinkCaptureThread(this.FIn_DeviceIndex[0], this.renderDevice, newParameters);
-            // Inform about auto detection feature of the card
-            if (this.captureThread.DeviceInformation.IsValid)
-            {
-                this.captureThread.FrameAvailableHandler += this.OnNewFrameReceived;
-                this.captureThread.RawFrameReceivedHandler += this.OnNewRawFrameReceived;
-                _BMDVideoInputFlags flags = _BMDVideoInputFlags.bmdVideoInputFlagDefault;
-                this.captureThread.SetDisplayMode(newParameters.DisplayMode, flags);
-                if (this.FIn_IsDeviceEnabled[0])
-                    this.captureThread.StartCapture(this.currentParameters.DisplayMode);
-            }
-            else
-            {
-                FOut_Status[0] = this.captureThread.DeviceInformation.Message;
-                this.captureThread = null;
-            }
-            pixelShaderConverter = new DX11Resource<YuvToRGBConverter>();
-            pixelShaderTargetConverter = new DX11Resource<YuvToRGBConverterWithTarget>();
-            rawTexture = new DX11Resource<DX11DynamicTexture2D>();
-            // Reset statistics and set flags
-            this._captureStatistics.Clear();
+            bool needsReset = this._currentCaptureParameters.NeedDeviceReset(newParameters);
+            bool videoInputChanged = this._currentCaptureParameters.VideoInputConnection != newParameters.VideoInputConnection;
+            // Update current capture parameters only if they changed
+            if (this._currentCaptureParameters.DiffersFrom(newParameters))
+                this._currentCaptureParameters = newParameters;
+            if (this.captureThread == null ||
+                needsReset ||
+                videoInputChanged)
+                this.Reset();
         }
 
         private void UpdateOutputPins()
@@ -333,10 +313,15 @@ namespace VVVV.DeckLink.Nodes
 
         private void ReactOnInputPins()
         {
-            // Early return
-            if (this.captureThread != null)
-                this.captureThread.FakeDelay = this.FIn_FakeDelay[0];
-            // Reset statistics 
+            /// React on reset pin bangging
+            if (this.captureThread == null)
+                this.Reset();
+
+            /// Reset device
+            if (this.FIn_BangResetDevice[0])
+                this.Reset();
+
+            /// Reset statistics 
             if (this.FIn_BangResetCounters.SliceCount > 0 && this.FIn_BangResetCounters[0])
             {
                 this._captureStatistics.Clear();
@@ -347,29 +332,38 @@ namespace VVVV.DeckLink.Nodes
                 }
             }
 
-            // Flush frame queue
+            /// Apply new display mode
+            bool applyDisplayMode = FIn_BangApplyDisplayMode[0];
+            if (applyDisplayMode)
+            {
+                if (captureThread != null)
+                {
+                    if (!this._currentCaptureParameters.AutoDetect)
+                    {
+                        this.Reset();
+                    }
+                }
+                else
+                    this.Reset();
+            }
+
+            //// Flush frame queue
             if (this.FIn_BangFlushQueue[0])
             {
-                if (this.captureThread.FramePresenter is IFlushable)
+                if (this.captureThread != null && this.captureThread.FramePresenter is IFlushable)
                     ((IFlushable)this.captureThread.FramePresenter).Flush();
             }
 
-            // Device change or enable change
+            //// Device change or enable change
             if (this.FIn_IsDeviceEnabled.IsChanged || this.newDevice)
             {
+                if (this.captureThread == null)
+                    return;
                 if (this.FIn_IsDeviceEnabled[0])
-                    this.captureThread.StartCapture(this.currentParameters.DisplayMode);
+                    this.captureThread.StartCapture(this._currentCaptureParameters.DisplayMode);
                 else
                     this.captureThread.StopCapture();
             }
-
-            // React on reset pin bangging
-            if (this.FIn_BangResetDevice[0])
-                this.Reset();
-
-            // When auto detection is disabled and the 'apply display mode' is banged
-            if (!this.currentParameters.AutoDetect && this.FIn_BangApplyDisplayMode[0])
-                this.ChangeDisplayMode();
         }
         #endregion
 
@@ -431,7 +425,7 @@ namespace VVVV.DeckLink.Nodes
             else
                 this.rawTexture[context] = inputTexture;
             this._captureStatistics.CurrentFramePresentCount = result.PresentationCount;
-            if (this.currentParameters.OutputMode == TextureOutputMode.UncompressedPS)
+            if (this._currentCaptureParameters.OutputMode == TextureOutputMode.UncompressedPS)
             {
                 if (result.IsNew)
                 {

@@ -1,5 +1,5 @@
 <!DOCTYPE PATCH  SYSTEM "http://vvvv.org/versions/vvvv50beta38.1.dtd" >
-   <PATCH nodename="E:\git\nsynk\vvvv.nodes.blackmagic\bm.decklink\Patches\debug.v4p" systemname="DecklinkTest" filename="C:\Users\vux\Documents\vvvv_45beta34.2_x64\DecklinkTest.v4p" scrollx="555" scrolly="75">
+   <PATCH nodename="E:\git\nsynk\vvvv.nodes.blackmagic\bm.decklink\Patches\debug.v4p" systemname="DecklinkTest" filename="C:\Users\vux\Documents\vvvv_45beta34.2_x64\DecklinkTest.v4p" scrollx="585" scrolly="90">
    <BOUNDS type="Window" left="6750" top="2670" width="24960" height="15720">
    </BOUNDS>
    <PACK Name="addonpack" Version="38.1.0">
@@ -65,7 +65,7 @@
    </BOUNDS>
    <BOUNDS type="Node" left="7200" top="1200" width="0" height="0">
    </BOUNDS>
-   <PIN pinname="Y Input Value" slicecount="1" visible="1" values="1">
+   <PIN pinname="Y Input Value" slicecount="1" visible="1" values="0">
    </PIN>
    <PIN pinname="Units" slicecount="1" values="||">
    </PIN>
@@ -75,7 +75,7 @@
    </PIN>
    <PIN pinname="Behavior" slicecount="1" values="Toggle">
    </PIN>
-   <PIN pinname="X Input Value" slicecount="1" values="1">
+   <PIN pinname="X Input Value" slicecount="1" values="0">
    </PIN>
    <PIN pinname="Descriptive Name" slicecount="1" values="|Auto Detect Mode|">
    </PIN>
@@ -129,7 +129,7 @@
    </PIN>
    <PIN pinname="Flush Queue" visible="1" slicecount="1" values="0">
    </PIN>
-   <PIN pinname="Reference Clock" visible="1" slicecount="1" values="0.15">
+   <PIN pinname="Reference Clock" visible="1" slicecount="1" values="0">
    </PIN>
    <PIN pinname="Available Frame Count" visible="1">
    </PIN>
@@ -383,22 +383,6 @@
    </PIN>
    </NODE>
    <LINK srcnodeid="34" srcpinname="Y Output Value" dstnodeid="21" dstpinname="Flush Queue">
-   </LINK>
-   <NODE nodename="IOBox (Value Advanced)" componentmode="InABox" id="35">
-   <BOUNDS type="Box" left="8970" top="3510" width="795" height="240">
-   </BOUNDS>
-   <BOUNDS type="Node" left="8970" top="3510" width="0" height="0">
-   </BOUNDS>
-   <PIN pinname="Y Input Value" slicecount="1" visible="1" values="0.25">
-   </PIN>
-   <PIN pinname="Units" slicecount="1" values="||">
-   </PIN>
-   <PIN pinname="Precision" slicecount="1" values="4">
-   </PIN>
-   <PIN pinname="Descriptive Name" slicecount="1" values="|Reference Clock|">
-   </PIN>
-   </NODE>
-   <LINK srcnodeid="35" srcpinname="Y Output Value" dstnodeid="21" dstpinname="Reference Clock">
    </LINK>
    <NODE nodename="IOBox (Value Advanced)" componentmode="InABox" id="36">
    <BOUNDS type="Box" left="6435" top="4245" width="480" height="480">

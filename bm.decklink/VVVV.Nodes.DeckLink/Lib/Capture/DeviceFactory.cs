@@ -55,7 +55,7 @@ namespace VVVV.DeckLink
                     this.InputDevice = null;
                     this.DeviceInformation = CaptureDeviceInformation.Invalid("Device already in use");
                 }
-                Marshal.ReleaseComObject(iterator);
+                //Marshal.ReleaseComObject(iterator);
             }
             else
             {

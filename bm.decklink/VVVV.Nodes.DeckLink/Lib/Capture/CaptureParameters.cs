@@ -93,13 +93,28 @@ namespace VVVV.DeckLink
         {
             if (other == null)
                 other = CaptureParameters.Default;
-
             return this.AutoDetect != other.AutoDetect
                 || this.FrameQueueMaxSize != other.FrameQueueMaxSize
                 || this.FrameQueueMode != other.FrameQueueMode
                 || this.FrameQueuePoolSize != other.FrameQueuePoolSize
                 || this.OutputMode != other.OutputMode
                 || this.PresentationCount != other.PresentationCount;
+        }
+
+        public bool DiffersFrom(CaptureParameters other)
+        {
+            if (other == null)
+                other = CaptureParameters.Default;
+            return
+             this.VideoInputConnection != other.VideoInputConnection ||
+             this.OutputMode != other.OutputMode ||
+             this.FrameQueueMode != other.FrameQueueMode ||
+             this.AutoDetect != other.AutoDetect ||
+             this.DisplayMode != other.DisplayMode ||
+             this.PresentationCount != other.PresentationCount ||
+             this.FrameQueueMaxSize != other.FrameQueueMaxSize ||
+             this.FrameQueuePoolSize != other.FrameQueuePoolSize ||
+             this.MaxLateness != other.MaxLateness;
         }
     }
 }
