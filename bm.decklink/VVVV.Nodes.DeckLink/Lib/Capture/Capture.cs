@@ -170,7 +170,7 @@ namespace VVVV.DeckLink
                 _BMDSupportedVideoModeFlags flags = _BMDSupportedVideoModeFlags.bmdSupportedVideoModeDefault;
                 this.device.DoesSupportVideoMode(connection, displayMode, this.inputPixelFormat, flags, out int isSupported);
                 return Convert.ToBoolean(isSupported);
-            } 
+            }
             catch (NotImplementedException e)
             {
                 this.DeviceInformation.IsAutoModeDetectionSupported = false;
@@ -310,6 +310,8 @@ namespace VVVV.DeckLink
 
         public FrameDataResult AcquireTexture(DX11RenderContext context, ref DX11DynamicTexture2D texture)
         {
+            if (this.framePresenter == null)
+                throw new InvalidOperationException("Frame Presenter is not set.");
             this.textureUpdateWatch.Stop();
             this.FrameTextureTime = this.textureUpdateWatch.Elapsed.TotalMilliseconds;
             this.textureUpdateWatch.Restart();
@@ -334,7 +336,8 @@ namespace VVVV.DeckLink
                 }
                 return result;
             }
-            else //Never happens, but for clarity set result type in condition
+            // Never happens, but for clarity set result type in condition
+            else 
             {
                 throw new InvalidOperationException("Result type should have been either texture or raw image");
             }

@@ -65,7 +65,7 @@
    </BOUNDS>
    <BOUNDS type="Node" left="7200" top="1200" width="0" height="0">
    </BOUNDS>
-   <PIN pinname="Y Input Value" slicecount="1" visible="1" values="0">
+   <PIN pinname="Y Input Value" slicecount="1" visible="1" values="1">
    </PIN>
    <PIN pinname="Units" slicecount="1" values="||">
    </PIN>
@@ -75,7 +75,7 @@
    </PIN>
    <PIN pinname="Behavior" slicecount="1" values="Toggle">
    </PIN>
-   <PIN pinname="X Input Value" slicecount="1" values="0">
+   <PIN pinname="X Input Value" slicecount="1" values="1">
    </PIN>
    <PIN pinname="Descriptive Name" slicecount="1" values="|Auto Detect Mode|">
    </PIN>
@@ -100,60 +100,6 @@
    </NODE>
    <LINK srcnodeid="20" srcpinname="Output Enum" dstnodeid="16" dstpinname="Display Mode">
    </LINK>
-   <NODE systemname="VideoIn (DeckLink DX11.Texture)" filename="VVVV.DX11.Nodes.DeckLink.dll" nodename="VideoIn (DeckLink DX11.Texture)" componentmode="Hidden" id="21">
-   <BOUNDS type="Node" left="3855" top="5190" width="6030" height="270">
-   </BOUNDS>
-   <BOUNDS type="Box" left="3855" top="5190" width="3000" height="3000">
-   </BOUNDS>
-   <PIN pinname="Is Auto Detect Mode Supported" visible="1">
-   </PIN>
-   <PIN pinname="Capture Parameters" visible="1" slicecount="1" values="||">
-   </PIN>
-   <PIN pinname="Decklink SDK Version" visible="1">
-   </PIN>
-   <PIN pinname="Version" visible="1">
-   </PIN>
-   <PIN pinname="Reset Device" visible="1">
-   </PIN>
-   <PIN pinname="Is Mode Supported" visible="1">
-   </PIN>
-   <PIN pinname="Is Running" visible="1">
-   </PIN>
-   <PIN pinname="Width" visible="1">
-   </PIN>
-   <PIN pinname="Height" visible="1">
-   </PIN>
-   <PIN pinname="Reset Counters" visible="1" slicecount="1" values="0">
-   </PIN>
-   <PIN pinname="Apply Display Mode" visible="1" slicecount="1" values="0">
-   </PIN>
-   <PIN pinname="Flush Queue" visible="1" slicecount="1" values="0">
-   </PIN>
-   <PIN pinname="Reference Clock" visible="1" slicecount="1" values="0">
-   </PIN>
-   <PIN pinname="Available Frame Count" visible="1">
-   </PIN>
-   <PIN pinname="Current Mode" visible="1">
-   </PIN>
-   <PIN pinname="Model Name" visible="1">
-   </PIN>
-   <PIN pinname="Device Name" visible="1">
-   </PIN>
-   <PIN pinname="Status" visible="1">
-   </PIN>
-   <PIN pinname="Statistics" visible="1">
-   </PIN>
-   <PIN pinname="Texture Height" visible="1">
-   </PIN>
-   <PIN pinname="Texture Width" visible="1">
-   </PIN>
-   <PIN pinname="Texture Out" visible="1">
-   </PIN>
-   </NODE>
-   <LINK srcnodeid="13" srcpinname="Y Output Value" dstnodeid="21" dstpinname="Device">
-   </LINK>
-   <LINK srcnodeid="14" srcpinname="Y Output Value" dstnodeid="21" dstpinname="Enabled">
-   </LINK>
    <NODE nodename="IOBox (Value Advanced)" componentmode="InABox" id="22">
    <BOUNDS type="Box" left="5985" top="7890" width="480" height="480">
    </BOUNDS>
@@ -170,8 +116,6 @@
    <PIN pinname="Descriptive Name" slicecount="1" values="|Is Auto Detect Mode Supported|">
    </PIN>
    </NODE>
-   <LINK srcnodeid="21" srcpinname="Is Auto Detect Mode Supported" dstnodeid="22" dstpinname="Y Input Value">
-   </LINK>
    <NODE systemname="Renderer (TTY)" nodename="Renderer (TTY)" componentmode="InABox" id="23">
    <BOUNDS type="Node" left="18360" top="330" width="100" height="100">
    </BOUNDS>
@@ -180,8 +124,6 @@
    <BOUNDS type="Window" left="27960" top="6315" width="6240" height="5085">
    </BOUNDS>
    </NODE>
-   <LINK srcnodeid="16" srcpinname="Output" dstnodeid="21" dstpinname="Capture Parameters">
-   </LINK>
    <NODE nodename="IOBox (Enumerations)" componentmode="InABox" id="24">
    <BOUNDS type="Box" left="2730" top="345" width="1590" height="270">
    </BOUNDS>
@@ -238,10 +180,8 @@
    <PIN pinname="Input String" visible="1" slicecount="1" values="11.4.1">
    </PIN>
    </NODE>
-   <LINK srcnodeid="21" srcpinname="Decklink SDK Version" dstnodeid="26" dstpinname="Input String">
-   </LINK>
    <NODE nodename="IOBox (String)" componentmode="InABox" id="27">
-   <BOUNDS type="Box" left="9825" top="6330" width="1860" height="255">
+   <BOUNDS type="Box" left="9825" top="6330" width="2595" height="330">
    </BOUNDS>
    <BOUNDS type="Node" left="9825" top="6330" width="0" height="0">
    </BOUNDS>
@@ -254,8 +194,6 @@
    <PIN pinname="Descriptive Name" slicecount="1" values="Version">
    </PIN>
    </NODE>
-   <LINK srcnodeid="21" srcpinname="Version" dstnodeid="27" dstpinname="Input String">
-   </LINK>
    <NODE nodename="IOBox (Value Advanced)" componentmode="InABox" id="28">
    <BOUNDS type="Box" left="7245" top="3405" width="480" height="480">
    </BOUNDS>
@@ -276,8 +214,6 @@
    <PIN pinname="Descriptive Name" slicecount="1" values="|Reset Device|">
    </PIN>
    </NODE>
-   <LINK srcnodeid="28" srcpinname="Y Output Value" dstnodeid="21" dstpinname="Reset Device">
-   </LINK>
    <NODE nodename="IOBox (Enumerations)" componentmode="InABox" id="29">
    <BOUNDS type="Box" left="5535" top="1230" width="1590" height="270">
    </BOUNDS>
@@ -312,8 +248,6 @@
    <PIN pinname="Descriptive Name" slicecount="1" values="|Is Mode Supported|">
    </PIN>
    </NODE>
-   <LINK srcnodeid="21" srcpinname="Is Mode Supported" dstnodeid="30" dstpinname="Y Input Value">
-   </LINK>
    <NODE nodename="IOBox (Value Advanced)" componentmode="InABox" id="31">
    <BOUNDS type="Box" left="5145" top="6555" width="480" height="480">
    </BOUNDS>
@@ -328,8 +262,6 @@
    <PIN pinname="Behavior" slicecount="1" values="Toggle">
    </PIN>
    </NODE>
-   <LINK srcnodeid="21" srcpinname="Is Running" dstnodeid="31" dstpinname="Y Input Value">
-   </LINK>
    <NODE nodename="IOBox (Value Advanced)" componentmode="InABox" id="32">
    <BOUNDS type="Box" left="4275" top="8430" width="795" height="240">
    </BOUNDS>
@@ -343,7 +275,7 @@
    </PIN>
    <PIN pinname="Descriptive Name" slicecount="1" values="Width">
    </PIN>
-   <PIN pinname="Y Input Value" visible="1">
+   <PIN pinname="Y Input Value" visible="1" slicecount="1" values="0">
    </PIN>
    </NODE>
    <NODE nodename="IOBox (Value Advanced)" componentmode="InABox" id="33">
@@ -359,7 +291,7 @@
    </PIN>
    <PIN pinname="Descriptive Name" slicecount="1" values="Height">
    </PIN>
-   <PIN pinname="Y Input Value" visible="1">
+   <PIN pinname="Y Input Value" visible="1" slicecount="1" values="0">
    </PIN>
    </NODE>
    <NODE nodename="IOBox (Value Advanced)" componentmode="InABox" id="34">
@@ -382,8 +314,6 @@
    <PIN pinname="Descriptive Name" slicecount="1" values="|Flush Queue|">
    </PIN>
    </NODE>
-   <LINK srcnodeid="34" srcpinname="Y Output Value" dstnodeid="21" dstpinname="Flush Queue">
-   </LINK>
    <NODE nodename="IOBox (Value Advanced)" componentmode="InABox" id="36">
    <BOUNDS type="Box" left="6435" top="4245" width="480" height="480">
    </BOUNDS>
@@ -404,8 +334,6 @@
    <PIN pinname="Descriptive Name" slicecount="1" values="|Reset Counters|">
    </PIN>
    </NODE>
-   <LINK srcnodeid="36" srcpinname="Y Output Value" dstnodeid="21" dstpinname="Reset Counters">
-   </LINK>
    <NODE nodename="IOBox (Value Advanced)" componentmode="InABox" id="37">
    <BOUNDS type="Box" left="5580" top="3630" width="480" height="480">
    </BOUNDS>
@@ -442,8 +370,6 @@
    <PIN pinname="Descriptive Name" slicecount="1" values="|Available Frame Count|">
    </PIN>
    </NODE>
-   <LINK srcnodeid="21" srcpinname="Available Frame Count" dstnodeid="38" dstpinname="Y Input Value">
-   </LINK>
    <NODE nodename="IOBox (String)" componentmode="InABox" id="39">
    <BOUNDS type="Box" left="6825" top="6315" width="1740" height="240">
    </BOUNDS>
@@ -458,8 +384,6 @@
    <PIN pinname="Descriptive Name" slicecount="1" values="|Current Mode|">
    </PIN>
    </NODE>
-   <LINK srcnodeid="21" srcpinname="Current Mode" dstnodeid="39" dstpinname="Input String">
-   </LINK>
    <NODE nodename="IOBox (String)" componentmode="InABox" id="40">
    <BOUNDS type="Box" left="7245" top="5760" width="1470" height="255">
    </BOUNDS>
@@ -474,8 +398,6 @@
    <PIN pinname="Descriptive Name" slicecount="1" values="|Model Name|">
    </PIN>
    </NODE>
-   <LINK srcnodeid="21" srcpinname="Model Name" dstnodeid="40" dstpinname="Input String">
-   </LINK>
    <NODE nodename="IOBox (String)" componentmode="InABox" id="41">
    <BOUNDS type="Box" left="7680" top="7515" width="795" height="240">
    </BOUNDS>
@@ -490,8 +412,6 @@
    <PIN pinname="Descriptive Name" slicecount="1" values="|Device Name|">
    </PIN>
    </NODE>
-   <LINK srcnodeid="21" srcpinname="Device Name" dstnodeid="41" dstpinname="Input String">
-   </LINK>
    <NODE nodename="IOBox (String)" componentmode="InABox" id="42">
    <BOUNDS type="Box" left="8085" top="6675" width="1470" height="240">
    </BOUNDS>
@@ -504,14 +424,12 @@
    <PIN pinname="Maximum Characters" slicecount="1" values="-1">
    </PIN>
    </NODE>
-   <LINK srcnodeid="21" srcpinname="Status" dstnodeid="42" dstpinname="Input String">
-   </LINK>
    <NODE systemname="Unzip (DeckLink CaptureStatistics)" filename="VVVV.DX11.Nodes.DeckLink.dll" nodename="Unzip (DeckLink CaptureStatistics)" componentmode="Hidden" id="43">
    <BOUNDS type="Node" left="11670" top="9840" width="9405" height="270">
    </BOUNDS>
    <BOUNDS type="Box" left="11670" top="9840" width="3000" height="3000">
    </BOUNDS>
-   <PIN pinname="Input" visible="1">
+   <PIN pinname="Input" visible="1" slicecount="1" values="||">
    </PIN>
    <PIN pinname="Frames Captured Count" visible="1">
    </PIN>
@@ -534,12 +452,6 @@
    <PIN pinname="FPS" visible="1">
    </PIN>
    </NODE>
-   <LINK srcnodeid="21" srcpinname="Statistics" dstnodeid="43" dstpinname="Input" linkstyle="VHV">
-   <LINKPOINT x="8670" y="7743">
-   </LINKPOINT>
-   <LINKPOINT x="11610" y="7543">
-   </LINKPOINT>
-   </LINK>
    <NODE nodename="IOBox (Value Advanced)" componentmode="InABox" id="44">
    <BOUNDS type="Box" left="11685" top="10755" width="795" height="240">
    </BOUNDS>
@@ -706,12 +618,6 @@
    <PIN pinname="Size" slicecount="1" values="20">
    </PIN>
    </NODE>
-   <LINK srcnodeid="37" srcpinname="Y Output Value" dstnodeid="21" dstpinname="Apply Display Mode">
-   </LINK>
-   <LINK srcnodeid="21" srcpinname="Texture Height" dstnodeid="33" dstpinname="Y Input Value">
-   </LINK>
-   <LINK srcnodeid="21" srcpinname="Texture Width" dstnodeid="32" dstpinname="Y Input Value">
-   </LINK>
    <NODE systemname="Renderer (DX11)" filename="%VVVV%\packs\dx11\nodes\plugins\base\VVVV.DX11.Nodes.dll" nodename="Renderer (DX11)" componentmode="InAWindow" id="58">
    <BOUNDS type="Node" left="3285" top="12135" width="100" height="100">
    </BOUNDS>
@@ -727,11 +633,63 @@
    </BOUNDS>
    <PIN pinname="Layer" visible="1">
    </PIN>
-   <PIN pinname="Texture" visible="1">
+   <PIN pinname="Texture" visible="1" slicecount="1" values="||">
    </PIN>
    </NODE>
    <LINK srcnodeid="59" srcpinname="Layer" dstnodeid="58" dstpinname="Layers">
    </LINK>
-   <LINK srcnodeid="21" srcpinname="Texture Out" dstnodeid="59" dstpinname="Texture">
+   <NODE systemname="VideoIn (DeckLink DX11.Texture)" filename="VVVV.DX11.Nodes.DeckLink.dll" nodename="VideoIn (DeckLink DX11.Texture)" componentmode="Hidden" id="60">
+   <BOUNDS type="Node" left="3855" top="5190" width="6030" height="270">
+   </BOUNDS>
+   <BOUNDS type="Box" left="3855" top="5190" width="3000" height="3000">
+   </BOUNDS>
+   <PIN pinname="Capture Parameters" visible="1">
+   </PIN>
+   </NODE>
+   <LINK srcnodeid="13" srcpinname="Y Output Value" dstnodeid="60" dstpinname="Device">
+   </LINK>
+   <LINK srcnodeid="14" srcpinname="Y Output Value" dstnodeid="60" dstpinname="Enabled">
+   </LINK>
+   <LINK srcnodeid="60" srcpinname="Is Auto Detect Mode Supported" dstnodeid="22" dstpinname="Y Input Value">
+   </LINK>
+   <LINK srcnodeid="60" srcpinname="Decklink SDK Version" dstnodeid="26" dstpinname="Input String">
+   </LINK>
+   <LINK srcnodeid="60" srcpinname="Version" dstnodeid="27" dstpinname="Input String">
+   </LINK>
+   <LINK srcnodeid="28" srcpinname="Y Output Value" dstnodeid="60" dstpinname="Reset Device">
+   </LINK>
+   <LINK srcnodeid="60" srcpinname="Is Mode Supported" dstnodeid="30" dstpinname="Y Input Value">
+   </LINK>
+   <LINK srcnodeid="60" srcpinname="Is Running" dstnodeid="31" dstpinname="Y Input Value">
+   </LINK>
+   <LINK srcnodeid="34" srcpinname="Y Output Value" dstnodeid="60" dstpinname="Flush Queue">
+   </LINK>
+   <LINK srcnodeid="36" srcpinname="Y Output Value" dstnodeid="60" dstpinname="Reset Counters">
+   </LINK>
+   <LINK srcnodeid="60" srcpinname="Available Frame Count" dstnodeid="38" dstpinname="Y Input Value">
+   </LINK>
+   <LINK srcnodeid="60" srcpinname="Current Mode" dstnodeid="39" dstpinname="Input String">
+   </LINK>
+   <LINK srcnodeid="60" srcpinname="Model Name" dstnodeid="40" dstpinname="Input String">
+   </LINK>
+   <LINK srcnodeid="60" srcpinname="Device Name" dstnodeid="41" dstpinname="Input String">
+   </LINK>
+   <LINK srcnodeid="60" srcpinname="Status" dstnodeid="42" dstpinname="Input String">
+   </LINK>
+   <LINK srcnodeid="60" srcpinname="Statistics" dstnodeid="43" dstpinname="Input" linkstyle="VHV">
+   <LINKPOINT x="8670" y="7743">
+   </LINKPOINT>
+   <LINKPOINT x="11610" y="7543">
+   </LINKPOINT>
+   </LINK>
+   <LINK srcnodeid="37" srcpinname="Y Output Value" dstnodeid="60" dstpinname="Apply Display Mode">
+   </LINK>
+   <LINK srcnodeid="60" srcpinname="Texture Height" dstnodeid="33" dstpinname="Y Input Value">
+   </LINK>
+   <LINK srcnodeid="60" srcpinname="Texture Width" dstnodeid="32" dstpinname="Y Input Value">
+   </LINK>
+   <LINK srcnodeid="60" srcpinname="Texture Out" dstnodeid="59" dstpinname="Texture">
+   </LINK>
+   <LINK srcnodeid="16" srcpinname="Output" dstnodeid="60" dstpinname="Capture Parameters">
    </LINK>
    </PATCH>

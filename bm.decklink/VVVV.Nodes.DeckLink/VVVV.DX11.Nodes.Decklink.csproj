@@ -16,8 +16,12 @@
     <OutputPath>..\Patches\</OutputPath>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Bugsnag, Version=2.2.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Bugsnag.2.2.0\lib\net45\Bugsnag.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
+    <Reference Include="System.Runtime.Serialization" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
@@ -82,7 +86,9 @@
   <ItemGroup>
     <EmbeddedResource Include="effects\YUV2RGB.fx" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <None Include="packages.config" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
     <PreBuildEvent>$(SolutionDir)gitcommit.sh $(SolutionDir)VVVV.Nodes.DeckLink/Properties/AssemblyInfo.cs</PreBuildEvent>

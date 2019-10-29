@@ -26,7 +26,6 @@ namespace VVVV.DeckLink
         {
             IDeckLink deckLink;
             IDeckLinkIterator iterator = new CDeckLinkIterator();
-
             List<IDeckLink> deviceList = new List<IDeckLink>();
 
             while (true)
