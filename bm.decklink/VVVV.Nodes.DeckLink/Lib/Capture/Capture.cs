@@ -64,9 +64,9 @@ namespace VVVV.DeckLink
             get { return this.running; }
         }
 
-        public bool isModeSupported
+        public bool IsModeSupported
         {
-            get { return this.ModeSupport != _BMDDisplayModeSupport_v10_11.bmdDisplayModeNotSupported_v10_11; }
+            get; private set;
         }
 
         public _BMDDisplayMode CurrentDisplayMode { get; private set; }
@@ -104,7 +104,6 @@ namespace VVVV.DeckLink
                 }
             });
             this.deviceInfo = df.DeviceInformation;
-            this._videoInputConnection = captureParameters.VideoInputConnection;
             if (df.DeviceInformation.IsValid)
             {
                 this.device = df.InputDevice;
@@ -152,31 +151,22 @@ namespace VVVV.DeckLink
 
         private bool IsDisplayModeSupported(_BMDDisplayMode displayMode)
         {
-            try
+            _BMDVideoConnection connection;
+            switch (this._videoInputConnection)
             {
-                _BMDVideoConnection connection;
-                switch (this._videoInputConnection)
-                {
-                    case VideoInputConnection.HDMI:
-                        connection = _BMDVideoConnection.bmdVideoConnectionHDMI;
-                        break;
-                    case VideoInputConnection.SDI:
-                        connection = _BMDVideoConnection.bmdVideoConnectionSDI;
-                        break;
-                    default:
-                        connection = _BMDVideoConnection.bmdVideoConnectionSDI;
-                        break;
-                }
-                _BMDSupportedVideoModeFlags flags = _BMDSupportedVideoModeFlags.bmdSupportedVideoModeDefault;
-                this.device.DoesSupportVideoMode(connection, displayMode, this.inputPixelFormat, flags, out int isSupported);
-                return Convert.ToBoolean(isSupported);
+                case VideoInputConnection.HDMI:
+                    connection = _BMDVideoConnection.bmdVideoConnectionHDMI;
+                    break;
+                case VideoInputConnection.SDI:
+                    connection = _BMDVideoConnection.bmdVideoConnectionSDI;
+                    break;
+                default:
+                    connection = _BMDVideoConnection.bmdVideoConnectionSDI;
+                    break;
             }
-            catch (NotImplementedException e)
-            {
-                this.DeviceInformation.IsAutoModeDetectionSupported = false;
-                // Generally allow display mode
-                return true;
-            }
+            _BMDSupportedVideoModeFlags flags = _BMDSupportedVideoModeFlags.bmdSupportedVideoModeDefault;
+            this.device.DoesSupportVideoMode(connection, displayMode, this.inputPixelFormat, flags, out int isSupported);
+            return Convert.ToBoolean(isSupported);
         }
 
         public void StartCapture(_BMDDisplayMode initialDisplayMode)
@@ -184,9 +174,9 @@ namespace VVVV.DeckLink
             if (this.running) return;
             Task t = Task.Run(() =>
             {
-                bool isSupported = IsDisplayModeSupported(initialDisplayMode);
+                this.IsModeSupported = IsDisplayModeSupported(initialDisplayMode);
                 // The requested mode is supported
-                if (isSupported)
+                if (this.IsModeSupported)
                 {
                     ModeSupport = _BMDDisplayModeSupport_v10_11.bmdDisplayModeSupported_v10_11;
                     this.device.SetCallback(this);
@@ -337,7 +327,7 @@ namespace VVVV.DeckLink
                 return result;
             }
             // Never happens, but for clarity set result type in condition
-            else 
+            else
             {
                 throw new InvalidOperationException("Result type should have been either texture or raw image");
             }
@@ -390,6 +380,8 @@ namespace VVVV.DeckLink
             TaskUtils.RunSync(() =>
             {
                 DeviceFactory.ReleaseDevice(slicedInput);
+                if (this.device == null)
+                    return;
                 int refCount = Marshal.ReleaseComObject(this.device);
             });
             if (this.framePresenter is IDisposable)

@@ -80,7 +80,7 @@ namespace VVVV.DeckLink.Nodes
         protected ISpread<bool> FOut_IsDisplayModeSupported;
 
         [Output("Is Auto Detect Mode Supported", IsSingle = true)]
-        protected ISpread<bool> FOut_IsAutoDetectSupported;
+        protected ISpread<string> FOut_VideoInputmode;
 
         [Output("Available Frame Count")]
         protected ISpread<int> FOut_AvailableFrameCount;
@@ -244,7 +244,10 @@ namespace VVVV.DeckLink.Nodes
         {
             /// Dispose wait handle
             if (this.eventWaitHandle != null)
+            {
                 this.eventWaitHandle.Dispose();
+                this.eventWaitHandle = null;
+            }
             if (this.captureThread != null)
             {
                 this.captureThread.FrameAvailableHandler -= this.OnNewFrameReceived;
@@ -298,7 +301,7 @@ namespace VVVV.DeckLink.Nodes
                 IStatusQueueReporter sqr = (IStatusQueueReporter)this.captureThread.FramePresenter;
                 this.FOut_QueueData.AssignFrom(sqr.QueueData.Select(qd => qd.TotalMilliseconds));
             }
-            this.FOut_IsDisplayModeSupported[0] = this.captureThread.isModeSupported;
+            this.FOut_IsDisplayModeSupported[0] = this.captureThread.IsModeSupported;
             this.FOut_CurrentMode[0] = this.captureThread.CurrentDisplayMode.ToString();
             this.FOut_TextureWidth[0] = this.captureThread.Width;
             this.FOut_TextureHeight[0] = this.captureThread.Height;
@@ -307,7 +310,6 @@ namespace VVVV.DeckLink.Nodes
             this.FOut_DeviceDisplayName[0] = this.captureThread.DeviceInformation.DisplayName;
             this.FOut_AvailableFrameCount[0] = this.captureThread.AvailableFrameCount;
             this.FOut_Status[0] = this.captureThread.DeviceInformation.Message;
-            this.FOut_IsAutoDetectSupported[0] = this.captureThread.DeviceInformation.IsAutoModeDetectionSupported;
         }
 
         private void UpdateStatistics()
@@ -345,6 +347,25 @@ namespace VVVV.DeckLink.Nodes
                 else
                     this.captureThread.StopCapture();
             }
+            /// Apply display mode
+            if (FIn_BangApplyDisplayMode.IsChanged)
+            {
+                var shouldApplyDisplayMode = FIn_BangApplyDisplayMode[0];
+                if (this._currentCaptureParameters.DisplayMode != this.captureThread.CurrentDisplayMode)
+                {
+                    this.captureThread.FrameAvailableHandler -= this.OnNewFrameReceived;
+                    this.captureThread.RawFrameReceivedHandler -= this.OnNewRawFrameReceived;
+                    this.captureThread.Dispose();
+                }
+                this.captureThread.Dispose();
+                this.captureThread = new DecklinkCaptureThread(this.FIn_DeviceIndex[0], this.renderDevice, this._currentCaptureParameters);
+                if (this.captureThread.DeviceInformation.IsValid)
+                {
+                    this.captureThread.FrameAvailableHandler += this.OnNewFrameReceived;
+                    this.captureThread.RawFrameReceivedHandler += this.OnNewRawFrameReceived;
+                    this.captureThread.StartCapture(this._currentCaptureParameters.DisplayMode);
+                }
+            }
             /// Capture parameters changed
             if (this._currentCaptureParameters.DiffersFrom(FIn_CaptureParameters[0]))
                 this.Dispose();
@@ -362,9 +383,12 @@ namespace VVVV.DeckLink.Nodes
             if (FIn_BangFlushQueue.IsChanged)
             {
                 var shouldFlashQueue = FIn_BangFlushQueue[0];
-                var hasFlushableFramePresenter = this.captureThread.FramePresenter is IFlushable;
-                if (shouldFlashQueue && hasFlushableFramePresenter)
-                    ((IFlushable)this.captureThread.FramePresenter).Flush();
+                if (this.captureThread.FramePresenter != null)
+                {
+                    var hasFlushableFramePresenter = this.captureThread.FramePresenter is IFlushable;
+                    if (shouldFlashQueue && hasFlushableFramePresenter)
+                        ((IFlushable)this.captureThread.FramePresenter).Flush();
+                }
             }
             /// Fake delay
             this.captureThread.FakeDelay = FIn_FakeDelay[0];

@@ -34,7 +34,7 @@ namespace VVVV.DeckLink
 
         public static CaptureDeviceInformation Invalid(string message)
         {
-            return new CaptureDeviceInformation("", "", false, message, false);
+            return new CaptureDeviceInformation(message, message, false, message, false);
         }
 
         public static CaptureDeviceInformation FromDevice(IDeckLink device)

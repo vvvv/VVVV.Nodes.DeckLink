@@ -14,11 +14,6 @@ namespace VVVV.DeckLink
     public sealed class CaptureParameters
     {
         /// <summary>
-        /// Video input connection
-        /// </summary>
-        public VideoInputConnection VideoInputConnection;
-
-        /// <summary>
         /// Texture Output mode
         /// </summary>
         public TextureOutputMode OutputMode;
@@ -106,7 +101,6 @@ namespace VVVV.DeckLink
             if (other == null)
                 other = CaptureParameters.Default;
             return
-             this.VideoInputConnection != other.VideoInputConnection ||
              this.OutputMode != other.OutputMode ||
              this.FrameQueueMode != other.FrameQueueMode ||
              this.AutoDetect != other.AutoDetect ||

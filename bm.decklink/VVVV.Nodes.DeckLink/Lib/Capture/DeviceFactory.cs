@@ -31,7 +31,6 @@ namespace VVVV.DeckLink
             while (true)
             {
                 iterator.Next(out deckLink);
-
                 if (deckLink == null)
                     break;
                 else
@@ -41,7 +40,6 @@ namespace VVVV.DeckLink
             if (deviceList.Count > 0)
             {
                 this.slicedInput = VMath.Zmod(index, deviceList.Count);
-
                 if (!usedDevices.Contains(slicedInput))
                 {
                     usedDevices.Add(slicedInput);
@@ -54,7 +52,7 @@ namespace VVVV.DeckLink
                     this.InputDevice = null;
                     this.DeviceInformation = CaptureDeviceInformation.Invalid("Device already in use");
                 }
-                //Marshal.ReleaseComObject(iterator);
+                Marshal.ReleaseComObject(iterator);
             }
             else
             {
