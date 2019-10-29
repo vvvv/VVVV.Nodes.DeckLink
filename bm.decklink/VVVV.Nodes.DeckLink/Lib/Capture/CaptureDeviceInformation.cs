@@ -39,14 +39,13 @@ namespace VVVV.DeckLink
 
         public static CaptureDeviceInformation FromDevice(IDeckLink device)
         {
-            string modelName;
-            string displayName;
-            device.GetModelName(out modelName);
-            device.GetDisplayName(out displayName);
+            device.GetModelName(out string modelName);
+            device.GetDisplayName(out string displayName);
             var deckLinkAttributes = (IDeckLinkProfileAttributes)device;
             deckLinkAttributes.GetFlag(_BMDDeckLinkAttributeID.BMDDeckLinkSupportsInputFormatDetection, out int isAutoDetectSupported);
             bool autoDetecionIsSupported = isAutoDetectSupported != 0;
-            return new CaptureDeviceInformation(modelName, displayName, true, "Device Initialized", autoDetecionIsSupported);
+            bool isValid = true;
+            return new CaptureDeviceInformation(modelName, displayName, isValid, "Device Initialized", autoDetecionIsSupported);
         }
 
     }

@@ -26,22 +26,22 @@ namespace VVVV.DeckLink
         public double FrameDelayTime;
         public double FrameTextureTime;
         public double FrameProcessTime;
+
         public event EventHandler RawFrameReceivedHandler;
         public event EventHandler FrameAvailableHandler;
 
-        private VideoInputConnection _videoInputConnection;
         private int fakeDelay = 0;
         private CaptureDeviceInformation deviceInfo;
         private IDeckLinkInput device;
         private _BMDVideoInputFlags videoInputFlags;
         private _BMDPixelFormat inputPixelFormat = _BMDPixelFormat.bmdFormat8BitYUV;
         private DecklinkVideoFrameConverter videoConverter;
-        private IDecklinkFramePresenter framePresenter;
+        private readonly IDecklinkFramePresenter framePresenter;
         private bool running = false;
         private object syncRoot = new object();
-        private int slicedInput;
+        private readonly int slicedInput;
         private Stopwatch sw = Stopwatch.StartNew();
-        private Stopwatch textureUpdateWatch = Stopwatch.StartNew();
+        private readonly Stopwatch textureUpdateWatch = Stopwatch.StartNew();
         private bool isLastFrameConverted;
         private Stopwatch processWatch = Stopwatch.StartNew();
         private _BMDDisplayModeSupport_v10_11 ModeSupport;
@@ -69,6 +69,24 @@ namespace VVVV.DeckLink
             get; private set;
         }
 
+        public string ModeSupportMessage
+        {
+            get
+            {
+                switch (this.ModeSupport)
+                {
+                    case _BMDDisplayModeSupport_v10_11.bmdDisplayModeNotSupported_v10_11:
+                        return "Mode not supported";
+                    case _BMDDisplayModeSupport_v10_11.bmdDisplayModeSupportedWithConversion_v10_11:
+                        return "Mode supported (with Conversion)";
+                    case _BMDDisplayModeSupport_v10_11.bmdDisplayModeSupported_v10_11:
+                        return "Mode supported";
+                    default:
+                        return "No Information";
+                }
+            }
+        }
+
         public _BMDDisplayMode CurrentDisplayMode { get; private set; }
 
         public IDecklinkFramePresenter FramePresenter
@@ -78,7 +96,7 @@ namespace VVVV.DeckLink
 
         public bool AutoDetectFormatEnabled { get; private set; }
 
-        public bool PerformConversion { get; private set; }
+        public bool ShouldPerformConversion { get; private set; }
 
         public float FPS { get; private set; }
 
@@ -94,13 +112,16 @@ namespace VVVV.DeckLink
         public DecklinkCaptureThread(int deviceIndex, DX11RenderContext renderDevice, CaptureParameters captureParameters)
         {
             DeviceFactory df = null;
-            this.PerformConversion = captureParameters.OutputMode == TextureOutputMode.UncompressedBMD;
+            this.ShouldPerformConversion = captureParameters.OutputMode == TextureOutputMode.UncompressedBMD;
             TaskUtils.RunSync(() =>
             {
                 df = new DeviceFactory(deviceIndex);
                 if (df.DeviceInformation.IsValid)
-                {
                     this.videoConverter = new DecklinkVideoFrameConverter(df.DeckLinkDevice);
+                else
+                {
+                    this.deviceInfo = df.DeviceInformation;
+                    return;
                 }
             });
             this.deviceInfo = df.DeviceInformation;
@@ -145,27 +166,15 @@ namespace VVVV.DeckLink
                                                                                     captureParameters.FrameQueueMaxSize);
                         break;
                 }
-
             }
+            else
+                this.deviceInfo = df.DeviceInformation;
         }
 
         private bool IsDisplayModeSupported(_BMDDisplayMode displayMode)
         {
-            _BMDVideoConnection connection;
-            switch (this._videoInputConnection)
-            {
-                case VideoInputConnection.HDMI:
-                    connection = _BMDVideoConnection.bmdVideoConnectionHDMI;
-                    break;
-                case VideoInputConnection.SDI:
-                    connection = _BMDVideoConnection.bmdVideoConnectionSDI;
-                    break;
-                default:
-                    connection = _BMDVideoConnection.bmdVideoConnectionSDI;
-                    break;
-            }
             _BMDSupportedVideoModeFlags flags = _BMDSupportedVideoModeFlags.bmdSupportedVideoModeDefault;
-            this.device.DoesSupportVideoMode(connection, displayMode, this.inputPixelFormat, flags, out int isSupported);
+            this.device.DoesSupportVideoMode(_BMDVideoConnection.bmdVideoConnectionUnspecified, displayMode, this.inputPixelFormat, flags, out int isSupported);
             return Convert.ToBoolean(isSupported);
         }
 
@@ -179,6 +188,7 @@ namespace VVVV.DeckLink
                 if (this.IsModeSupported)
                 {
                     ModeSupport = _BMDDisplayModeSupport_v10_11.bmdDisplayModeSupported_v10_11;
+                    this.device.GetDisplayMode(initialDisplayMode, out IDeckLinkDisplayMode usedDisplayMode);
                     this.device.SetCallback(this);
                     this.ApplyDisplayMode(initialDisplayMode);
                     this.CurrentDisplayMode = initialDisplayMode;
@@ -213,26 +223,24 @@ namespace VVVV.DeckLink
             Task.WaitAll(t);
         }
 
-        public void SetDisplayMode(_BMDDisplayMode displayMode, _BMDVideoInputFlags videoInputFlags)
-        {
-            lock (syncRoot)
-            {
-                if (this.running)
-                {
-                    this.device.DisableVideoInput();
-                    this.device.StopStreams();
-                    this.ApplyDisplayMode(displayMode);
-                    this.device.StartStreams();
-                }
-            }
-        }
-
         private void ApplyDisplayMode(_BMDDisplayMode newDisplayMode)
         {
-            bool isSupported = IsDisplayModeSupported(newDisplayMode);
-            if (isSupported)
+            try
             {
-                this.device.EnableVideoInput(newDisplayMode, this.inputPixelFormat, this.videoInputFlags);
+                bool isSupported = IsDisplayModeSupported(newDisplayMode);
+                if (isSupported)
+                {
+                    if (this.CurrentDisplayMode != newDisplayMode)
+                        this.ModeSupport = _BMDDisplayModeSupport_v10_11.bmdDisplayModeSupportedWithConversion_v10_11;
+                    else
+                        this.ModeSupport = _BMDDisplayModeSupport_v10_11.bmdDisplayModeSupported_v10_11;
+                    this.device.EnableVideoInput(newDisplayMode, this.inputPixelFormat, this.videoInputFlags);
+                    this.CurrentDisplayMode = newDisplayMode;
+                }
+            }
+            catch (COMException e)
+            {
+                this.deviceInfo = CaptureDeviceInformation.Invalid(e.Message);
             }
         }
 
@@ -240,13 +248,11 @@ namespace VVVV.DeckLink
         {
             if (!this.running)
                 return;
-
             TaskUtils.RunSyncAndIgnoreException(() =>
             {
                 this.device.SetCallback(null);
                 this.device.StopStreams();
             });
-
             this.running = false;
         }
 
@@ -286,9 +292,9 @@ namespace VVVV.DeckLink
             {
                 this.Width = videoFrame.GetWidth();
                 this.Height = videoFrame.GetHeight();
-                this.framePresenter.PushFrame(videoFrame, this.PerformConversion);
+                this.framePresenter.PushFrame(videoFrame, this.ShouldPerformConversion);
                 System.Runtime.InteropServices.Marshal.ReleaseComObject(videoFrame);
-                this.isLastFrameConverted = this.PerformConversion;
+                this.isLastFrameConverted = this.ShouldPerformConversion;
             }
             if (this.FrameAvailableHandler != null)
             {
@@ -348,11 +354,10 @@ namespace VVVV.DeckLink
                 }
                 if (texture == null)
                 {
-                    var fmt = this.PerformConversion ? SlimDX.DXGI.Format.B8G8R8A8_UNorm : SlimDX.DXGI.Format.R8G8B8A8_UNorm;
+                    var fmt = this.ShouldPerformConversion ? SlimDX.DXGI.Format.B8G8R8A8_UNorm : SlimDX.DXGI.Format.R8G8B8A8_UNorm;
                     texture = new DX11DynamicTexture2D(context, Math.Max(w, 1), Math.Max(this.Height, 1), fmt);
                 }
             }
-
         }
 
         private unsafe FrameDataResult Copy(DecklinkFrameData frameData, DX11DynamicTexture2D tex)

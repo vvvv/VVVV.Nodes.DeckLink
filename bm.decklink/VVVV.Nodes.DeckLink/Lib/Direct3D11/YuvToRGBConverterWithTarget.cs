@@ -11,9 +11,8 @@ namespace VVVV.DeckLink.Direct3D11
 {
     public class YuvToRGBConverterWithTarget : IDX11Resource
     {
-        private DX11RenderContext context;
-
-        private YuvToRGBConverter converter;
+        private readonly DX11RenderContext context;
+        private readonly YuvToRGBConverter converter;
         private DX11RenderTarget2D renderTarget;
 
         public YuvToRGBConverterWithTarget(DX11RenderContext context, YuvToRGBConverter converter)
@@ -38,13 +37,9 @@ namespace VVVV.DeckLink.Direct3D11
             {
                 renderTarget = new DX11RenderTarget2D(this.context, uncompressedWidth, inputTexture.Height, new SlimDX.DXGI.SampleDescription(1, 0), SlimDX.DXGI.Format.R8G8B8A8_UNorm);
             }
-
             context.RenderTargetStack.Push(renderTarget);
-
             this.converter.Apply(inputTexture, renderTarget);
-
             context.RenderTargetStack.Pop();
-
             return this.renderTarget;
         }
 
