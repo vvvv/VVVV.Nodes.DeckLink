@@ -1,5 +1,5 @@
-<!DOCTYPE PATCH  SYSTEM "http://vvvv.org/versions/vvvv50alpha38.2.dtd" >
-   <PATCH nodename="E:\git\nsynk\vvvv.nodes.blackmagic\bm.decklink\Patches\CaptureParameters (DX11.DeckLink).help.v4p" systemname="CaptureParameters (DX11.DeckLink)" filename="E:\git\nsynk\vvvv.nodes.blackmagic\bm.decklink\Patches\CaptureParameters (DX11.DeckLink).help.v4p">
+<!DOCTYPE PATCH  SYSTEM "http://vvvv.org/versions/vvvv50beta38.1.dtd" >
+   <PATCH nodename="E:\git\nsynk\vvvv.nodes.blackmagic\bm.decklink\Release\nodes\plugins\vvvv.nodes.blackmagic\decklink\CaptureParameters (DeckLink Join) help.v4p" systemname="CaptureParameters (DX11.DeckLink)" filename="E:\git\nsynk\vvvv.nodes.blackmagic\bm.decklink\Patches\CaptureParameters (DX11.DeckLink).help.v4p">
    <BOUNDS type="Window" left="18240" top="3855" width="18105" height="10020">
    </BOUNDS>
    <NODE nodename="IOBox (Enumerations)" componentmode="InABox" id="12" systemname="IOBox (Enumerations)">
@@ -39,9 +39,9 @@
    </PIN>
    </NODE>
    <NODE nodename="IOBox (Enumerations)" componentmode="InABox" id="10" systemname="IOBox (Enumerations)">
-   <BOUNDS type="Box" left="7500" top="3450" width="2775" height="240">
+   <BOUNDS type="Box" left="7560" top="3315" width="2775" height="240">
    </BOUNDS>
-   <BOUNDS type="Node" left="7500" top="3450" width="0" height="0">
+   <BOUNDS type="Node" left="7560" top="3315" width="0" height="0">
    </BOUNDS>
    <PIN pinname="Input Enum" slicecount="1" visible="1" values="bmdModeHD1080p25">
    </PIN>
@@ -161,9 +161,9 @@
    </PIN>
    </NODE>
    <NODE nodename="IOBox (String)" componentmode="InABox" id="2" systemname="IOBox (String)">
-   <BOUNDS type="Node" left="7920" top="4365" width="3765" height="270">
+   <BOUNDS type="Node" left="10455" top="2910" width="3765" height="270">
    </BOUNDS>
-   <BOUNDS type="Box" left="7920" top="4365" width="3765" height="270">
+   <BOUNDS type="Box" left="10455" top="2910" width="3765" height="270">
    </BOUNDS>
    <PIN pinname="Input String" visible="0" slicecount="1" values="|Max size of frame queue, before we start to discard|">
    </PIN>

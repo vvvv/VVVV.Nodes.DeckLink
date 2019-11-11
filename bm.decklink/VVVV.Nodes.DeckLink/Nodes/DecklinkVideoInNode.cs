@@ -141,9 +141,15 @@ namespace VVVV.DeckLink.Nodes
         #region Main loop event handlers
         private void MainLoop_OnPrepareGraph(Object sender, EventArgs args)
         {
-            if (_waitHandle == null)
+            bool hasCaptureThread = this._captureThread != null;
+            if (!hasCaptureThread)
+                return;
+            var captureParameters = this.FIn_CaptureParameters.DefaultIfNilOrNull(0, CaptureParameters.Default);
+            bool isWaitFramePresenter = this._captureThread.FramePresenter is WaitFramePresenter;
+            bool maxLatenessChanged = captureParameters.MaxLateness != _currentCaptureParameters.MaxLateness;
+            if (_waitHandle == null || maxLatenessChanged)
                 _waitHandle = new EventWaitHandle(false, EventResetMode.AutoReset);
-            if (this._captureThread != null && this._captureThread.FramePresenter is WaitFramePresenter)
+            if (hasCaptureThread && isWaitFramePresenter)
                 _waitHandle.WaitOne();
         }
         #endregion
@@ -214,7 +220,7 @@ namespace VVVV.DeckLink.Nodes
                         this._captureThread.Dispose();
                         this._captureThread = null;
                     }
-                    if (FIn_IsDeviceEnabled[0])
+                    if (FIn_IsDeviceEnabled[0] && this._captureThread != null)
                         this._captureThread.StartCapture(this._currentCaptureParameters.DisplayMode);
                     /// Sucessful initalization
                     this.needsInitialization = false;
@@ -384,6 +390,8 @@ namespace VVVV.DeckLink.Nodes
             if (FIn_BangFlushQueue.IsChanged)
             {
                 var shouldFlashQueue = FIn_BangFlushQueue[0];
+                if (this._captureThread == null)
+                    return;
                 if (this._captureThread.FramePresenter != null)
                 {
                     var hasFlushableFramePresenter = this._captureThread.FramePresenter is IFlushable;
@@ -453,9 +461,10 @@ namespace VVVV.DeckLink.Nodes
             if (!this.FIn_IsDeviceEnabled[0])
                 return;
             /// Update input texture
-            var inputTexture = this._rawTexture.Contains(context)
-                ? this._rawTexture[context]
-                : null;
+            //var inputTexture = this._rawTexture.Contains(context)
+            //    ? this._rawTexture[context]
+            //    : null;
+            var inputTexture = this._rawTexture[context];
             try
             {
                 //Acquire texture and copy content

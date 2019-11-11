@@ -316,7 +316,7 @@ namespace VVVV.DeckLink
             if (result.ResultType == FrameDataResultType.RawImage)
             {
                 this.UpdateTexture(context, ref texture);
-                if (result.IsNew)
+                if (result.IsNew && result.CurrentFrame != null)
                 {
                     this.Copy(result.CurrentFrame, texture);
                 }

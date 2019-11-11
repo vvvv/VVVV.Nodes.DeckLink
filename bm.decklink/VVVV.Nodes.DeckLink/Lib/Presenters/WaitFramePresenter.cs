@@ -47,8 +47,11 @@ namespace VVVV.DeckLink.Presenters
 
         public void Dispose()
         {
-            this.frame.Dispose();
-            this.frame = null;
+            if (this.frame != null)
+            {
+                this.frame.Dispose();
+                this.frame = null;
+            }
         }
     }
 }
