@@ -31,7 +31,6 @@ namespace VVVV.DeckLink
         {
             int width = videoFrame.GetWidth();
             int height = videoFrame.GetHeight();
-            
             if (width != this.convertedFrameData.Width || height != this.convertedFrameData.Height)
             {
                 this.convertedFrameData = this.convertedFrameData.UpdateConvertedFrame(videoFrame);
@@ -40,13 +39,13 @@ namespace VVVV.DeckLink
                 {
                     Marshal.ReleaseComObject(this.convertedFrame);
                 }
-                converter.Device.CreateVideoFrame(width, height, width * 4, _BMDPixelFormat.bmdFormat8BitBGRA, _BMDFrameFlags.bmdFrameFlagDefault, out this.convertedFrame);
+                converter.Device?.CreateVideoFrame(width, height, width * 4, _BMDPixelFormat.bmdFormat8BitBGRA, _BMDFrameFlags.bmdFrameFlagDefault, out this.convertedFrame);
             }
-
+            if (this.convertedFrame == null)
+                return;
             converter.Conversion.ConvertFrame(videoFrame, this.convertedFrame);
             IntPtr ptr;
             this.convertedFrame.GetBytes(out ptr);
-
             CopyMemory(this.convertedFrameData.DataPointer, ptr, this.convertedFrameData.DataLength);
         }
 
