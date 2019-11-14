@@ -26,6 +26,7 @@ namespace VVVV.DeckLink
         public double FrameDelayTime;
         public double FrameTextureTime;
         public double FrameProcessTime;
+        public List<_BMDDisplayMode> AvailableDisplayModes = new List<_BMDDisplayMode>();
 
         public event EventHandler RawFrameReceivedHandler;
         public event EventHandler FrameAvailableHandler;
@@ -171,8 +172,34 @@ namespace VVVV.DeckLink
                 this.deviceInfo = df.DeviceInformation;
         }
 
+        bool displayModesFetched = false;
+        private void FetchAvailableDisplayModes()
+        {
+            try
+            {
+                if (!displayModesFetched)
+                {
+                    IDeckLinkDisplayModeIterator iterator;
+                    this.device.GetDisplayModeIterator(out iterator);
+                    IDeckLinkDisplayMode nextDisplayMode;
+                    iterator.Next(out nextDisplayMode);
+                    var displayModeNew = nextDisplayMode.GetDisplayMode();
+                    while (nextDisplayMode != null)
+                    {
+                        iterator.Next(out nextDisplayMode);
+                        AvailableDisplayModes.Add(nextDisplayMode.GetDisplayMode());
+                    }
+                    displayModesFetched = true;
+                }
+            } catch (Exception e)
+            {
+
+            }
+        }
+
         private bool IsDisplayModeSupported(_BMDDisplayMode displayMode)
         {
+            this.FetchAvailableDisplayModes();
             _BMDSupportedVideoModeFlags flags = _BMDSupportedVideoModeFlags.bmdSupportedVideoModeDefault;
             this.device.DoesSupportVideoMode(_BMDVideoConnection.bmdVideoConnectionUnspecified, displayMode, this.inputPixelFormat, flags, out int isSupported);
             return Convert.ToBoolean(isSupported);

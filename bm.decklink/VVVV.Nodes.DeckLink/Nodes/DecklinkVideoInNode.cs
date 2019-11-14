@@ -16,9 +16,6 @@ using System.Linq;
 using System.ComponentModel.Composition;
 using VVVV.Core.Logging;
 using System.Threading;
-#if DEBUG
-using Bugsnag;
-#endif
 
 namespace VVVV.DeckLink.Nodes
 {
@@ -88,6 +85,9 @@ namespace VVVV.DeckLink.Nodes
         [Output("Available Frame Count")]
         protected ISpread<int> FOut_AvailableFrameCount;
 
+        [Output("Available Display Modes", Visibility = PinVisibility.OnlyInspector)]
+        protected ISpread<_BMDDisplayMode> FOut_AvailableDisplayModes;
+
         [Output("Current Mode")]
         protected ISpread<string> FOut_CurrentMode;
 
@@ -125,11 +125,6 @@ namespace VVVV.DeckLink.Nodes
         private readonly DX11Resource<DX11DynamicTexture2D> _rawTexture = new DX11Resource<DX11DynamicTexture2D>();
         #endregion
 
-#if DEBUG
-        private Bugsnag.Client bugsnag = new Bugsnag.Client(new Configuration("c5a577d93d33c483f88192f8a25f14c4"));
-#endif
-
-
         #region Constructor
         public VideoInDeckLinkNode()
         {
@@ -150,7 +145,7 @@ namespace VVVV.DeckLink.Nodes
             if (_waitHandle == null || maxLatenessChanged)
                 _waitHandle = new EventWaitHandle(false, EventResetMode.AutoReset);
             if (hasCaptureThread && isWaitFramePresenter)
-                _waitHandle.WaitOne();
+                _waitHandle.WaitOne(Convert.ToInt32(_currentCaptureParameters.MaxLateness));
         }
         #endregion
 
@@ -236,11 +231,7 @@ namespace VVVV.DeckLink.Nodes
             }
             catch (Exception e)
             {
-#if DEBUG
-                bugsnag.Notify(e);
-#else
                 throw e;
-#endif
             }
         }
 
@@ -317,6 +308,8 @@ namespace VVVV.DeckLink.Nodes
             this.FOut_AvailableFrameCount[0] = this._captureThread.AvailableFrameCount;
             this.FOut_Status[0] = this._captureThread.DeviceInformation.Message;
             this.FOut_DisplayModeSupportedDescription[0] = this._captureThread.ModeSupportMessage;
+
+            this.FOut_AvailableDisplayModes.AssignFrom(this._captureThread.AvailableDisplayModes);
         }
 
         private void UpdateStatistics()
@@ -488,13 +481,9 @@ namespace VVVV.DeckLink.Nodes
                 this._captureStatistics.CurrentFramePresentCount = result.PresentationCount;
                 if (result.IsNew) this._captureStatistics.FramesCopiedCount++;
             }
-            catch (InvalidOperationException e)
-            {
-                bugsnag.Notify(e);
-            }
             catch (Exception e)
             {
-                bugsnag.Notify(e);
+                throw e;
             }
         }
         #endregion
