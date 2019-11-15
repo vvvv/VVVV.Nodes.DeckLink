@@ -145,7 +145,15 @@ namespace VVVV.DeckLink.Nodes
             if (_waitHandle == null || maxLatenessChanged)
                 _waitHandle = new EventWaitHandle(false, EventResetMode.AutoReset);
             if (hasCaptureThread && isWaitFramePresenter)
-                _waitHandle.WaitOne(Convert.ToInt32(_currentCaptureParameters.MaxLateness));
+            {
+                var timeOut = Convert.ToInt32(_currentCaptureParameters.MaxLateness);
+                _waitHandle.WaitOne(timeOut != 0 ? timeOut : 100);
+            }
+            else
+            {
+                _waitHandle.Dispose();
+                _waitHandle = null;
+            }
         }
         #endregion
 
