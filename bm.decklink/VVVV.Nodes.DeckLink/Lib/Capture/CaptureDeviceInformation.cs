@@ -12,41 +12,54 @@ namespace VVVV.DeckLink
     /// </summary>
     public sealed class CaptureDeviceInformation
     {
-        public readonly string ModelName;
-        public readonly string DisplayName;
-        public readonly bool IsValid;
-        public readonly string Message;
+        public string ModelName;
+        public string DisplayName;
+        public bool IsValid;
+        public string Message;
         public bool IsAutoModeDetectionSupported;
+        private readonly IDeckLink device;
 
-        private CaptureDeviceInformation(
-            string modelName,
-            string displayName,
-            bool isValid,
-            string message,
-            bool isAutoModeDetectionSupported)
+        private CaptureDeviceInformation(IDeckLink device, string message)
         {
-            this.ModelName = modelName;
-            this.DisplayName = displayName;
-            this.IsValid = isValid;
-            this.Message = message;
-            this.IsAutoModeDetectionSupported = isAutoModeDetectionSupported;
+            if (device == null)
+            {
+                this.ModelName = "Unknown";
+                this.DisplayName = "Unknown";
+                this.IsValid = false;
+                this.Message = "Device seems to be occupied already.";
+                this.IsAutoModeDetectionSupported = false;
+            }
+            else
+            {
+                this.device = device;
+                this.device.GetModelName(out this.ModelName);
+                device.GetDisplayName(out this.DisplayName);
+                var deckLinkAttributes = (IDeckLinkProfileAttributes)this.device;
+                deckLinkAttributes.GetFlag(_BMDDeckLinkAttributeID.BMDDeckLinkSupportsInputFormatDetection, out int isAutoDetectSupported);
+                bool autoDetecionIsSupported = isAutoDetectSupported != 0;
+                this.IsValid = true;
+                this.Message = message;
+                this.IsAutoModeDetectionSupported = autoDetecionIsSupported;
+            }
         }
 
-        public static CaptureDeviceInformation Invalid(string message)
+        public CaptureDeviceInformation Invalid(string message)
         {
-            return new CaptureDeviceInformation(message, message, false, message, false);
+            this.Message = message;
+            this.IsValid = false;
+            return this;
+        }
+
+        public CaptureDeviceInformation Valid(string message)
+        {
+            this.Message = message;
+            this.IsValid = true;
+            return this;
         }
 
         public static CaptureDeviceInformation FromDevice(IDeckLink device)
         {
-            device.GetModelName(out string modelName);
-            device.GetDisplayName(out string displayName);
-            var deckLinkAttributes = (IDeckLinkProfileAttributes)device;
-            deckLinkAttributes.GetFlag(_BMDDeckLinkAttributeID.BMDDeckLinkSupportsInputFormatDetection, out int isAutoDetectSupported);
-            bool autoDetecionIsSupported = isAutoDetectSupported != 0;
-            bool isValid = true;
-            return new CaptureDeviceInformation(modelName, displayName, isValid, "Device Initialized", autoDetecionIsSupported);
+            return new CaptureDeviceInformation(device, "Initialized");
         }
-
     }
 }

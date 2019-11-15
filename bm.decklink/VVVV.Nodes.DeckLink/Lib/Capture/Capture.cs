@@ -219,7 +219,17 @@ namespace VVVV.DeckLink
                     this.device.SetCallback(this);
                     this.ApplyDisplayMode(initialDisplayMode);
                     this.CurrentDisplayMode = initialDisplayMode;
-                    this.device.StartStreams();
+                    try
+                    {
+                        this.device.StartStreams();
+                    } 
+                    catch (COMException e)
+                    {
+                        this.deviceInfo = this.deviceInfo.Invalid("Device seems to be occupied already");
+                        this.running = false;
+                        throw e;
+                    }
+                    this.deviceInfo = this.deviceInfo.Valid("Streaming");
                     this.running = true;
                 }
                 // The requested mode is not supported
@@ -267,7 +277,7 @@ namespace VVVV.DeckLink
             }
             catch (COMException e)
             {
-                this.deviceInfo = CaptureDeviceInformation.Invalid(e.Message);
+                this.deviceInfo = this.deviceInfo.Invalid(e.Message);
             }
         }
 

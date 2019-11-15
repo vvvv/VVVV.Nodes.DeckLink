@@ -50,14 +50,15 @@ namespace VVVV.DeckLink
                 else
                 {
                     this.InputDevice = null;
-                    this.DeviceInformation = CaptureDeviceInformation.Invalid("Device already in use");
+                    this.DeviceInformation = CaptureDeviceInformation.FromDevice(this.DeckLinkDevice);
+                    this.DeviceInformation = this.DeviceInformation.Invalid("Device seems to be occupied already");
                 }
                 Marshal.ReleaseComObject(iterator);
             }
             else
             {
                 this.InputDevice = null;
-                this.DeviceInformation = CaptureDeviceInformation.Invalid("Device not found");
+                this.DeviceInformation = this.DeviceInformation.Invalid("Device not found");
             }
         }
 
