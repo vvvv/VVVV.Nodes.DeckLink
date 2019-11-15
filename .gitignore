@@ -10,3 +10,7 @@ bm.decklink/Blackmagic_DeckLink_SDK_*/
 
 # Ignore the release folder
 bm.decklink/Release/
+
+# Ignore dlls and debug objects
+*.dll
+*.pdb
