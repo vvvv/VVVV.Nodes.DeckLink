@@ -113,7 +113,10 @@ namespace VVVV.DeckLink
         /// </summary>
         public void Dispose()
         {
-            this.framePool.ForEach(f => f.Dispose());
+            for (var i = 0; i < this.framePool.Count; i++)
+            {
+                this.framePool[i].Dispose();
+            }
             this.framePool.Clear();
             this.availableFrames.Clear();
 
