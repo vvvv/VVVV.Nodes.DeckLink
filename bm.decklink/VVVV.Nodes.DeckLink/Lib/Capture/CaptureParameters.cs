@@ -29,6 +29,11 @@ namespace VVVV.DeckLink
         public bool AutoDetect;
 
         /// <summary>
+        /// Pixel color format (RGB, YUV)
+        /// </summary>
+        public PixelColorFormat PixelFormat;
+
+        /// <summary>
         /// Preferred display mode if manual
         /// </summary>
         public _BMDDisplayMode DisplayMode;
@@ -72,7 +77,8 @@ namespace VVVV.DeckLink
                     FrameQueuePoolSize = 10,
                     MaxLateness = 100,
                     OutputMode = TextureOutputMode.UncompressedBMD,
-                    PresentationCount = 1
+                    PresentationCount = 1,
+                    PixelFormat = PixelColorFormat.YUV8Bit
                 };
             }
         }
@@ -93,7 +99,8 @@ namespace VVVV.DeckLink
                 || this.FrameQueueMode != other.FrameQueueMode
                 || this.FrameQueuePoolSize != other.FrameQueuePoolSize
                 || this.OutputMode != other.OutputMode
-                || this.PresentationCount != other.PresentationCount;
+                || this.PresentationCount != other.PresentationCount
+                || this.PixelFormat != other.PixelFormat;
         }
 
         public bool DiffersFrom(CaptureParameters other)
@@ -108,7 +115,8 @@ namespace VVVV.DeckLink
              this.PresentationCount != other.PresentationCount ||
              this.FrameQueueMaxSize != other.FrameQueueMaxSize ||
              this.FrameQueuePoolSize != other.FrameQueuePoolSize ||
-             this.MaxLateness != other.MaxLateness;
+             this.MaxLateness != other.MaxLateness ||
+             this.PixelFormat != other.PixelFormat;
         }
     }
 }

@@ -22,6 +22,9 @@ namespace VVVV.DeckLink.Nodes
         [Input("Upload Mode", DefaultEnumEntry = "DiscardImmutable")]
         protected IDiffSpread<FrameQueueMode> FIn_UploadMode;
 
+        [Input("PixelFormat", DefaultEnumEntry = "YUV8Bit")]
+        protected IDiffSpread<PixelColorFormat> FIn_PixelFormat;
+
         [Input("Auto Detect Mode", DefaultValue = 1)]
         protected IDiffSpread<bool> FIn_AutoDetectMode;
 
@@ -56,7 +59,8 @@ namespace VVVV.DeckLink.Nodes
                     FrameQueuePoolSize = this.FIn_FrameQueuePoolSize[i],
                     MaxLateness = this.FIn_MaxLateness[i],
                     OutputMode = this.FIn_OutputMode[i],
-                    PresentationCount = this.FIn_FramePresentCount[i]
+                    PresentationCount = this.FIn_FramePresentCount[i],
+                    PixelFormat = this.FIn_PixelFormat[i]
                 };
             }
         }

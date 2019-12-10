@@ -7,17 +7,17 @@ using System.Threading.Tasks;
 namespace VVVV.DeckLink
 {
     /// <summary>
-    /// Video input connection
+    /// Pixel Format
     /// </summary>
-    public enum VideoInputConnection
+    public enum PixelColorFormat
     {
         /// <summary>
-        /// High-Definition Multimedia Interface 
+        /// Query the BlackMagic API using YUV 8bit pixel format
         /// </summary>
-        HDMI,
+        YUV8Bit,
         /// <summary>
-        /// Serial Digital Interface
+        /// Query the BlackMagic API using RGB 8bit pixel format
         /// </summary>
-        SDI
+        RGB8Bit
     }
 }

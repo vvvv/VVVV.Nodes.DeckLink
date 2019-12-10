@@ -43,9 +43,9 @@
    </PIN>
    </NODE>
    <NODE nodename="IOBox (Value Advanced)" componentmode="InABox" id="17">
-   <BOUNDS type="Box" left="6720" top="1320" width="480" height="480">
+   <BOUNDS type="Box" left="6510" top="1275" width="480" height="480">
    </BOUNDS>
-   <BOUNDS type="Node" left="6720" top="1320" width="0" height="0">
+   <BOUNDS type="Node" left="6510" top="1275" width="0" height="0">
    </BOUNDS>
    <PIN pinname="Y Input Value" slicecount="1" visible="1" values="1">
    </PIN>
@@ -87,7 +87,7 @@
    </BOUNDS>
    </NODE>
    <NODE nodename="IOBox (Enumerations)" componentmode="InABox" id="25">
-   <BOUNDS type="Box" left="5805" top="480" width="2865" height="240">
+   <BOUNDS type="Box" left="5805" top="480" width="1665" height="255">
    </BOUNDS>
    <BOUNDS type="Node" left="5805" top="480" width="0" height="0">
    </BOUNDS>
@@ -157,7 +157,7 @@
    </BOUNDS>
    <BOUNDS type="Node" left="4860" top="1635" width="0" height="0">
    </BOUNDS>
-   <PIN pinname="Input Enum" slicecount="1" visible="1" values="UncompressedBMD">
+   <PIN pinname="Input Enum" slicecount="1" visible="1" values="UncompressedPS">
    </PIN>
    <PIN pinname="Default" slicecount="1" values="UncompressedPS">
    </PIN>
@@ -631,6 +631,8 @@
    </BOUNDS>
    <PIN pinname="Output" visible="1">
    </PIN>
+   <PIN pinname="PixelFormat" visible="1">
+   </PIN>
    </NODE>
    <LINK srcnodeid="17" srcpinname="Y Output Value" dstnodeid="69" dstpinname="Auto Detect Mode">
    </LINK>
@@ -650,6 +652,8 @@
    <PIN pinname="Capture Parameters" visible="1" slicecount="1" values="||">
    </PIN>
    <PIN pinname="Texture Out" visible="1">
+   </PIN>
+   <PIN pinname="Texture Pixel Format" visible="1">
    </PIN>
    </NODE>
    <LINK srcnodeid="13" srcpinname="Y Output Value" dstnodeid="71" dstpinname="Device">
@@ -794,4 +798,34 @@
    </PACK>
    <PACK Name="vvvv-ZeroMQ_Release_x64" Version="0.5.4">
    </PACK>
+   <NODE nodename="IOBox (String)" componentmode="InABox" id="78">
+   <BOUNDS type="Box" left="675" top="9990" width="2850" height="495">
+   </BOUNDS>
+   <BOUNDS type="Node" left="675" top="9990" width="0" height="0">
+   </BOUNDS>
+   <PIN pinname="Default" slicecount="1" values="||">
+   </PIN>
+   <PIN pinname="File Mask" slicecount="1" values="||">
+   </PIN>
+   <PIN pinname="Maximum Characters" slicecount="1" values="-1">
+   </PIN>
+   </NODE>
+   <LINK srcnodeid="71" srcpinname="Texture Pixel Format" dstnodeid="78" dstpinname="Input String">
+   </LINK>
+   <NODE nodename="IOBox (Enumerations)" componentmode="InABox" id="79">
+   <BOUNDS type="Box" left="7305" top="825" width="1590" height="270">
+   </BOUNDS>
+   <BOUNDS type="Node" left="7305" top="825" width="0" height="0">
+   </BOUNDS>
+   <PIN pinname="Input Enum" slicecount="1" visible="1" values="RGB8Bit">
+   </PIN>
+   <PIN pinname="Default" slicecount="1" values="YUV8Bit">
+   </PIN>
+   <PIN pinname="File Mask" slicecount="1" values="||">
+   </PIN>
+   <PIN pinname="Maximum Characters" slicecount="1" values="-1">
+   </PIN>
+   </NODE>
+   <LINK srcnodeid="79" srcpinname="Output Enum" dstnodeid="69" dstpinname="PixelFormat">
+   </LINK>
    </PATCH>
