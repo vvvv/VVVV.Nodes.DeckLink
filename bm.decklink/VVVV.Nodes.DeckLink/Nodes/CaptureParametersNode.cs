@@ -8,51 +8,55 @@ using VVVV.PluginInterfaces.V2;
 
 namespace VVVV.DeckLink.Nodes
 {
-    [PluginInfo(Name = "CaptureParameters", Category = "DeckLink", Version = "Join", Author = "vux", Tags = "blackmagic, capture",
-        Help = "Joins a set of parameters for decklink capture")]
+    [PluginInfo(Name = "CaptureParameters", 
+                Category = "DeckLink", 
+                Version = "Join", 
+                Author = "vux", 
+                Tags = "blackmagic, capture",
+                Help = "Joins a set of parameters for decklink capture")]
     public class CaptureParametersNode : IPluginEvaluate
     {
         [Input("Output Mode")]
-        protected ISpread<TextureOutputMode> outputMode;
+        protected ISpread<TextureOutputMode> FIn_OutputMode;
 
         [Input("Upload Mode", DefaultEnumEntry = "DiscardImmutable")]
-        protected IDiffSpread<FrameQueueMode> queueMode;
+        protected IDiffSpread<FrameQueueMode> FIn_UploadMode;
 
         [Input("Auto Detect Mode", DefaultValue = 1)]
-        protected IDiffSpread<bool> autoDetect;
+        protected IDiffSpread<bool> FIn_AutoDetectMode;
 
         [Input("Display Mode", IsBang = true)]
-        protected IDiffSpread<_BMDDisplayMode> displayMode;
+        protected IDiffSpread<_BMDDisplayMode> FIn_DisplayMode;
 
         [Input("Frame Present Count", DefaultValue = 1)]
-        protected IDiffSpread<int> framePresentCount;
+        protected IDiffSpread<int> FIn_FramePresentCount;
 
         [Input("Frame Queue Max Size", DefaultValue = 10)]
-        protected IDiffSpread<int> frameQueueMaxSize;
+        protected IDiffSpread<int> FIn_FrameQueueMaxSize;
 
         [Input("Frame Queue Pool Size", DefaultValue = 10)]
-        protected IDiffSpread<int> frameQueuePoolSize;
+        protected IDiffSpread<int> FIn_FrameQueuePoolSize;
 
         [Input("Max Lateness (ms)", DefaultValue = 100)]
-        protected IDiffSpread<double> maxLateness;
+        protected IDiffSpread<double> FIn_MaxLateness;
 
         [Output("Output")]
-        protected ISpread<CaptureParameters> output;
+        protected ISpread<CaptureParameters> FOut_CaptureParameters;
 
         public void Evaluate(int SpreadMax)
         {
             for (int i = 0; i < SpreadMax; i++)
             {
-                this.output[i] = new CaptureParameters()
+                this.FOut_CaptureParameters[i] = new CaptureParameters()
                 {
-                    AutoDetect = this.autoDetect[i],
-                    DisplayMode = this.displayMode[i],
-                    FrameQueueMaxSize = this.frameQueueMaxSize[i],
-                    FrameQueueMode = this.queueMode[i],
-                    FrameQueuePoolSize = this.frameQueuePoolSize[i],
-                    MaxLateness = this.maxLateness[i],
-                    OutputMode = this.outputMode[i],
-                    PresentationCount = this.framePresentCount[i]
+                    AutoDetect = this.FIn_AutoDetectMode[i],
+                    DisplayMode = this.FIn_DisplayMode[i],
+                    FrameQueueMaxSize = this.FIn_FrameQueueMaxSize[i],
+                    FrameQueueMode = this.FIn_UploadMode[i],
+                    FrameQueuePoolSize = this.FIn_FrameQueuePoolSize[i],
+                    MaxLateness = this.FIn_MaxLateness[i],
+                    OutputMode = this.FIn_OutputMode[i],
+                    PresentationCount = this.FIn_FramePresentCount[i]
                 };
             }
         }
