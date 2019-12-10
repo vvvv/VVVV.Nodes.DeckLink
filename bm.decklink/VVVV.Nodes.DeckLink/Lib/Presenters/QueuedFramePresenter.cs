@@ -124,7 +124,7 @@ namespace VVVV.DeckLink.Presenters
             }
         }
 
-        public void PushFrame(IDeckLinkVideoInputFrame videoFrame, bool performConvertion)
+        public void PushFrame(IDeckLinkVideoInputFrame videoFrame, bool performConvertion, int scalar = 2)
         {
             //Drop frame if queue is full
             if (this.frameQueue.Count >= this.maxQueueSize)
@@ -141,11 +141,11 @@ namespace VVVV.DeckLink.Presenters
 
             if (performConvertion)
             {
-                frameData.UpdateAndConvert(this.videoConverter, videoFrame);
+                frameData.UpdateAndConvert(this.videoConverter, videoFrame, scalar);
             }
             else
             {
-                frameData.UpdateAndCopy(videoFrame);
+                frameData.UpdateAndCopy(videoFrame, scalar);
             }
             System.Runtime.InteropServices.Marshal.ReleaseComObject(videoFrame);
             this.frameQueue.Enqueue(frameData);

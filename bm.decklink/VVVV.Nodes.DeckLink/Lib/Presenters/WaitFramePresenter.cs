@@ -32,15 +32,15 @@ namespace VVVV.DeckLink.Presenters
             return result;
         }
 
-        public void PushFrame(IDeckLinkVideoInputFrame videoFrame, bool performConvertion)
+        public void PushFrame(IDeckLinkVideoInputFrame videoFrame, bool performConvertion, int scalar = 2)
         {
             if (performConvertion)
             {
-                this.frame.UpdateAndConvert(this.videoConverter, videoFrame);
+                this.frame.UpdateAndConvert(this.videoConverter, videoFrame, scalar);
             }
             else
             {
-                this.frame.UpdateAndCopy(videoFrame);
+                this.frame.UpdateAndCopy(videoFrame, scalar);
             }
             System.Runtime.InteropServices.Marshal.ReleaseComObject(videoFrame);
         }

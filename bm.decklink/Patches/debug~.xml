@@ -1,6 +1,6 @@
 <!DOCTYPE PATCH  SYSTEM "http://vvvv.org/versions/vvvv50alpha38.2.dtd" >
    <PATCH nodename="C:\Users\NSYNK\Desktop\vvvv.nodes.blackmagic\bm.decklink\Patches\debug.v4p" systemname="DecklinkTest" filename="C:\Users\vux\Documents\vvvv_45beta34.2_x64\DecklinkTest.v4p" scrollx="0" scrolly="0">
-   <BOUNDS type="Window" left="7860" top="2325" width="24960" height="15720">
+   <BOUNDS type="Window" left="11130" top="2325" width="26850" height="15720">
    </BOUNDS>
    <PACK Name="addonpack" Version="38.1.0">
    </PACK>
@@ -43,9 +43,9 @@
    </PIN>
    </NODE>
    <NODE nodename="IOBox (Value Advanced)" componentmode="InABox" id="17">
-   <BOUNDS type="Box" left="6510" top="1275" width="480" height="480">
+   <BOUNDS type="Box" left="7260" top="1230" width="480" height="480">
    </BOUNDS>
-   <BOUNDS type="Node" left="6510" top="1275" width="0" height="0">
+   <BOUNDS type="Node" left="7260" top="1230" width="0" height="0">
    </BOUNDS>
    <PIN pinname="Y Input Value" slicecount="1" visible="1" values="1">
    </PIN>
@@ -63,11 +63,11 @@
    </PIN>
    </NODE>
    <NODE nodename="IOBox (Enumerations)" componentmode="InABox" id="20">
-   <BOUNDS type="Box" left="7680" top="1635" width="2010" height="270">
+   <BOUNDS type="Box" left="8175" top="1605" width="2010" height="270">
    </BOUNDS>
-   <BOUNDS type="Node" left="7680" top="1635" width="0" height="0">
+   <BOUNDS type="Node" left="8175" top="1605" width="0" height="0">
    </BOUNDS>
-   <PIN pinname="Input Enum" slicecount="1" visible="1" values="bmdModeHD1080p50">
+   <PIN pinname="Input Enum" slicecount="1" visible="1" values="bmdModeHD1080p6000">
    </PIN>
    <PIN pinname="Default" slicecount="1" values="bmdMode1920x1440p50">
    </PIN>
@@ -115,7 +115,7 @@
    </PIN>
    <PIN pinname="Descriptive Name" slicecount="1" values="|Decklink SDK Version|">
    </PIN>
-   <PIN pinname="Input String" visible="1" slicecount="1" values="11.4.1">
+   <PIN pinname="Input String" visible="1" slicecount="1" values="||">
    </PIN>
    </NODE>
    <NODE nodename="IOBox (String)" componentmode="InABox" id="27">
@@ -213,7 +213,7 @@
    </PIN>
    <PIN pinname="Descriptive Name" slicecount="1" values="Width">
    </PIN>
-   <PIN pinname="Y Input Value" visible="1" slicecount="1" values="1920">
+   <PIN pinname="Y Input Value" visible="1">
    </PIN>
    </NODE>
    <NODE nodename="IOBox (Value Advanced)" componentmode="InABox" id="34">
@@ -545,7 +545,7 @@
    </BOUNDS>
    <BOUNDS type="Box" left="3285" top="12135" width="6000" height="4500">
    </BOUNDS>
-   <BOUNDS type="Window" left="240" top="14160" width="9810" height="7500">
+   <BOUNDS type="Window" left="300" top="12540" width="9810" height="7500">
    </BOUNDS>
    <PIN pinname="Layers" visible="1">
    </PIN>
@@ -571,7 +571,7 @@
    </PIN>
    <PIN pinname="Descriptive Name" slicecount="1" values="Height">
    </PIN>
-   <PIN pinname="Y Input Value" visible="1" slicecount="1" values="1080">
+   <PIN pinname="Y Input Value" visible="1">
    </PIN>
    </NODE>
    <NODE nodename="IOBox (String)" componentmode="InABox" id="63">
@@ -644,76 +644,18 @@
    </LINK>
    <LINK srcnodeid="64" srcpinname="Y Output Value" dstnodeid="69" dstpinname="Max Lateness (ms)">
    </LINK>
-   <NODE systemname="VideoIn (DeckLink DX11.Texture)" filename="VVVV.DX11.Nodes.DeckLink.dll" nodename="VideoIn (DeckLink DX11.Texture)" componentmode="Hidden" id="71">
-   <BOUNDS type="Node" left="3855" top="5190" width="6030" height="270">
-   </BOUNDS>
-   <BOUNDS type="Box" left="3855" top="5190" width="3000" height="3000">
-   </BOUNDS>
-   <PIN pinname="Capture Parameters" visible="1" slicecount="1" values="||">
-   </PIN>
-   <PIN pinname="Texture Out" visible="1">
-   </PIN>
-   <PIN pinname="Texture Pixel Format" visible="1">
-   </PIN>
-   </NODE>
-   <LINK srcnodeid="13" srcpinname="Y Output Value" dstnodeid="71" dstpinname="Device">
-   </LINK>
-   <LINK srcnodeid="14" srcpinname="Y Output Value" dstnodeid="71" dstpinname="Enabled">
-   </LINK>
-   <LINK srcnodeid="71" srcpinname="Decklink SDK Version" dstnodeid="26" dstpinname="Input String">
-   </LINK>
-   <LINK srcnodeid="71" srcpinname="Version" dstnodeid="27" dstpinname="Input String">
-   </LINK>
-   <LINK srcnodeid="28" srcpinname="Y Output Value" dstnodeid="71" dstpinname="Reset Device">
-   </LINK>
-   <LINK srcnodeid="71" srcpinname="Is Mode Supported" dstnodeid="30" dstpinname="Y Input Value">
-   </LINK>
-   <LINK srcnodeid="71" srcpinname="Is Running" dstnodeid="31" dstpinname="Y Input Value">
-   </LINK>
-   <LINK srcnodeid="34" srcpinname="Y Output Value" dstnodeid="71" dstpinname="Flush Queue">
-   </LINK>
-   <LINK srcnodeid="36" srcpinname="Y Output Value" dstnodeid="71" dstpinname="Reset Counters">
-   </LINK>
-   <LINK srcnodeid="71" srcpinname="Available Frame Count" dstnodeid="38" dstpinname="Y Input Value">
-   </LINK>
-   <LINK srcnodeid="71" srcpinname="Current Mode" dstnodeid="39" dstpinname="Input String">
-   </LINK>
-   <LINK srcnodeid="71" srcpinname="Model Name" dstnodeid="40" dstpinname="Input String">
-   </LINK>
-   <LINK srcnodeid="71" srcpinname="Device Name" dstnodeid="41" dstpinname="Input String">
-   </LINK>
-   <LINK srcnodeid="71" srcpinname="Status" dstnodeid="42" dstpinname="Input String">
-   </LINK>
-   <LINK srcnodeid="71" srcpinname="Statistics" dstnodeid="43" dstpinname="Input" linkstyle="VHV">
-   <LINKPOINT x="8670" y="7743">
-   </LINKPOINT>
-   <LINKPOINT x="11610" y="7543">
-   </LINKPOINT>
-   </LINK>
-   <LINK srcnodeid="37" srcpinname="Y Output Value" dstnodeid="71" dstpinname="Apply Display Mode">
-   </LINK>
-   <LINK srcnodeid="71" srcpinname="Texture Width" dstnodeid="32" dstpinname="Y Input Value">
-   </LINK>
-   <LINK srcnodeid="71" srcpinname="Texture Out" dstnodeid="59" dstpinname="Texture">
-   </LINK>
-   <LINK srcnodeid="71" srcpinname="Texture Height" dstnodeid="33" dstpinname="Y Input Value">
-   </LINK>
-   <LINK srcnodeid="71" srcpinname="Mode Supported Description" dstnodeid="63" dstpinname="Input String">
-   </LINK>
    <NODE systemname="MainLoop (VVVV)" nodename="MainLoop (VVVV)" componentmode="Hidden" id="-6">
    <BOUNDS type="Node" left="14070" top="3540" width="100" height="100">
    </BOUNDS>
    <PIN pinname="Maximum Foreground FPS" slicecount="1" values="120">
    </PIN>
    </NODE>
-   <LINK srcnodeid="69" srcpinname="Output" dstnodeid="71" dstpinname="Capture Parameters">
-   </LINK>
    <NODE systemname="Info (DX11.Texture 2d)" filename="%VVVV%\packs\dx11\nodes\plugins\base\VVVV.DX11.Nodes.dll" nodename="Info (DX11.Texture 2d)" componentmode="Hidden" id="73">
    <BOUNDS type="Node" left="1560" top="5610" width="100" height="100">
    </BOUNDS>
    <BOUNDS type="Box" left="1560" top="5610" width="3000" height="3000">
    </BOUNDS>
-   <PIN pinname="Texture In" visible="1">
+   <PIN pinname="Texture In" visible="1" slicecount="1" values="||">
    </PIN>
    <PIN pinname="Width" visible="1">
    </PIN>
@@ -724,12 +666,6 @@
    <PIN pinname="View Format" visible="1">
    </PIN>
    </NODE>
-   <LINK srcnodeid="71" srcpinname="Texture Out" dstnodeid="73" dstpinname="Texture In" linkstyle="VHV">
-   <LINKPOINT x="3855" y="5520">
-   </LINKPOINT>
-   <LINKPOINT x="1620" y="5520">
-   </LINKPOINT>
-   </LINK>
    <NODE nodename="IOBox (Value Advanced)" componentmode="InABox" id="74">
    <BOUNDS type="Box" left="915" top="6105" width="795" height="240">
    </BOUNDS>
@@ -810,12 +746,10 @@
    <PIN pinname="Maximum Characters" slicecount="1" values="-1">
    </PIN>
    </NODE>
-   <LINK srcnodeid="71" srcpinname="Texture Pixel Format" dstnodeid="78" dstpinname="Input String">
-   </LINK>
    <NODE nodename="IOBox (Enumerations)" componentmode="InABox" id="79">
-   <BOUNDS type="Box" left="7305" top="825" width="1590" height="270">
+   <BOUNDS type="Box" left="6510" top="855" width="1590" height="270">
    </BOUNDS>
-   <BOUNDS type="Node" left="7305" top="825" width="0" height="0">
+   <BOUNDS type="Node" left="6510" top="855" width="0" height="0">
    </BOUNDS>
    <PIN pinname="Input Enum" slicecount="1" visible="1" values="RGB8Bit">
    </PIN>
@@ -827,5 +761,65 @@
    </PIN>
    </NODE>
    <LINK srcnodeid="79" srcpinname="Output Enum" dstnodeid="69" dstpinname="PixelFormat">
+   </LINK>
+   <NODE systemname="VideoIn (DeckLink DX11.Texture)" filename="VVVV.DX11.Nodes.DeckLink.dll" nodename="VideoIn (DeckLink DX11.Texture)" componentmode="Hidden" id="81">
+   <BOUNDS type="Node" left="3855" top="5190" width="6030" height="270">
+   </BOUNDS>
+   <BOUNDS type="Box" left="3855" top="5190" width="3000" height="3000">
+   </BOUNDS>
+   </NODE>
+   <LINK srcnodeid="13" srcpinname="Y Output Value" dstnodeid="81" dstpinname="Device">
+   </LINK>
+   <LINK srcnodeid="14" srcpinname="Y Output Value" dstnodeid="81" dstpinname="Enabled">
+   </LINK>
+   <LINK srcnodeid="81" srcpinname="Decklink SDK Version" dstnodeid="26" dstpinname="Input String">
+   </LINK>
+   <LINK srcnodeid="81" srcpinname="Version" dstnodeid="27" dstpinname="Input String">
+   </LINK>
+   <LINK srcnodeid="28" srcpinname="Y Output Value" dstnodeid="81" dstpinname="Reset Device">
+   </LINK>
+   <LINK srcnodeid="81" srcpinname="Is Mode Supported" dstnodeid="30" dstpinname="Y Input Value">
+   </LINK>
+   <LINK srcnodeid="81" srcpinname="Is Running" dstnodeid="31" dstpinname="Y Input Value">
+   </LINK>
+   <LINK srcnodeid="34" srcpinname="Y Output Value" dstnodeid="81" dstpinname="Flush Queue">
+   </LINK>
+   <LINK srcnodeid="36" srcpinname="Y Output Value" dstnodeid="81" dstpinname="Reset Counters">
+   </LINK>
+   <LINK srcnodeid="81" srcpinname="Available Frame Count" dstnodeid="38" dstpinname="Y Input Value">
+   </LINK>
+   <LINK srcnodeid="81" srcpinname="Current Mode" dstnodeid="39" dstpinname="Input String">
+   </LINK>
+   <LINK srcnodeid="81" srcpinname="Model Name" dstnodeid="40" dstpinname="Input String">
+   </LINK>
+   <LINK srcnodeid="81" srcpinname="Device Name" dstnodeid="41" dstpinname="Input String">
+   </LINK>
+   <LINK srcnodeid="81" srcpinname="Status" dstnodeid="42" dstpinname="Input String">
+   </LINK>
+   <LINK srcnodeid="81" srcpinname="Statistics" dstnodeid="43" dstpinname="Input" linkstyle="VHV">
+   <LINKPOINT x="8670" y="7743">
+   </LINKPOINT>
+   <LINKPOINT x="11610" y="7543">
+   </LINKPOINT>
+   </LINK>
+   <LINK srcnodeid="37" srcpinname="Y Output Value" dstnodeid="81" dstpinname="Apply Display Mode">
+   </LINK>
+   <LINK srcnodeid="81" srcpinname="Texture Width" dstnodeid="32" dstpinname="Y Input Value">
+   </LINK>
+   <LINK srcnodeid="81" srcpinname="Texture Out" dstnodeid="59" dstpinname="Texture">
+   </LINK>
+   <LINK srcnodeid="81" srcpinname="Texture Height" dstnodeid="33" dstpinname="Y Input Value">
+   </LINK>
+   <LINK srcnodeid="81" srcpinname="Mode Supported Description" dstnodeid="63" dstpinname="Input String">
+   </LINK>
+   <LINK srcnodeid="69" srcpinname="Output" dstnodeid="81" dstpinname="Capture Parameters">
+   </LINK>
+   <LINK srcnodeid="81" srcpinname="Texture Out" dstnodeid="73" dstpinname="Texture In" linkstyle="VHV">
+   <LINKPOINT x="3855" y="5520">
+   </LINKPOINT>
+   <LINKPOINT x="1620" y="5520">
+   </LINKPOINT>
+   </LINK>
+   <LINK srcnodeid="81" srcpinname="Texture Pixel Format" dstnodeid="78" dstpinname="Input String">
    </LINK>
    </PATCH>

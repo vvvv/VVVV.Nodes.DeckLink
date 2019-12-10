@@ -318,7 +318,7 @@ namespace VVVV.DeckLink.Nodes
             this.FOut_AvailableFrameCount[0] = this._captureThread.AvailableFrameCount;
             this.FOut_Status[0] = this._captureThread.DeviceInformation.Message;
             this.FOut_DisplayModeSupportedDescription[0] = this._captureThread.ModeSupportMessage;
-            this.FOut_TexturePixelFormat[0] = this._captureThread.PixelFormat;
+            this.FOut_TexturePixelFormat[0] = this._captureThread.PixelFormat.ToString();
         }
 
         private void UpdateStatistics()
@@ -463,7 +463,7 @@ namespace VVVV.DeckLink.Nodes
             if (!this.FIn_IsDeviceEnabled[0])
                 return;
             /// Update input texture
-            this._rawTexture[context] = new DX11DynamicTexture2D(context, 1920, 1080, SlimDX.DXGI.Format.R8G8B8A8_UNorm);
+            this._rawTexture[context] = new DX11DynamicTexture2D(context, this._captureThread.Width, this._captureThread.Height, SlimDX.DXGI.Format.R8G8B8A8_UNorm);
             var inputTexture = this._rawTexture.Contains(context)
                 ? this._rawTexture[context]
                 : null;
@@ -472,28 +472,30 @@ namespace VVVV.DeckLink.Nodes
                 //Acquire texture and copy content
                 var result = this._captureThread.AcquireTexture(context, ref inputTexture);
                 //Remove old texture if not required anymore
-                /*
                 if (inputTexture == null)
                     this._rawTexture.Data.Remove(context);
                 else
                     this._rawTexture[context] = inputTexture;
-                if (this._currentCaptureParameters.OutputMode == TextureOutputMode.UncompressedPS)
+                // For YUV pixel format, perform a conversion (with desired output mode)
+                if (this._captureThread.PixelFormat == _BMDPixelFormat.bmdFormat8BitYUV)
                 {
-                    if (result.IsNew)
+                    if (this._currentCaptureParameters.OutputMode == TextureOutputMode.UncompressedPS)
                     {
-                        DX11Texture2D converted = this._pixelShaderTargetConverter[context].Apply(result.Texture);
-                        this.FOut_TextureOut[0][context] = converted;
+                        if (result.IsNew)
+                        {
+                            DX11Texture2D converted = this._pixelShaderTargetConverter[context].Apply(result.Texture);
+                            this.FOut_TextureOut[0][context] = converted;
+                        }
                     }
+                    else
+                        this.FOut_TextureOut[0][context] = result.Texture;
                 }
+                // For RGB pixel format just extract the texture as is :)
                 else
                     this.FOut_TextureOut[0][context] = result.Texture;
-                */
-                //this.FOut_TextureWidth[0] = result.Texture.Width;
-                this.FOut_TextureOut[0][context] = result.Texture;
-                
                 // Statistics
-                //this._captureStatistics.CurrentFramePresentCount = result.PresentationCount;
-                //if (result.IsNew) this._captureStatistics.FramesCopiedCount++;
+                this._captureStatistics.CurrentFramePresentCount = result.PresentationCount;
+                if (result.IsNew) this._captureStatistics.FramesCopiedCount++;
             }
             catch (Exception e)
             {

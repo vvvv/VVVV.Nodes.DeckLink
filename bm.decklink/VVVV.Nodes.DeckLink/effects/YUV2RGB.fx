@@ -41,7 +41,6 @@ float4 PS(psInput In): SV_Target
 	col.a = 1.0f;
 	
     return col.bgra;
-	//return InputTexture.Sample(pointSampler, In.uv).argb;
 }
 
 technique11 Process

@@ -63,7 +63,7 @@ namespace VVVV.DeckLink.Presenters
             return result;
         }
 
-        public void PushFrame(IDeckLinkVideoInputFrame videoFrame, bool performConvertion)
+        public void PushFrame(IDeckLinkVideoInputFrame videoFrame, bool performConvertion, int scalar = 2)
         {
             if (this.renderContext.Device.Disposed)
                 return;
@@ -84,13 +84,13 @@ namespace VVVV.DeckLink.Presenters
 
             if (performConvertion)
             {
-                this.frame.UpdateAndConvert(this.videoConverter, videoFrame);
+                this.frame.UpdateAndConvert(this.videoConverter, videoFrame, scalar);
                 newTexture = ImmutableTextureFactory.CreateConvertedFrame(this.renderContext, this.frame.ConvertedFrameData);
             }
             else
             {
-                this.frame.UpdateAndCopy(videoFrame);
-                newTexture = ImmutableTextureFactory.CreateRawFrame(this.renderContext, this.frame.RawFrameData);
+                this.frame.UpdateAndCopy(videoFrame, scalar);
+                newTexture = ImmutableTextureFactory.CreateRawFrame(this.renderContext, this.frame.RawFrameData, scalar);
             }
             System.Runtime.InteropServices.Marshal.ReleaseComObject(videoFrame);
 

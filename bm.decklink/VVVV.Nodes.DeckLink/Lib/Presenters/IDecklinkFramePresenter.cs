@@ -17,7 +17,7 @@ namespace VVVV.DeckLink.Presenters
         /// Push a new frame when received by the device
         /// </summary>
         /// <param name="videoFrame">new video frame</param>
-        void PushFrame(IDeckLinkVideoInputFrame videoFrame, bool performConvertion);
+        void PushFrame(IDeckLinkVideoInputFrame videoFrame, bool performConvertion, int scalar = 2);
 
         /// <summary>
         /// Get frame that should be presented

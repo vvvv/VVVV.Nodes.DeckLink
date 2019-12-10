@@ -240,11 +240,10 @@ namespace VVVV.DeckLink.Presenters
             }
         }
 
-        public void PushFrame(IDeckLinkVideoInputFrame videoFrame, bool performConvertion)
+        public void PushFrame(IDeckLinkVideoInputFrame videoFrame, bool performConvertion, int scalar = 2)
         {
             if (this.renderDevice.Device.Disposed)
                 return;
-
             //Drop frame if queue is full
             if (this.frameQueue.Count >= this.maxQueueSize)
             {
@@ -257,17 +256,16 @@ namespace VVVV.DeckLink.Presenters
             {
                 frameData = this.framePool.Acquire();
             }
-
             DX11Texture2D newTexture;
             if (performConvertion)
             {
-                frameData.UpdateAndConvert(this.videoConverter, videoFrame);
+                frameData.UpdateAndConvert(this.videoConverter, videoFrame, scalar);
                 newTexture = ImmutableTextureFactory.CreateConvertedFrame(this.renderDevice, frameData.ConvertedFrameData);
             }
             else
             {
-                frameData.UpdateAndCopy(videoFrame);
-                newTexture = ImmutableTextureFactory.CreateRawFrame(this.renderDevice, frameData.RawFrameData);
+                frameData.UpdateAndCopy(videoFrame, scalar);
+                newTexture = ImmutableTextureFactory.CreateRawFrame(this.renderDevice, frameData.RawFrameData, scalar);
             }
             System.Runtime.InteropServices.Marshal.ReleaseComObject(videoFrame);
 
