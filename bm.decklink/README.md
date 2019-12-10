@@ -15,3 +15,7 @@
 The solution will build the `.dll` files right into the `Patches/` folder. Use
 `release.bat vvvv.nodes.blackmagic` to copy all the files into the `Release/`
 dir for usage with the vvvv packs dir.
+
+## Helpful Links
+- [DeckLinkCapabilities: A Printout of Capabilities of Blackmagic Design/DeckLink Hardware](http://alax.info/blog/1454)
+- [Correcting HDMI Colour on Nvidia and AMD GPUs](https://pcmonitors.info/articles/correcting-hdmi-colour-on-nvidia-and-amd-gpus/)
