@@ -70,6 +70,9 @@ namespace VVVV.DeckLink.Nodes
         [Output("Texture Height")]
         protected ISpread<int> FOut_TextureHeight;
 
+        [Output("Texture Pixel Format")]
+        protected ISpread<string> FOut_TexturePixelFormat;
+
         [Output("Is Running")]
         protected ISpread<bool> FOut_IsRunning;
 
@@ -122,7 +125,7 @@ namespace VVVV.DeckLink.Nodes
         private readonly DX11RenderContext _renderDevice;
         private DX11Resource<YuvToRGBConverter> _pixelShaderConverter = new DX11Resource<YuvToRGBConverter>();
         private DX11Resource<YuvToRGBConverterWithTarget> _pixelShaderTargetConverter = new DX11Resource<YuvToRGBConverterWithTarget>();
-        private readonly DX11Resource<DX11DynamicTexture2D> _rawTexture = new DX11Resource<DX11DynamicTexture2D>();
+        private DX11Resource<DX11DynamicTexture2D> _rawTexture = new DX11Resource<DX11DynamicTexture2D>();
         #endregion
 
         #region Constructor
@@ -131,7 +134,6 @@ namespace VVVV.DeckLink.Nodes
             this._renderDevice = DX11GlobalDevice.DeviceManager.RenderContexts[0];
         }
         #endregion
-
 
         #region Main loop event handlers
         private void MainLoop_OnPrepareGraph(Object sender, EventArgs args)
@@ -316,8 +318,7 @@ namespace VVVV.DeckLink.Nodes
             this.FOut_AvailableFrameCount[0] = this._captureThread.AvailableFrameCount;
             this.FOut_Status[0] = this._captureThread.DeviceInformation.Message;
             this.FOut_DisplayModeSupportedDescription[0] = this._captureThread.ModeSupportMessage;
-
-            this.FOut_AvailableDisplayModes.AssignFrom(this._captureThread.AvailableDisplayModes);
+            this.FOut_TexturePixelFormat[0] = this._captureThread.PixelFormat;
         }
 
         private void UpdateStatistics()
@@ -462,15 +463,16 @@ namespace VVVV.DeckLink.Nodes
             if (!this.FIn_IsDeviceEnabled[0])
                 return;
             /// Update input texture
-            //var inputTexture = this._rawTexture.Contains(context)
-            //    ? this._rawTexture[context]
-            //    : null;
-            var inputTexture = this._rawTexture[context];
+            this._rawTexture[context] = new DX11DynamicTexture2D(context, 1920, 1080, SlimDX.DXGI.Format.R8G8B8A8_UNorm);
+            var inputTexture = this._rawTexture.Contains(context)
+                ? this._rawTexture[context]
+                : null;
             try
             {
                 //Acquire texture and copy content
                 var result = this._captureThread.AcquireTexture(context, ref inputTexture);
                 //Remove old texture if not required anymore
+                /*
                 if (inputTexture == null)
                     this._rawTexture.Data.Remove(context);
                 else
@@ -485,9 +487,13 @@ namespace VVVV.DeckLink.Nodes
                 }
                 else
                     this.FOut_TextureOut[0][context] = result.Texture;
+                */
+                //this.FOut_TextureWidth[0] = result.Texture.Width;
+                this.FOut_TextureOut[0][context] = result.Texture;
+                
                 // Statistics
-                this._captureStatistics.CurrentFramePresentCount = result.PresentationCount;
-                if (result.IsNew) this._captureStatistics.FramesCopiedCount++;
+                //this._captureStatistics.CurrentFramePresentCount = result.PresentationCount;
+                //if (result.IsNew) this._captureStatistics.FramesCopiedCount++;
             }
             catch (Exception e)
             {

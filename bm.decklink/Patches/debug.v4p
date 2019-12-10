@@ -1,10 +1,10 @@
-<!DOCTYPE PATCH  SYSTEM "http://vvvv.org/versions/vvvv50beta38.1.dtd" >
-   <PATCH nodename="E:\git\nsynk\vvvv.nodes.blackmagic\bm.decklink\Patches\debug.v4p" systemname="DecklinkTest" filename="C:\Users\vux\Documents\vvvv_45beta34.2_x64\DecklinkTest.v4p" scrollx="885" scrolly="0">
+<!DOCTYPE PATCH  SYSTEM "http://vvvv.org/versions/vvvv50alpha38.2.dtd" >
+   <PATCH nodename="C:\Users\NSYNK\Desktop\vvvv.nodes.blackmagic\bm.decklink\Patches\debug.v4p" systemname="DecklinkTest" filename="C:\Users\vux\Documents\vvvv_45beta34.2_x64\DecklinkTest.v4p" scrollx="0" scrolly="0">
    <BOUNDS type="Window" left="7860" top="2325" width="24960" height="15720">
    </BOUNDS>
    <PACK Name="addonpack" Version="38.1.0">
    </PACK>
-   <PACK Name="dx11" Version="1.3.1">
+   <PACK Name="dx11" Version="1.2">
    </PACK>
    <NODE nodename="IOBox (Value Advanced)" componentmode="InABox" id="13">
    <BOUNDS type="Box" left="3840" top="4425" width="795" height="240">
@@ -545,7 +545,7 @@
    </BOUNDS>
    <BOUNDS type="Box" left="3285" top="12135" width="6000" height="4500">
    </BOUNDS>
-   <BOUNDS type="Window" left="-11865" top="15435" width="9810" height="7500">
+   <BOUNDS type="Window" left="240" top="14160" width="9810" height="7500">
    </BOUNDS>
    <PIN pinname="Layers" visible="1">
    </PIN>
@@ -649,6 +649,10 @@
    </BOUNDS>
    <PIN pinname="Capture Parameters" visible="1" slicecount="1" values="||">
    </PIN>
+   <PIN pinname="Texture Out" visible="1">
+   </PIN>
+   <PIN pinname="Texture Pixel Format" visible="1">
+   </PIN>
    </NODE>
    <LINK srcnodeid="13" srcpinname="Y Output Value" dstnodeid="71" dstpinname="Device">
    </LINK>
@@ -701,5 +705,109 @@
    </PIN>
    </NODE>
    <LINK srcnodeid="69" srcpinname="Output" dstnodeid="71" dstpinname="Capture Parameters">
+   </LINK>
+   <NODE systemname="Info (DX11.Texture 2d)" filename="%VVVV%\packs\dx11\nodes\plugins\base\VVVV.DX11.Nodes.dll" nodename="Info (DX11.Texture 2d)" componentmode="Hidden" id="73">
+   <BOUNDS type="Node" left="1560" top="5610" width="100" height="100">
+   </BOUNDS>
+   <BOUNDS type="Box" left="1560" top="5610" width="3000" height="3000">
+   </BOUNDS>
+   <PIN pinname="Texture In" visible="1">
+   </PIN>
+   <PIN pinname="Width" visible="1">
+   </PIN>
+   <PIN pinname="Height" visible="1">
+   </PIN>
+   <PIN pinname="Format" visible="1">
+   </PIN>
+   <PIN pinname="View Format" visible="1">
+   </PIN>
+   </NODE>
+   <LINK srcnodeid="71" srcpinname="Texture Out" dstnodeid="73" dstpinname="Texture In" linkstyle="VHV">
+   <LINKPOINT x="3855" y="5520">
+   </LINKPOINT>
+   <LINKPOINT x="1620" y="5520">
+   </LINKPOINT>
+   </LINK>
+   <NODE nodename="IOBox (Value Advanced)" componentmode="InABox" id="74">
+   <BOUNDS type="Box" left="915" top="6105" width="795" height="240">
+   </BOUNDS>
+   <BOUNDS type="Node" left="915" top="6105" width="0" height="0">
+   </BOUNDS>
+   <PIN pinname="Units" slicecount="1" values="||">
+   </PIN>
+   <PIN pinname="Precision" slicecount="1" values="4">
+   </PIN>
+   <PIN pinname="Value Type" slicecount="1" values="Integer">
+   </PIN>
+   <PIN pinname="Descriptive Name" slicecount="1" values="Width">
+   </PIN>
+   </NODE>
+   <LINK srcnodeid="73" srcpinname="Width" dstnodeid="74" dstpinname="Y Input Value">
+   </LINK>
+   <NODE nodename="IOBox (Value Advanced)" componentmode="InABox" id="75">
+   <BOUNDS type="Box" left="915" top="6480" width="795" height="240">
+   </BOUNDS>
+   <BOUNDS type="Node" left="915" top="6480" width="0" height="0">
+   </BOUNDS>
+   <PIN pinname="Units" slicecount="1" values="||">
+   </PIN>
+   <PIN pinname="Precision" slicecount="1" values="4">
+   </PIN>
+   <PIN pinname="Value Type" slicecount="1" values="Integer">
+   </PIN>
+   <PIN pinname="Descriptive Name" slicecount="1" values="Height">
+   </PIN>
+   </NODE>
+   <LINK srcnodeid="73" srcpinname="Height" dstnodeid="75" dstpinname="Y Input Value">
+   </LINK>
+   <NODE nodename="IOBox (Enumerations)" componentmode="InABox" id="76">
+   <BOUNDS type="Box" left="930" top="6900" width="1590" height="270">
+   </BOUNDS>
+   <BOUNDS type="Node" left="930" top="6900" width="0" height="0">
+   </BOUNDS>
+   <PIN pinname="Default" slicecount="1" values="Unknown">
+   </PIN>
+   <PIN pinname="File Mask" slicecount="1" values="||">
+   </PIN>
+   <PIN pinname="Maximum Characters" slicecount="1" values="-1">
+   </PIN>
+   <PIN pinname="Descriptive Name" slicecount="1" values="Format">
+   </PIN>
+   </NODE>
+   <LINK srcnodeid="73" srcpinname="Format" dstnodeid="76" dstpinname="Input Enum">
+   </LINK>
+   <NODE nodename="IOBox (Enumerations)" componentmode="InABox" id="77">
+   <BOUNDS type="Box" left="945" top="7305" width="1590" height="270">
+   </BOUNDS>
+   <BOUNDS type="Node" left="945" top="7305" width="0" height="0">
+   </BOUNDS>
+   <PIN pinname="Default" slicecount="1" values="Unknown">
+   </PIN>
+   <PIN pinname="File Mask" slicecount="1" values="||">
+   </PIN>
+   <PIN pinname="Maximum Characters" slicecount="1" values="-1">
+   </PIN>
+   <PIN pinname="Descriptive Name" slicecount="1" values="|View Format|">
+   </PIN>
+   </NODE>
+   <LINK srcnodeid="73" srcpinname="View Format" dstnodeid="77" dstpinname="Input Enum">
+   </LINK>
+   <PACK Name="dx11.particles" Version="1.0.3">
+   </PACK>
+   <PACK Name="vvvv-ZeroMQ_Release_x64" Version="0.5.4">
+   </PACK>
+   <NODE nodename="IOBox (String)" componentmode="InABox" id="78">
+   <BOUNDS type="Box" left="675" top="9990" width="2850" height="495">
+   </BOUNDS>
+   <BOUNDS type="Node" left="675" top="9990" width="0" height="0">
+   </BOUNDS>
+   <PIN pinname="Default" slicecount="1" values="||">
+   </PIN>
+   <PIN pinname="File Mask" slicecount="1" values="||">
+   </PIN>
+   <PIN pinname="Maximum Characters" slicecount="1" values="-1">
+   </PIN>
+   </NODE>
+   <LINK srcnodeid="71" srcpinname="Texture Pixel Format" dstnodeid="78" dstpinname="Input String">
    </LINK>
    </PATCH>

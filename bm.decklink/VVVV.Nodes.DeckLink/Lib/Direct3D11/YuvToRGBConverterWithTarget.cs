@@ -32,7 +32,6 @@ namespace VVVV.DeckLink.Direct3D11
                     renderTarget = null;
                 }
             }
-
             if (renderTarget == null)
             {
                 renderTarget = new DX11RenderTarget2D(this.context, uncompressedWidth, inputTexture.Height, new SlimDX.DXGI.SampleDescription(1, 0), SlimDX.DXGI.Format.R8G8B8A8_UNorm);

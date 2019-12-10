@@ -42,13 +42,13 @@ namespace VVVV.DeckLink.Direct3D11
                 CpuAccessFlags = CpuAccessFlags.None,
                 Format = SlimDX.DXGI.Format.R8G8B8A8_UNorm,
                 Height = rawFrame.Height,
-                Width = rawFrame.Width / 2,
+                Width = rawFrame.Width,
                 MipLevels = 1,
                 OptionFlags = ResourceOptionFlags.None,
                 SampleDescription = new SlimDX.DXGI.SampleDescription(1, 0),
                 Usage = ResourceUsage.Immutable,
             };
-            DataRectangle slice = new DataRectangle(rawFrame.Width * 2, new DataStream(rawFrame.DataPointer, rawFrame.DataLength, true, false));
+            DataRectangle slice = new DataRectangle(rawFrame.Width * 4, new DataStream(rawFrame.DataPointer, rawFrame.DataLength, true, false));
             Texture2D frameTexture = new Texture2D(context.Device, textureDesc, slice);
             ShaderResourceView frameTextureView = new ShaderResourceView(context.Device, frameTexture);
             return DX11Texture2D.FromTextureAndSRV(context, frameTexture, frameTextureView); ;

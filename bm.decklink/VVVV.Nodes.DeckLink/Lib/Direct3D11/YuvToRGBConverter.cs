@@ -29,17 +29,12 @@ namespace VVVV.DeckLink.Direct3D11
         public void Apply(DX11Texture2D inputTexture, DX11RenderTarget2D outputTexture)
         {
             int uncompressedWidth = inputTexture.Width * 2;
-
             context.RenderTargetStack.Push(outputTexture);
-
             context.Primitives.ApplyFullTriVS();
-
             this.inputTexture.SetResource(inputTexture.SRV);
             this.halfWidth.Set(inputTexture.Width);
             this.shader.ApplyPass(0);
-
             context.CurrentDeviceContext.Draw(3, 0);
-
             context.RenderTargetStack.Pop();
         }
 

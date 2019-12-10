@@ -83,9 +83,7 @@ namespace VVVV.DeckLink
         public void Compact(DecklinkFrameData current)
         {
             this.availableFrames.Clear();
-
             List<DecklinkFrameData> newList = new List<DecklinkFrameData>();
-
             int preserveCount = this.initialSize;
             if (current != null)
             {
@@ -93,14 +91,12 @@ namespace VVVV.DeckLink
                 preserveCount--;
                 this.framePool.Remove(current);
             }
-
             for (int i = 0; i < preserveCount; i++)
             {
                 this.availableFrames.Push(this.framePool[0]);
                 newList.Add(this.framePool[0]);
                 this.framePool.RemoveAt(0);
             }
-
             for (int i = 0; i < this.framePool.Count; i++)
             {
                 this.framePool[i].Dispose();
@@ -119,7 +115,6 @@ namespace VVVV.DeckLink
             }
             this.framePool.Clear();
             this.availableFrames.Clear();
-
         }
     }
 }

@@ -148,7 +148,6 @@ namespace VVVV.DeckLink.Presenters
                 frameData.UpdateAndCopy(videoFrame);
             }
             System.Runtime.InteropServices.Marshal.ReleaseComObject(videoFrame);
-
             this.frameQueue.Enqueue(frameData);
         }
 
@@ -174,7 +173,6 @@ namespace VVVV.DeckLink.Presenters
             {
                 //Preserve current frame
                 this.framePool.Compact(this.currentPresentationFrame != null ? this.currentPresentationFrame.Frame : null);
-
                 this.frameQueue.Clear();
             }
         }

@@ -16,7 +16,6 @@ namespace VVVV.DeckLink
 
         private IntPtr rawCompressedData = IntPtr.Zero;
         private int rawCompressedDataLength = 0;
-
         private int width;
         private int height;
 
@@ -70,46 +69,36 @@ namespace VVVV.DeckLink
         {
             int width = videoFrame.GetWidth();
             int height = videoFrame.GetHeight();
-            int frameSize = width / 2 * 4 * height;
+            int frameSize = width * 4 * height;
             if (frameSize != frame.DataLength)
             {
                 frame.Dispose();
                 return new RawFrameData(width, height, frameSize);
             }
             else
-            {
                 return frame;
-            }
         }
 
         public static RawFrameData UpdateConvertedFrame(this RawFrameData frame, IDeckLinkVideoInputFrame videoFrame)
         {
             int width = videoFrame.GetWidth();
             int height = videoFrame.GetHeight();
-
             int frameSize = width * 4 * height;
-
             if (frameSize != frame.DataLength)
             {
                 frame.Dispose();
                 return new RawFrameData(width, height, frameSize);
             }
             else
-            {
                 return frame;
-            }
         }
 
         public static void MapAndCopyFrame(this RawFrameData frame, DX11DynamicTexture2D texture)
         {
             if (frame.Width * 4 == texture.GetRowPitch())
-            {
                 texture.WriteData(frame.DataPointer, frame.DataLength);
-            }
             else
-            {
                 texture.WriteDataPitch(frame.DataPointer, frame.DataLength, 4);
-            }
         }
     }
 }
