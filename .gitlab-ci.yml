@@ -6,7 +6,7 @@ build:
   script:
     - cd "bm.decklink"
     - '"C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\MSBuild\Current\Bin\msbuild.exe"'
-    - xcopy /s Patches\* Release/ /Y
+    - cp -r Patches/* Release/
   artifacts:
     paths:
     - bm.decklink/Release/nodes
