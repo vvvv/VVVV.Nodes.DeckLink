@@ -5,4 +5,9 @@ build:
   stage: build
   script:
     - cd "bm.decklink"
-    - '"C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\MSBuild\Current\Bin\msbuild.exe"'
+    - '"C:\Program Files (x86)\Microsoft Visual
+  Studio\2019\Community\MSBuild\Current\Bin\msbuild.exe"'
+  artifacts:
+    paths:
+    - bm.decklink/Release
+    expire_in: 1 week
