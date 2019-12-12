@@ -5,9 +5,8 @@ build:
   stage: build
   script:
     - cd "bm.decklink"
-    - '"C:\Program Files (x86)\Microsoft Visual
-  Studio\2019\Community\MSBuild\Current\Bin\msbuild.exe"'
-    - "release.bat vvvv.nodes.blackmagic\decklink"
+    - '"C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\MSBuild\Current\Bin\msbuild.exe"'
+    - '".\release.bat vvvv.nodes.blackmagic/decklink"'
   artifacts:
     paths:
     - bm.decklink/Release
