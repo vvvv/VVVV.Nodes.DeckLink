@@ -178,7 +178,7 @@ namespace VVVV.DeckLink.Presenters
             }
         }
 
-        public void PushFrame(IDeckLinkVideoInputFrame videoFrame, bool performConvertion, int scalar = 2)
+        public void PushFrame(IDeckLinkVideoInputFrame videoFrame, bool performConvertion, int pixelFormatDivisor = 2, SlimDX.DXGI.Format pixelColorFormat = SlimDX.DXGI.Format.R8G8B8A8_UNorm)
         {
             //Drop frame if queue is full
             if (this.frameQueue.Count >= this.maxQueueSize)
@@ -195,11 +195,11 @@ namespace VVVV.DeckLink.Presenters
 
             if (performConvertion)
             {
-                frameData.UpdateAndConvert(this.videoConverter, videoFrame, scalar);
+                frameData.UpdateAndConvert(this.videoConverter, videoFrame, pixelFormatDivisor);
             }
             else
             {
-                frameData.UpdateAndCopy(videoFrame, scalar);
+                frameData.UpdateAndCopy(videoFrame, pixelFormatDivisor);
             }
             System.Runtime.InteropServices.Marshal.ReleaseComObject(videoFrame);
 

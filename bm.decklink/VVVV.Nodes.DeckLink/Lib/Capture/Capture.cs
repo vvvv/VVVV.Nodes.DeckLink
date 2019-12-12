@@ -35,8 +35,7 @@ namespace VVVV.DeckLink
         private CaptureDeviceInformation deviceInfo;
         private IDeckLinkInput device;
         private _BMDVideoInputFlags videoInputFlags;
-        //private _BMDPixelFormat inputPixelFormat = _BMDPixelFormat.bmdFormat8BitYUV;
-        private _BMDPixelFormat inputPixelFormat = _BMDPixelFormat.bmdFormat8BitBGRA;
+        private _BMDPixelFormat inputPixelFormat = _BMDPixelFormat.bmdFormat8BitYUV;
         private DecklinkVideoFrameConverter videoConverter;
         private readonly IDecklinkFramePresenter framePresenter;
         private bool running = false;
@@ -120,7 +119,7 @@ namespace VVVV.DeckLink
         {
             DeviceFactory df = null;
             // TODO
-            this.ShouldPerformConversion = false; // captureParameters.OutputMode == TextureOutputMode.UncompressedBMD;
+            this.ShouldPerformConversion = captureParameters.OutputMode == TextureOutputMode.UncompressedBMD;
             TaskUtils.RunSync(() =>
             {
                 df = new DeviceFactory(deviceIndex);
@@ -314,8 +313,11 @@ namespace VVVV.DeckLink
                 this.Width = videoFrame.GetWidth();
                 this.Height = videoFrame.GetHeight();
                 this.PixelFormat = this.inputPixelFormat;
-                int pixelFormatScalar = this.inputPixelFormat == _BMDPixelFormat.bmdFormat8BitYUV ? 2 : 1;
-                this.framePresenter.PushFrame(videoFrame, this.ShouldPerformConversion, pixelFormatScalar);
+                int pixelFormatDivisor = this.inputPixelFormat == _BMDPixelFormat.bmdFormat8BitYUV ? 2 : 1;
+                var pixelColorFormat = this.inputPixelFormat == _BMDPixelFormat.bmdFormat8BitBGRA 
+                    ? SlimDX.DXGI.Format.B8G8R8A8_UNorm 
+                    : SlimDX.DXGI.Format.R8G8B8A8_UNorm;
+                this.framePresenter.PushFrame(videoFrame, this.ShouldPerformConversion, pixelFormatDivisor, pixelColorFormat);
                 System.Runtime.InteropServices.Marshal.ReleaseComObject(videoFrame);
                 this.isLastFrameConverted = this.ShouldPerformConversion;
             }
@@ -366,7 +368,7 @@ namespace VVVV.DeckLink
         {
             lock (syncRoot)
             {
-                int width = this.Width; // this.isLastFrameConverted ? this.Width : this.Width / 2;
+                int width = this.isLastFrameConverted ? this.Width : this.Width / 2;
                 if (texture != null)
                 {
                     if (width != this.Width || texture.Height != this.Height)
@@ -377,7 +379,9 @@ namespace VVVV.DeckLink
                 }
                 if (texture == null)
                 {
-                    var fmt = this.ShouldPerformConversion ? SlimDX.DXGI.Format.B8G8R8A8_UNorm : SlimDX.DXGI.Format.R8G8B8A8_UNorm;
+                    var fmt = this.ShouldPerformConversion ? 
+                        SlimDX.DXGI.Format.B8G8R8A8_UNorm : 
+                        SlimDX.DXGI.Format.R8G8B8A8_UNorm;
                     texture = new DX11DynamicTexture2D(context, Math.Max(1, width), Math.Max(1, Height), fmt);
                 }
             }
@@ -387,7 +391,7 @@ namespace VVVV.DeckLink
         {
             lock (syncRoot)
             {
-                int w = this.Width; // this.isLastFrameConverted ? this.Width : this.Width / 2;
+                int w = this.isLastFrameConverted ? this.Width : this.Width / 2;
                 //Get last frame
                 var result = this.framePresenter.GetPresentationFrame();
                 if (this.isLastFrameConverted)

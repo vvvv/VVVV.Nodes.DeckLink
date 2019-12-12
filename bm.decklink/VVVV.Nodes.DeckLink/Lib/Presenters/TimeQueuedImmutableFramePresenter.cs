@@ -240,7 +240,7 @@ namespace VVVV.DeckLink.Presenters
             }
         }
 
-        public void PushFrame(IDeckLinkVideoInputFrame videoFrame, bool performConvertion, int scalar = 2)
+        public void PushFrame(IDeckLinkVideoInputFrame videoFrame, bool performConvertion, int pixelFormatDivisor = 2, SlimDX.DXGI.Format pixelColorFormat = SlimDX.DXGI.Format.R8G8B8A8_UNorm)
         {
             if (this.renderDevice.Device.Disposed)
                 return;
@@ -259,13 +259,13 @@ namespace VVVV.DeckLink.Presenters
             DX11Texture2D newTexture;
             if (performConvertion)
             {
-                frameData.UpdateAndConvert(this.videoConverter, videoFrame, scalar);
+                frameData.UpdateAndConvert(this.videoConverter, videoFrame, pixelFormatDivisor);
                 newTexture = ImmutableTextureFactory.CreateConvertedFrame(this.renderDevice, frameData.ConvertedFrameData);
             }
             else
             {
-                frameData.UpdateAndCopy(videoFrame, scalar);
-                newTexture = ImmutableTextureFactory.CreateRawFrame(this.renderDevice, frameData.RawFrameData, scalar);
+                frameData.UpdateAndCopy(videoFrame, pixelFormatDivisor);
+                newTexture = ImmutableTextureFactory.CreateRawFrame(this.renderDevice, frameData.RawFrameData, pixelFormatDivisor, pixelColorFormat);
             }
             System.Runtime.InteropServices.Marshal.ReleaseComObject(videoFrame);
 

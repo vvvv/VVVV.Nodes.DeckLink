@@ -1,25 +1,143 @@
-<!DOCTYPE PATCH  SYSTEM "http://vvvv.org/versions/vvvv50beta38.1.dtd" >
-   <PATCH nodename="E:\git\nsynk\vvvv.nodes.blackmagic\bm.decklink\Release\nodes\plugins\vvvv.nodes.blackmagic\decklink\CaptureParameters (DeckLink Join) help.v4p" systemname="CaptureParameters (DX11.DeckLink)" filename="E:\git\nsynk\vvvv.nodes.blackmagic\bm.decklink\Patches\CaptureParameters (DX11.DeckLink).help.v4p">
-   <BOUNDS type="Window" left="18240" top="3855" width="18105" height="10020">
+<!DOCTYPE PATCH  SYSTEM "http://vvvv.org/versions/vvvv50alpha38.2.dtd" >
+   <PATCH nodename="C:\Users\NSYNK\Desktop\vvvv.nodes.blackmagic\bm.decklink\Patches\CaptureParameters (DeckLink DX11.Texture) help.v4p" scrollx="0" scrolly="0" systemname="CaptureParameters (DeckLink DX11.Texture) help" filename="C:\Users\NSYNK\Desktop\vvvv.nodes.blackmagic\bm.decklink\Patches\CaptureParameters (DeckLink DX11.Texture) help.v4p">
+   <BOUNDS type="Window" left="20775" top="450" width="17145" height="20430">
    </BOUNDS>
-   <NODE nodename="IOBox (Enumerations)" componentmode="InABox" id="12" systemname="IOBox (Enumerations)">
-   <BOUNDS type="Box" left="1515" top="1860" width="1515" height="840">
+   <NODE systemname="CaptureParameters (DeckLink Join)" filename="VVVV.DX11.Nodes.DeckLink.dll" nodename="CaptureParameters (DeckLink Join)" componentmode="Hidden" id="6">
+   <BOUNDS type="Node" left="1950" top="4905" width="8100" height="270">
    </BOUNDS>
-   <BOUNDS type="Node" left="1515" top="1860" width="0" height="0">
+   <BOUNDS type="Box" left="1950" top="4905" width="3000" height="3000">
    </BOUNDS>
-   <PIN pinname="Input Enum" slicecount="1" visible="1" values="UncompressedBMD">
+   <PIN pinname="Output" visible="1">
+   </PIN>
+   <PIN pinname="Output Mode" visible="1">
+   </PIN>
+   <PIN pinname="Upload Mode" visible="1">
+   </PIN>
+   <PIN pinname="PixelFormat" visible="1">
+   </PIN>
+   <PIN pinname="Auto Detect Mode" visible="1">
+   </PIN>
+   <PIN pinname="Display Mode" visible="1">
+   </PIN>
+   <PIN pinname="Max Lateness (ms)" visible="1">
+   </PIN>
+   </NODE>
+   <NODE systemname="VideoIn (DeckLink DX11.Texture)" filename="VVVV.DX11.Nodes.DeckLink.dll" nodename="VideoIn (DeckLink DX11.Texture)" componentmode="Hidden" id="7">
+   <BOUNDS type="Node" left="1605" top="6510" width="100" height="100">
+   </BOUNDS>
+   <BOUNDS type="Box" left="1605" top="6510" width="3000" height="3000">
+   </BOUNDS>
+   <PIN pinname="Capture Parameters" visible="1">
+   </PIN>
+   <PIN pinname="Device" visible="1">
+   </PIN>
+   <PIN pinname="Enabled" visible="1">
+   </PIN>
+   </NODE>
+   <LINK srcnodeid="6" srcpinname="Output" dstnodeid="7" dstpinname="Capture Parameters">
+   </LINK>
+   <NODE nodename="IOBox (Value Advanced)" componentmode="InABox" id="8" systemname="IOBox (Value Advanced)">
+   <BOUNDS type="Box" left="945" top="5970" width="795" height="240">
+   </BOUNDS>
+   <BOUNDS type="Node" left="945" top="5970" width="0" height="0">
+   </BOUNDS>
+   <PIN pinname="Y Input Value" slicecount="1" visible="1" values="1">
+   </PIN>
+   <PIN pinname="Units" slicecount="1" values="||">
+   </PIN>
+   <PIN pinname="Precision" slicecount="1" values="4">
+   </PIN>
+   <PIN pinname="Value Type" slicecount="1" values="Integer">
+   </PIN>
+   <PIN pinname="Descriptive Name" slicecount="1" values="Device">
+   </PIN>
+   </NODE>
+   <LINK srcnodeid="8" srcpinname="Y Output Value" dstnodeid="7" dstpinname="Device" linkstyle="VHV">
+   <LINKPOINT x="1005" y="6345">
+   </LINKPOINT>
+   <LINKPOINT x="1605" y="6345">
+   </LINKPOINT>
+   </LINK>
+   <NODE nodename="IOBox (Value Advanced)" componentmode="InABox" id="9" systemname="IOBox (Value Advanced)">
+   <BOUNDS type="Box" left="3810" top="5790" width="480" height="480">
+   </BOUNDS>
+   <BOUNDS type="Node" left="3810" top="5790" width="0" height="0">
+   </BOUNDS>
+   <PIN pinname="Y Input Value" slicecount="1" visible="1" values="0">
+   </PIN>
+   <PIN pinname="Units" slicecount="1" values="||">
+   </PIN>
+   <PIN pinname="Precision" slicecount="1" values="4">
+   </PIN>
+   <PIN pinname="Value Type" slicecount="1" values="Boolean">
+   </PIN>
+   <PIN pinname="Behavior" slicecount="1" values="Toggle">
+   </PIN>
+   <PIN pinname="Descriptive Name" slicecount="1" values="Enabled">
+   </PIN>
+   <PIN pinname="X Input Value" slicecount="1" values="0">
+   </PIN>
+   </NODE>
+   <LINK srcnodeid="9" srcpinname="Y Output Value" dstnodeid="7" dstpinname="Enabled">
+   </LINK>
+   <NODE nodename="IOBox (Enumerations)" componentmode="InABox" id="10" systemname="IOBox (Enumerations)">
+   <BOUNDS type="Box" left="1950" top="3855" width="1590" height="270">
+   </BOUNDS>
+   <BOUNDS type="Node" left="1950" top="3855" width="0" height="0">
+   </BOUNDS>
+   <PIN pinname="Input Enum" slicecount="1" visible="1" values="UncompressedPS">
+   </PIN>
+   <PIN pinname="Default" slicecount="1" values="UncompressedPS">
+   </PIN>
+   <PIN pinname="File Mask" slicecount="1" values="||">
+   </PIN>
+   <PIN pinname="Maximum Characters" slicecount="1" values="-1">
    </PIN>
    <PIN pinname="Descriptive Name" slicecount="1" values="|Output Mode|">
    </PIN>
-   <PIN pinname="Style" slicecount="1" values="List">
+   </NODE>
+   <LINK srcnodeid="10" srcpinname="Output Enum" dstnodeid="6" dstpinname="Output Mode">
+   </LINK>
+   <NODE nodename="IOBox (Enumerations)" componentmode="InABox" id="11" systemname="IOBox (Enumerations)">
+   <BOUNDS type="Box" left="2970" top="1560" width="1740" height="300">
+   </BOUNDS>
+   <BOUNDS type="Node" left="2970" top="1560" width="0" height="0">
+   </BOUNDS>
+   <PIN pinname="Input Enum" slicecount="1" visible="1" values="DiscardImmutable">
    </PIN>
-   <PIN pinname="Output Enum" visible="1">
+   <PIN pinname="Default" slicecount="1" values="Discard_DEPRECATED">
+   </PIN>
+   <PIN pinname="File Mask" slicecount="1" values="||">
+   </PIN>
+   <PIN pinname="Maximum Characters" slicecount="1" values="-1">
+   </PIN>
+   <PIN pinname="Descriptive Name" slicecount="1" values="|Upload Mode|">
    </PIN>
    </NODE>
-   <NODE nodename="IOBox (Value Advanced)" componentmode="InABox" id="11" systemname="IOBox (Value Advanced)">
-   <BOUNDS type="Box" left="6105" top="3180" width="480" height="480">
+   <LINK srcnodeid="11" srcpinname="Output Enum" dstnodeid="6" dstpinname="Upload Mode">
+   </LINK>
+   <NODE nodename="IOBox (Enumerations)" componentmode="InABox" id="12" systemname="IOBox (Enumerations)">
+   <BOUNDS type="Box" left="3975" top="2550" width="1005" height="240">
    </BOUNDS>
-   <BOUNDS type="Node" left="6105" top="3180" width="0" height="0">
+   <BOUNDS type="Node" left="3975" top="2550" width="0" height="0">
+   </BOUNDS>
+   <PIN pinname="Input Enum" slicecount="1" visible="1" values="RGB8Bit">
+   </PIN>
+   <PIN pinname="Default" slicecount="1" values="YUV8Bit">
+   </PIN>
+   <PIN pinname="File Mask" slicecount="1" values="||">
+   </PIN>
+   <PIN pinname="Maximum Characters" slicecount="1" values="-1">
+   </PIN>
+   <PIN pinname="Descriptive Name" slicecount="1" values="PixelFormat">
+   </PIN>
+   </NODE>
+   <LINK srcnodeid="12" srcpinname="Output Enum" dstnodeid="6" dstpinname="PixelFormat">
+   </LINK>
+   <NODE nodename="IOBox (Value Advanced)" componentmode="InABox" id="13" systemname="IOBox (Value Advanced)">
+   <BOUNDS type="Box" left="4965" top="4020" width="480" height="480">
+   </BOUNDS>
+   <BOUNDS type="Node" left="4965" top="4020" width="0" height="0">
    </BOUNDS>
    <PIN pinname="Y Input Value" slicecount="1" visible="1" values="1">
    </PIN>
@@ -33,153 +151,33 @@
    </PIN>
    <PIN pinname="Descriptive Name" slicecount="1" values="|Auto Detect Mode|">
    </PIN>
-   <PIN pinname="Y Output Value" visible="1">
-   </PIN>
-   <PIN pinname="X Input Value" slicecount="1" values="1">
-   </PIN>
    </NODE>
-   <NODE nodename="IOBox (Enumerations)" componentmode="InABox" id="10" systemname="IOBox (Enumerations)">
-   <BOUNDS type="Box" left="7560" top="3315" width="2775" height="240">
+   <LINK srcnodeid="13" srcpinname="Y Output Value" dstnodeid="6" dstpinname="Auto Detect Mode">
+   </LINK>
+   <NODE nodename="IOBox (Enumerations)" componentmode="InABox" id="14" systemname="IOBox (Enumerations)">
+   <BOUNDS type="Box" left="5955" top="1485" width="2520" height="285">
    </BOUNDS>
-   <BOUNDS type="Node" left="7560" top="3315" width="0" height="0">
+   <BOUNDS type="Node" left="5955" top="1485" width="0" height="0">
    </BOUNDS>
-   <PIN pinname="Input Enum" slicecount="1" visible="1" values="bmdModeHD1080p25">
+   <PIN pinname="Input Enum" slicecount="1" visible="1" values="bmdMode1920x1440p50">
+   </PIN>
+   <PIN pinname="Default" slicecount="1" values="bmdMode1920x1440p50">
+   </PIN>
+   <PIN pinname="File Mask" slicecount="1" values="||">
+   </PIN>
+   <PIN pinname="Maximum Characters" slicecount="1" values="-1">
    </PIN>
    <PIN pinname="Descriptive Name" slicecount="1" values="|Display Mode|">
    </PIN>
-   <PIN pinname="Output Enum" visible="1">
-   </PIN>
    </NODE>
-   <NODE nodename="IOBox (Value Advanced)" componentmode="InABox" id="9" systemname="IOBox (Value Advanced)">
-   <BOUNDS type="Box" left="9000" top="2460" width="795" height="240">
+   <LINK srcnodeid="14" srcpinname="Output Enum" dstnodeid="6" dstpinname="Display Mode">
+   </LINK>
+   <NODE nodename="IOBox (Value Advanced)" componentmode="InABox" id="15" systemname="IOBox (Value Advanced)">
+   <BOUNDS type="Box" left="10005" top="3570" width="795" height="240">
    </BOUNDS>
-   <BOUNDS type="Node" left="9000" top="2460" width="0" height="0">
+   <BOUNDS type="Node" left="10005" top="3570" width="0" height="0">
    </BOUNDS>
-   <PIN pinname="Y Input Value" slicecount="1" visible="1" values="1">
-   </PIN>
-   <PIN pinname="Units" slicecount="1" values="||">
-   </PIN>
-   <PIN pinname="Precision" slicecount="1" values="4">
-   </PIN>
-   <PIN pinname="Value Type" slicecount="1" values="Integer">
-   </PIN>
-   <PIN pinname="Descriptive Name" slicecount="1" values="|Frame Present Count|">
-   </PIN>
-   <PIN pinname="Y Output Value" visible="1">
-   </PIN>
-   </NODE>
-   <NODE nodename="IOBox (Value Advanced)" componentmode="InABox" id="8" systemname="IOBox (Value Advanced)">
-   <BOUNDS type="Box" left="11865" top="1710" width="795" height="240">
-   </BOUNDS>
-   <BOUNDS type="Node" left="11865" top="1710" width="0" height="0">
-   </BOUNDS>
-   <PIN pinname="Y Input Value" slicecount="1" visible="1" values="10">
-   </PIN>
-   <PIN pinname="Units" slicecount="1" values="||">
-   </PIN>
-   <PIN pinname="Precision" slicecount="1" values="4">
-   </PIN>
-   <PIN pinname="Value Type" slicecount="1" values="Integer">
-   </PIN>
-   <PIN pinname="Descriptive Name" slicecount="1" values="|Frame Queue Pool Size|">
-   </PIN>
-   <PIN pinname="Y Output Value" visible="1">
-   </PIN>
-   </NODE>
-   <NODE id="7" nodename="IOBox (Enumerations)" componentmode="InABox" systemname="IOBox (Enumerations)">
-   <BOUNDS type="Box" left="3420" top="1665" width="1815" height="1245">
-   </BOUNDS>
-   <BOUNDS type="Node" left="3420" top="1665" width="0" height="0">
-   </BOUNDS>
-   <PIN pinname="Input Enum" slicecount="1" visible="1" values="Wait">
-   </PIN>
-   <PIN pinname="Style" slicecount="1" values="List">
-   </PIN>
-   <PIN pinname="Descriptive Name" slicecount="1" values="|Upload Mode|">
-   </PIN>
-   <PIN pinname="Output Enum" visible="1">
-   </PIN>
-   </NODE>
-   <NODE nodename="IOBox (String)" componentmode="InABox" id="6" systemname="IOBox (String)">
-   <BOUNDS type="Node" left="5280" top="1665" width="2385" height="270">
-   </BOUNDS>
-   <BOUNDS type="Box" left="5280" top="1665" width="3075" height="1140">
-   </BOUNDS>
-   <PIN pinname="Input String" visible="0" slicecount="1" values="|Discard = Always use last frame&cr;&lf;&cr;&lf;Queue = Make sure that frame is at least presented N times on the screen (where N is the Frame Present Count pin)|">
-   </PIN>
-   <PIN pinname="Output String" visible="0">
-   </PIN>
-   <PIN pinname="Show Grid" slicecount="1" values="0">
-   </PIN>
-   <PIN pinname="String Type" slicecount="1" values="MultiLine">
-   </PIN>
-   </NODE>
-   <NODE nodename="IOBox (String)" componentmode="InABox" id="5" systemname="IOBox (String)">
-   <BOUNDS type="Node" left="12795" top="1725" width="7980" height="270">
-   </BOUNDS>
-   <BOUNDS type="Box" left="12795" top="1725" width="4965" height="690">
-   </BOUNDS>
-   <PIN pinname="Input String" visible="0" slicecount="1" values="|This is the initial frame que pool size, please note that it is allowed to infinitely grow, flush queue will reset accordingly|">
-   </PIN>
-   <PIN pinname="Output String" visible="0">
-   </PIN>
-   <PIN pinname="Show Grid" slicecount="1" values="0">
-   </PIN>
-   <PIN pinname="String Type" slicecount="1" values="MultiLine">
-   </PIN>
-   </NODE>
-   <NODE nodename="IOBox (String)" componentmode="InABox" id="4" systemname="IOBox (String)">
-   <BOUNDS type="Node" left="9795" top="2460" width="5460" height="270">
-   </BOUNDS>
-   <BOUNDS type="Box" left="9795" top="2460" width="5460" height="270">
-   </BOUNDS>
-   <PIN pinname="Input String" visible="0" slicecount="1" values="|&lt;-- Minimum count of frame presentation before a frame can move to next|">
-   </PIN>
-   <PIN pinname="Output String" visible="0">
-   </PIN>
-   <PIN pinname="Show Grid" slicecount="1" values="0">
-   </PIN>
-   <PIN pinname="String Type" slicecount="1" values="MultiLine">
-   </PIN>
-   </NODE>
-   <NODE nodename="IOBox (Value Advanced)" componentmode="InABox" id="3" systemname="IOBox (Value Advanced)">
-   <BOUNDS type="Box" left="10440" top="3420" width="795" height="240">
-   </BOUNDS>
-   <BOUNDS type="Node" left="10440" top="3420" width="0" height="0">
-   </BOUNDS>
-   <PIN pinname="Y Input Value" slicecount="1" visible="1" values="10">
-   </PIN>
-   <PIN pinname="Units" slicecount="1" values="||">
-   </PIN>
-   <PIN pinname="Precision" slicecount="1" values="4">
-   </PIN>
-   <PIN pinname="Value Type" slicecount="1" values="Integer">
-   </PIN>
-   <PIN pinname="Descriptive Name" slicecount="1" values="|Frame Queue Max Size|">
-   </PIN>
-   <PIN pinname="Y Output Value" visible="1">
-   </PIN>
-   </NODE>
-   <NODE nodename="IOBox (String)" componentmode="InABox" id="2" systemname="IOBox (String)">
-   <BOUNDS type="Node" left="10455" top="2910" width="3765" height="270">
-   </BOUNDS>
-   <BOUNDS type="Box" left="10455" top="2910" width="3765" height="270">
-   </BOUNDS>
-   <PIN pinname="Input String" visible="0" slicecount="1" values="|Max size of frame queue, before we start to discard|">
-   </PIN>
-   <PIN pinname="Output String" visible="0">
-   </PIN>
-   <PIN pinname="Show Grid" slicecount="1" values="0">
-   </PIN>
-   <PIN pinname="String Type" slicecount="1" values="MultiLine">
-   </PIN>
-   </NODE>
-   <NODE nodename="IOBox (Value Advanced)" componentmode="InABox" id="1" systemname="IOBox (Value Advanced)">
-   <BOUNDS type="Box" left="13305" top="3525" width="795" height="240">
-   </BOUNDS>
-   <BOUNDS type="Node" left="13305" top="3525" width="0" height="0">
-   </BOUNDS>
-   <PIN pinname="Y Input Value" slicecount="1" visible="1" values="90">
+   <PIN pinname="Y Input Value" slicecount="1" visible="1" values="100">
    </PIN>
    <PIN pinname="Units" slicecount="1" values="||">
    </PIN>
@@ -187,51 +185,359 @@
    </PIN>
    <PIN pinname="Descriptive Name" slicecount="1" values="|Max Lateness (ms)|">
    </PIN>
-   <PIN pinname="Y Output Value" visible="1">
+   </NODE>
+   <LINK srcnodeid="15" srcpinname="Y Output Value" dstnodeid="6" dstpinname="Max Lateness (ms)">
+   </LINK>
+   <NODE nodename="IOBox (String)" systemname="IOBox (String)" componentmode="InABox" id="16">
+   <BOUNDS type="Node" left="3990" top="2850" width="11085" height="270">
+   </BOUNDS>
+   <BOUNDS type="Box" left="3990" top="2850" width="3570" height="945">
+   </BOUNDS>
+   <PIN pinname="Input String" visible="0" slicecount="1" values="|Select the pixel format that is transfered on the input (when using signals from NVIDIAcards as an input, make sure to check the NVIDIA control panel, too)|">
+   </PIN>
+   <PIN pinname="Output String" visible="0">
+   </PIN>
+   <PIN pinname="Show Grid" slicecount="1" values="0">
+   </PIN>
+   <PIN pinname="String Type" slicecount="1" values="MultiLine">
    </PIN>
    </NODE>
-   <NODE systemname="CaptureParameters (DeckLink Join)" filename="..\..\..\..\..\Development\vvvv\vvvv_50alpha38.2_x64\packs\NSYNK-Arsenal\nodes\plugins\vvvv.nodes.blackmagic\decklink\VVVV.DX11.Nodes.DeckLink.dll" nodename="CaptureParameters (DeckLink Join)" componentmode="Hidden" id="0">
-   <BOUNDS type="Node" left="3255" top="4035" width="10110" height="270">
+   <NODE nodename="IOBox (String)" systemname="IOBox (String)" componentmode="InABox" id="17">
+   <BOUNDS type="Node" left="10110" top="3900" width="11505" height="270">
    </BOUNDS>
-   <PIN pinname="Output Mode" visible="1">
+   <BOUNDS type="Box" left="10110" top="3900" width="3645" height="930">
+   </BOUNDS>
+   <PIN pinname="Input String" visible="0" slicecount="1" values="|The maximum time that is waited for a new frame to arrive (when using the &apos;wait&apos; upload mode it&apos;s the maximum timeout that the main thread of vvvv is blocked)|">
    </PIN>
-   <PIN pinname="Upload Mode" visible="1">
+   <PIN pinname="Output String" visible="0">
    </PIN>
-   <PIN pinname="Auto Detect Mode" visible="1">
+   <PIN pinname="Show Grid" slicecount="1" values="0">
    </PIN>
-   <PIN pinname="Display Mode" visible="1">
-   </PIN>
-   <PIN pinname="Frame Present Count" visible="1">
-   </PIN>
-   <PIN pinname="Frame Queue Max Size" visible="1">
-   </PIN>
-   <PIN pinname="Frame Queue Pool Size" visible="1">
-   </PIN>
-   <PIN pinname="Max Lateness (ms)" visible="1">
-   </PIN>
-   <PIN pinname="Output" visible="1">
+   <PIN pinname="String Type" slicecount="1" values="MultiLine">
    </PIN>
    </NODE>
-   <LINK srcnodeid="12" srcpinname="Output Enum" dstnodeid="0" dstpinname="Output Mode" linkstyle="PolyLine">
-   </LINK>
-   <LINK srcnodeid="7" srcpinname="Output Enum" dstnodeid="0" dstpinname="Upload Mode" linkstyle="PolyLine">
-   </LINK>
-   <LINK srcnodeid="11" srcpinname="Y Output Value" dstnodeid="0" dstpinname="Auto Detect Mode" linkstyle="PolyLine">
-   </LINK>
-   <LINK srcnodeid="10" srcpinname="Output Enum" dstnodeid="0" dstpinname="Display Mode" linkstyle="PolyLine">
-   </LINK>
-   <LINK srcnodeid="9" srcpinname="Y Output Value" dstnodeid="0" dstpinname="Frame Present Count" linkstyle="PolyLine">
-   </LINK>
-   <LINK srcnodeid="3" srcpinname="Y Output Value" dstnodeid="0" dstpinname="Frame Queue Max Size">
-   </LINK>
-   <LINK srcnodeid="8" srcpinname="Y Output Value" dstnodeid="0" dstpinname="Frame Queue Pool Size">
-   </LINK>
-   <LINK srcnodeid="1" srcpinname="Y Output Value" dstnodeid="0" dstpinname="Max Lateness (ms)">
-   </LINK>
-   <NODE nodename="IOBox (String)" componentmode="InABox" id="14" systemname="IOBox (String)">
-   <BOUNDS type="Node" left="240" top="255" width="970" height="230">
+   <NODE nodename="IOBox (String)" systemname="IOBox (String)" componentmode="InABox" id="18">
+   <BOUNDS type="Node" left="5940" top="450" width="12735" height="270">
    </BOUNDS>
-   <BOUNDS type="Box" left="240" top="255" width="3855" height="465">
+   <BOUNDS type="Box" left="5940" top="450" width="4845" height="795">
+   </BOUNDS>
+   <PIN pinname="Input String" visible="0" slicecount="1" values="|If &apos;Auto Detect Mode&apos; pin is disabled, you can select a preferred display mode (usually has to be the same as the Blackmagic Desktop Video Setup software is showing for your card)|">
+   </PIN>
+   <PIN pinname="Output String" visible="0">
+   </PIN>
+   <PIN pinname="Show Grid" slicecount="1" values="0">
+   </PIN>
+   <PIN pinname="String Type" slicecount="1" values="MultiLine">
+   </PIN>
+   </NODE>
+   <NODE nodename="IOBox (String)" systemname="IOBox (String)" componentmode="InABox" id="19">
+   <BOUNDS type="Node" left="5490" top="4065" width="4485" height="270">
+   </BOUNDS>
+   <BOUNDS type="Box" left="5490" top="4065" width="2625" height="525">
+   </BOUNDS>
+   <PIN pinname="Input String" visible="0" slicecount="1" values="|Tries to automatically detect the display mode from the card.|">
+   </PIN>
+   <PIN pinname="Output String" visible="0">
+   </PIN>
+   <PIN pinname="Show Grid" slicecount="1" values="0">
+   </PIN>
+   <PIN pinname="String Type" slicecount="1" values="MultiLine">
+   </PIN>
+   </NODE>
+   <PACK Name="dx11" Version="1.2">
+   </PACK>
+   <PACK Name="dx11.particles" Version="1.0.3">
+   </PACK>
+   <PACK Name="vvvv-ZeroMQ_Release_x64" Version="0.5.4">
+   </PACK>
+   <PACK Name="addonpack" Version="38.1.0">
+   </PACK>
+   <NODE nodename="IOBox (String)" systemname="IOBox (String)" componentmode="InABox" id="20">
+   <BOUNDS type="Node" left="3300" top="7785" width="1440" height="270">
+   </BOUNDS>
+   <BOUNDS type="Box" left="3300" top="7785" width="1755" height="315">
+   </BOUNDS>
+   <PIN pinname="Input String" visible="0" slicecount="1" values="DiscardImmutable">
+   </PIN>
+   <PIN pinname="Output String" visible="0">
+   </PIN>
+   <PIN pinname="Show Grid" slicecount="1" values="0">
+   </PIN>
+   <PIN pinname="String Type" slicecount="1" values="MultiLine">
+   </PIN>
+   <PIN pinname="Show Characters [#0..#32,#127]" slicecount="1" values="0">
+   </PIN>
+   <PIN pinname="Size" slicecount="1" values="10">
+   </PIN>
+   <PIN pinname="Font" slicecount="1" values="|Yu Gothic UI Semibold|">
+   </PIN>
+   </NODE>
+   <NODE nodename="IOBox (String)" systemname="IOBox (String)" componentmode="InABox" id="21">
+   <BOUNDS type="Node" left="3300" top="9615" width="1440" height="270">
+   </BOUNDS>
+   <BOUNDS type="Box" left="3300" top="9615" width="1665" height="285">
+   </BOUNDS>
+   <PIN pinname="Input String" visible="0" slicecount="1" values="TimedImmutable">
+   </PIN>
+   <PIN pinname="Output String" visible="0">
+   </PIN>
+   <PIN pinname="Show Grid" slicecount="1" values="0">
+   </PIN>
+   <PIN pinname="String Type" slicecount="1" values="MultiLine">
+   </PIN>
+   <PIN pinname="Show Characters [#0..#32,#127]" slicecount="1" values="0">
+   </PIN>
+   <PIN pinname="Size" slicecount="1" values="10">
+   </PIN>
+   <PIN pinname="Font" slicecount="1" values="|Yu Gothic UI Semibold|">
+   </PIN>
+   </NODE>
+   <NODE nodename="IOBox (String)" systemname="IOBox (String)" componentmode="InABox" id="22">
+   <BOUNDS type="Node" left="4350" top="10995" width="1440" height="270">
+   </BOUNDS>
+   <BOUNDS type="Box" left="4350" top="10995" width="585" height="315">
+   </BOUNDS>
+   <PIN pinname="Input String" visible="0" slicecount="1" values="Wait">
+   </PIN>
+   <PIN pinname="Output String" visible="0">
+   </PIN>
+   <PIN pinname="Show Grid" slicecount="1" values="0">
+   </PIN>
+   <PIN pinname="String Type" slicecount="1" values="MultiLine">
+   </PIN>
+   <PIN pinname="Show Characters [#0..#32,#127]" slicecount="1" values="0">
+   </PIN>
+   <PIN pinname="Size" slicecount="1" values="10">
+   </PIN>
+   <PIN pinname="Font" slicecount="1" values="|Yu Gothic UI Semibold|">
+   </PIN>
+   </NODE>
+   <NODE nodename="IOBox (String)" systemname="IOBox (String)" componentmode="InABox" id="23">
+   <BOUNDS type="Node" left="5250" top="10995" width="17790" height="270">
+   </BOUNDS>
+   <BOUNDS type="Box" left="5250" top="10995" width="5340" height="1005">
+   </BOUNDS>
+   <PIN pinname="Input String" visible="0" slicecount="1" values="|The wait upload mode hooks the vvvv main thread to the input signal and blocks it until a new frame has arrived. Meaning that vvvv is clocked by the cards input frequency (e.g. if you are receiving a 60fps video input signal, vvvv is rendering at 60fps).|">
+   </PIN>
+   <PIN pinname="Output String" visible="0">
+   </PIN>
+   <PIN pinname="Show Grid" slicecount="1" values="0">
+   </PIN>
+   <PIN pinname="String Type" slicecount="1" values="MultiLine">
+   </PIN>
+   </NODE>
+   <NODE nodename="IOBox (String)" systemname="IOBox (String)" componentmode="InABox" id="25">
+   <BOUNDS type="Node" left="5250" top="7785" width="17790" height="270">
+   </BOUNDS>
+   <BOUNDS type="Box" left="5250" top="7785" width="5325" height="1785">
+   </BOUNDS>
+   <PIN pinname="Input String" visible="0" slicecount="1" values="|The discard immutable mode is storing received frames in a queue (with the size of pin &apos;Frame Queue Max Size&apos;) and presents them when vvvv is ready.As the queue is filling, not yet presented frames are discarded, so the VideoIn node is always presenting the latest presented frames without blocking vvvv. It always presents the last frame, regardless of what happened by creating an immutable texture in the background, and takes care of disposing old frames (this is done during update).|">
+   </PIN>
+   <PIN pinname="Output String" visible="0">
+   </PIN>
+   <PIN pinname="Show Grid" slicecount="1" values="0">
+   </PIN>
+   <PIN pinname="String Type" slicecount="1" values="MultiLine">
+   </PIN>
+   </NODE>
+   <NODE nodename="IOBox (String)" systemname="IOBox (String)" componentmode="InABox" id="26">
+   <BOUNDS type="Node" left="5250" top="9615" width="17790" height="270">
+   </BOUNDS>
+   <BOUNDS type="Box" left="5250" top="9615" width="5310" height="1155">
+   </BOUNDS>
+   <PIN pinname="Input String" visible="0" slicecount="1" values="|The timed immutable mode is storing received frames in a queue (with the size of pin &quot;Frame Queue Max Size&quot;) and presents always the latest frame that arrived within a certain time threshold (set by &quot;Max Lateness&quot; pin (in milliseconds). It&apos;s creating an immutable texture in the background and takes care of disposing old frames (during update).|">
+   </PIN>
+   <PIN pinname="Output String" visible="0">
+   </PIN>
+   <PIN pinname="Show Grid" slicecount="1" values="0">
+   </PIN>
+   <PIN pinname="String Type" slicecount="1" values="MultiLine">
+   </PIN>
+   </NODE>
+   <NODE nodename="IOBox (String)" systemname="IOBox (String)" componentmode="InABox" id="27">
+   <BOUNDS type="Node" left="4815" top="6270" width="1050" height="270">
+   </BOUNDS>
+   <BOUNDS type="Box" left="4815" top="6270" width="4860" height="720">
+   </BOUNDS>
+   <PIN pinname="Input String" visible="0" slicecount="1" values="|¹ Upload Modes|">
+   </PIN>
+   <PIN pinname="Output String" visible="0">
+   </PIN>
+   <PIN pinname="Show Grid" slicecount="1" values="0">
+   </PIN>
+   <PIN pinname="String Type" slicecount="1" values="MultiLine">
+   </PIN>
+   <PIN pinname="Size" slicecount="1" values="30">
+   </PIN>
+   </NODE>
+   <NODE nodename="IOBox (String)" systemname="IOBox (String)" componentmode="InABox" id="28">
+   <BOUNDS type="Node" left="2925" top="1080" width="2250" height="270">
+   </BOUNDS>
+   <BOUNDS type="Box" left="2925" top="1080" width="2250" height="270">
+   </BOUNDS>
+   <PIN pinname="Input String" visible="0" slicecount="1" values="|Have a look at ¹ Upload Modes|">
+   </PIN>
+   <PIN pinname="Output String" visible="0">
+   </PIN>
+   <PIN pinname="Show Grid" slicecount="1" values="0">
+   </PIN>
+   <PIN pinname="String Type" slicecount="1" values="MultiLine">
+   </PIN>
+   </NODE>
+   <NODE nodename="IOBox (String)" systemname="IOBox (String)" componentmode="InABox" id="29">
+   <BOUNDS type="Node" left="5325" top="7080" width="17790" height="270">
+   </BOUNDS>
+   <BOUNDS type="Box" left="5325" top="7080" width="4485" height="600">
+   </BOUNDS>
+   <PIN pinname="Input String" visible="0" slicecount="1" values="|Upload modes marked with _DEPRECATED shouldn&apos;t be used anymore.|">
+   </PIN>
+   <PIN pinname="Output String" visible="0">
+   </PIN>
+   <PIN pinname="Show Grid" slicecount="1" values="0">
+   </PIN>
+   <PIN pinname="String Type" slicecount="1" values="MultiLine">
+   </PIN>
+   <PIN pinname="Font" slicecount="1" values="|Yu Gothic UI Semibold|">
+   </PIN>
+   <PIN pinname="Size" slicecount="1" values="10">
+   </PIN>
+   </NODE>
+   <NODE nodename="IOBox (String)" systemname="IOBox (String)" componentmode="InABox" id="31">
+   <BOUNDS type="Node" left="1320" top="4140" width="2250" height="270">
+   </BOUNDS>
+   <BOUNDS type="Box" left="1320" top="4140" width="2205" height="330">
+   </BOUNDS>
+   <PIN pinname="Input String" visible="0" slicecount="1" values="|Have a look at ² Output Modes|">
+   </PIN>
+   <PIN pinname="Output String" visible="0">
+   </PIN>
+   <PIN pinname="Show Grid" slicecount="1" values="0">
+   </PIN>
+   <PIN pinname="String Type" slicecount="1" values="MultiLine">
+   </PIN>
+   </NODE>
+   <NODE nodename="IOBox (String)" systemname="IOBox (String)" componentmode="InABox" id="32">
+   <BOUNDS type="Node" left="4980" top="12495" width="1050" height="270">
+   </BOUNDS>
+   <BOUNDS type="Box" left="4980" top="12495" width="4860" height="720">
+   </BOUNDS>
+   <PIN pinname="Input String" visible="0" slicecount="1" values="|² Output Modes|">
+   </PIN>
+   <PIN pinname="Output String" visible="0">
+   </PIN>
+   <PIN pinname="Show Grid" slicecount="1" values="0">
+   </PIN>
+   <PIN pinname="String Type" slicecount="1" values="MultiLine">
+   </PIN>
+   <PIN pinname="Size" slicecount="1" values="30">
+   </PIN>
+   </NODE>
+   <NODE nodename="IOBox (String)" systemname="IOBox (String)" componentmode="InABox" id="35">
+   <BOUNDS type="Node" left="3285" top="13770" width="1440" height="270">
+   </BOUNDS>
+   <BOUNDS type="Box" left="3285" top="13770" width="1755" height="315">
+   </BOUNDS>
+   <PIN pinname="Input String" visible="0" slicecount="1" values="|Uncompressed PS|">
+   </PIN>
+   <PIN pinname="Output String" visible="0">
+   </PIN>
+   <PIN pinname="Show Grid" slicecount="1" values="0">
+   </PIN>
+   <PIN pinname="String Type" slicecount="1" values="MultiLine">
+   </PIN>
+   <PIN pinname="Show Characters [#0..#32,#127]" slicecount="1" values="0">
+   </PIN>
+   <PIN pinname="Size" slicecount="1" values="10">
+   </PIN>
+   <PIN pinname="Font" slicecount="1" values="|Yu Gothic UI Semibold|">
+   </PIN>
+   </NODE>
+   <NODE nodename="IOBox (String)" systemname="IOBox (String)" componentmode="InABox" id="34">
+   <BOUNDS type="Node" left="3120" top="14100" width="1440" height="270">
+   </BOUNDS>
+   <BOUNDS type="Box" left="3120" top="14100" width="1980" height="330">
+   </BOUNDS>
+   <PIN pinname="Input String" visible="0" slicecount="1" values="|Uncompressed BMD|">
+   </PIN>
+   <PIN pinname="Output String" visible="0">
+   </PIN>
+   <PIN pinname="Show Grid" slicecount="1" values="0">
+   </PIN>
+   <PIN pinname="String Type" slicecount="1" values="MultiLine">
+   </PIN>
+   <PIN pinname="Show Characters [#0..#32,#127]" slicecount="1" values="0">
+   </PIN>
+   <PIN pinname="Size" slicecount="1" values="10">
+   </PIN>
+   <PIN pinname="Font" slicecount="1" values="|Yu Gothic UI Semibold|">
+   </PIN>
+   </NODE>
+   <NODE nodename="IOBox (String)" systemname="IOBox (String)" componentmode="InABox" id="33">
+   <BOUNDS type="Node" left="3390" top="14460" width="1440" height="270">
+   </BOUNDS>
+   <BOUNDS type="Box" left="3390" top="14460" width="1800" height="360">
+   </BOUNDS>
+   <PIN pinname="Input String" visible="0" slicecount="1" values="|Compressed YUV|">
+   </PIN>
+   <PIN pinname="Output String" visible="0">
+   </PIN>
+   <PIN pinname="Show Grid" slicecount="1" values="0">
+   </PIN>
+   <PIN pinname="String Type" slicecount="1" values="MultiLine">
+   </PIN>
+   <PIN pinname="Show Characters [#0..#32,#127]" slicecount="1" values="0">
+   </PIN>
+   <PIN pinname="Size" slicecount="1" values="10">
+   </PIN>
+   <PIN pinname="Font" slicecount="1" values="|Yu Gothic UI Semibold|">
+   </PIN>
+   </NODE>
+   <NODE nodename="IOBox (String)" systemname="IOBox (String)" componentmode="InABox" id="36">
+   <BOUNDS type="Node" left="5265" top="13770" width="17790" height="270">
+   </BOUNDS>
+   <BOUNDS type="Box" left="5265" top="13770" width="4980" height="390">
+   </BOUNDS>
+   <PIN pinname="Input String" visible="0" slicecount="1" values="|Uncompress the input texture using a YUV to RGB pixel shader|">
+   </PIN>
+   <PIN pinname="Output String" visible="0">
+   </PIN>
+   <PIN pinname="Show Grid" slicecount="1" values="0">
+   </PIN>
+   <PIN pinname="String Type" slicecount="1" values="MultiLine">
+   </PIN>
+   </NODE>
+   <NODE nodename="IOBox (String)" systemname="IOBox (String)" componentmode="InABox" id="38">
+   <BOUNDS type="Node" left="5250" top="14100" width="17790" height="270">
+   </BOUNDS>
+   <BOUNDS type="Box" left="5250" top="14100" width="4980" height="390">
+   </BOUNDS>
+   <PIN pinname="Input String" visible="0" slicecount="1" values="|Uncompress the input texture using Black Magic native converter|">
+   </PIN>
+   <PIN pinname="Output String" visible="0">
+   </PIN>
+   <PIN pinname="Show Grid" slicecount="1" values="0">
+   </PIN>
+   <PIN pinname="String Type" slicecount="1" values="MultiLine">
+   </PIN>
+   </NODE>
+   <NODE nodename="IOBox (String)" systemname="IOBox (String)" componentmode="InABox" id="39">
+   <BOUNDS type="Node" left="5295" top="14460" width="17790" height="270">
+   </BOUNDS>
+   <BOUNDS type="Box" left="5295" top="14460" width="4980" height="390">
+   </BOUNDS>
+   <PIN pinname="Input String" visible="0" slicecount="1" values="|Do not convert the incoming texture at all|">
+   </PIN>
+   <PIN pinname="Output String" visible="0">
+   </PIN>
+   <PIN pinname="Show Grid" slicecount="1" values="0">
+   </PIN>
+   <PIN pinname="String Type" slicecount="1" values="MultiLine">
+   </PIN>
+   </NODE>
+   <NODE nodename="IOBox (String)" componentmode="InABox" id="41" systemname="IOBox (String)">
+   <BOUNDS type="Node" left="225" top="240" width="970" height="230">
+   </BOUNDS>
+   <BOUNDS type="Box" left="225" top="240" width="3855" height="465">
    </BOUNDS>
    <PIN pinname="Input String" visible="0" slicecount="1" values="CaptureParameters">
    </PIN>
@@ -246,10 +552,10 @@
    <PIN pinname="Size" slicecount="1" values="17">
    </PIN>
    </NODE>
-   <NODE nodename="IOBox (String)" componentmode="InABox" id="13" systemname="IOBox (String)">
-   <BOUNDS type="Node" left="240" top="810" width="1070" height="230">
+   <NODE nodename="IOBox (String)" componentmode="InABox" id="40" systemname="IOBox (String)">
+   <BOUNDS type="Node" left="225" top="795" width="1070" height="230">
    </BOUNDS>
-   <BOUNDS type="Box" left="240" top="810" width="2265" height="645">
+   <BOUNDS type="Box" left="225" top="795" width="2265" height="645">
    </BOUNDS>
    <PIN pinname="Input String" visible="0" slicecount="1" values="|NSYNK GmbH&cr;&lf;www.nsynk.de|">
    </PIN>
@@ -264,8 +570,4 @@
    <PIN pinname="Size" slicecount="1" values="11">
    </PIN>
    </NODE>
-   <PACK Name="dx11" Version="1.3.1">
-   </PACK>
-   <PACK Name="addonpack" Version="38.1.0">
-   </PACK>
    </PATCH>

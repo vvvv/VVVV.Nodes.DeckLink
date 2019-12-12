@@ -183,7 +183,7 @@
    </BOUNDS>
    <BOUNDS type="Node" left="4860" top="1635" width="0" height="0">
    </BOUNDS>
-   <PIN pinname="Input Enum" slicecount="1" visible="1" values="UncompressedPS">
+   <PIN pinname="Input Enum" slicecount="1" visible="1" values="CompressedYUV">
    </PIN>
    <PIN pinname="Default" slicecount="1" values="UncompressedPS">
    </PIN>
@@ -241,7 +241,7 @@
    </PIN>
    <PIN pinname="Descriptive Name" slicecount="1" values="Width">
    </PIN>
-   <PIN pinname="Y Input Value" visible="1" slicecount="1" values="1920">
+   <PIN pinname="Y Input Value" visible="1" slicecount="1" values="0">
    </PIN>
    </NODE>
    <NODE nodename="IOBox (Value Advanced)" componentmode="InABox" id="34">
@@ -601,7 +601,7 @@
    </PIN>
    <PIN pinname="Descriptive Name" slicecount="1" values="Height">
    </PIN>
-   <PIN pinname="Y Input Value" visible="1" slicecount="1" values="1080">
+   <PIN pinname="Y Input Value" visible="1" slicecount="1" values="0">
    </PIN>
    </NODE>
    <NODE nodename="IOBox (String)" componentmode="InABox" id="63">
@@ -638,56 +638,56 @@
    </PACK>
    <PACK Name="vvvv-ZeroMQ_Release_x64" Version="0.5.4">
    </PACK>
-   <NODE systemname="VideoIn (DeckLink DX11.Texture)" filename="VVVV.DX11.Nodes.DeckLink.dll" nodename="VideoIn (DeckLink DX11.Texture)" componentmode="Hidden" id="68">
+   <NODE systemname="VideoIn (DeckLink DX11.Texture)" filename="VVVV.DX11.Nodes.DeckLink.dll" nodename="VideoIn (DeckLink DX11.Texture)" componentmode="Hidden" id="67">
    <BOUNDS type="Node" left="3855" top="5190" width="6030" height="270">
    </BOUNDS>
    <BOUNDS type="Box" left="3855" top="5190" width="3000" height="3000">
    </BOUNDS>
    </NODE>
-   <LINK srcnodeid="13" srcpinname="Y Output Value" dstnodeid="68" dstpinname="Device">
+   <LINK srcnodeid="13" srcpinname="Y Output Value" dstnodeid="67" dstpinname="Device">
    </LINK>
-   <LINK srcnodeid="14" srcpinname="Y Output Value" dstnodeid="68" dstpinname="Enabled">
+   <LINK srcnodeid="14" srcpinname="Y Output Value" dstnodeid="67" dstpinname="Enabled">
    </LINK>
-   <LINK srcnodeid="68" srcpinname="Decklink SDK Version" dstnodeid="26" dstpinname="Input String">
+   <LINK srcnodeid="67" srcpinname="Decklink SDK Version" dstnodeid="26" dstpinname="Input String">
    </LINK>
-   <LINK srcnodeid="68" srcpinname="Version" dstnodeid="27" dstpinname="Input String">
+   <LINK srcnodeid="67" srcpinname="Version" dstnodeid="27" dstpinname="Input String">
    </LINK>
-   <LINK srcnodeid="28" srcpinname="Y Output Value" dstnodeid="68" dstpinname="Reset Device">
+   <LINK srcnodeid="28" srcpinname="Y Output Value" dstnodeid="67" dstpinname="Reset Device">
    </LINK>
-   <LINK srcnodeid="68" srcpinname="Is Mode Supported" dstnodeid="30" dstpinname="Y Input Value">
+   <LINK srcnodeid="67" srcpinname="Is Mode Supported" dstnodeid="30" dstpinname="Y Input Value">
    </LINK>
-   <LINK srcnodeid="68" srcpinname="Is Running" dstnodeid="31" dstpinname="Y Input Value">
+   <LINK srcnodeid="67" srcpinname="Is Running" dstnodeid="31" dstpinname="Y Input Value">
    </LINK>
-   <LINK srcnodeid="34" srcpinname="Y Output Value" dstnodeid="68" dstpinname="Flush Queue">
+   <LINK srcnodeid="34" srcpinname="Y Output Value" dstnodeid="67" dstpinname="Flush Queue">
    </LINK>
-   <LINK srcnodeid="36" srcpinname="Y Output Value" dstnodeid="68" dstpinname="Reset Counters">
+   <LINK srcnodeid="36" srcpinname="Y Output Value" dstnodeid="67" dstpinname="Reset Counters">
    </LINK>
-   <LINK srcnodeid="68" srcpinname="Available Frame Count" dstnodeid="38" dstpinname="Y Input Value">
+   <LINK srcnodeid="67" srcpinname="Available Frame Count" dstnodeid="38" dstpinname="Y Input Value">
    </LINK>
-   <LINK srcnodeid="68" srcpinname="Current Mode" dstnodeid="39" dstpinname="Input String">
+   <LINK srcnodeid="67" srcpinname="Current Mode" dstnodeid="39" dstpinname="Input String">
    </LINK>
-   <LINK srcnodeid="68" srcpinname="Model Name" dstnodeid="40" dstpinname="Input String">
+   <LINK srcnodeid="67" srcpinname="Model Name" dstnodeid="40" dstpinname="Input String">
    </LINK>
-   <LINK srcnodeid="68" srcpinname="Device Name" dstnodeid="41" dstpinname="Input String">
+   <LINK srcnodeid="67" srcpinname="Device Name" dstnodeid="41" dstpinname="Input String">
    </LINK>
-   <LINK srcnodeid="68" srcpinname="Status" dstnodeid="42" dstpinname="Input String">
+   <LINK srcnodeid="67" srcpinname="Status" dstnodeid="42" dstpinname="Input String">
    </LINK>
-   <LINK srcnodeid="68" srcpinname="Statistics" dstnodeid="43" dstpinname="Input" linkstyle="VHV">
+   <LINK srcnodeid="67" srcpinname="Statistics" dstnodeid="43" dstpinname="Input" linkstyle="VHV">
    <LINKPOINT x="8670" y="7743">
    </LINKPOINT>
    <LINKPOINT x="11610" y="7543">
    </LINKPOINT>
    </LINK>
-   <LINK srcnodeid="37" srcpinname="Y Output Value" dstnodeid="68" dstpinname="Apply Display Mode">
+   <LINK srcnodeid="37" srcpinname="Y Output Value" dstnodeid="67" dstpinname="Apply Display Mode">
    </LINK>
-   <LINK srcnodeid="68" srcpinname="Texture Width" dstnodeid="32" dstpinname="Y Input Value">
+   <LINK srcnodeid="67" srcpinname="Texture Width" dstnodeid="32" dstpinname="Y Input Value">
    </LINK>
-   <LINK srcnodeid="68" srcpinname="Texture Out" dstnodeid="59" dstpinname="Texture">
+   <LINK srcnodeid="67" srcpinname="Texture Out" dstnodeid="59" dstpinname="Texture">
    </LINK>
-   <LINK srcnodeid="16" srcpinname="Output" dstnodeid="68" dstpinname="Capture Parameters">
+   <LINK srcnodeid="16" srcpinname="Output" dstnodeid="67" dstpinname="Capture Parameters">
    </LINK>
-   <LINK srcnodeid="68" srcpinname="Texture Height" dstnodeid="33" dstpinname="Y Input Value">
+   <LINK srcnodeid="67" srcpinname="Texture Height" dstnodeid="33" dstpinname="Y Input Value">
    </LINK>
-   <LINK srcnodeid="68" srcpinname="Mode Supported Description" dstnodeid="63" dstpinname="Input String">
+   <LINK srcnodeid="67" srcpinname="Mode Supported Description" dstnodeid="63" dstpinname="Input String">
    </LINK>
    </PATCH>

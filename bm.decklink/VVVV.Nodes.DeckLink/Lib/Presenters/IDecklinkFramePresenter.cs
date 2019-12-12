@@ -17,7 +17,7 @@ namespace VVVV.DeckLink.Presenters
         /// Push a new frame when received by the device
         /// </summary>
         /// <param name="videoFrame">new video frame</param>
-        void PushFrame(IDeckLinkVideoInputFrame videoFrame, bool performConvertion, int scalar = 2);
+        void PushFrame(IDeckLinkVideoInputFrame videoFrame, bool performConvertion, int pixelFormatDivisor = 2, SlimDX.DXGI.Format pixelColorFormat = SlimDX.DXGI.Format.R8G8B8A8_UNorm);
 
         /// <summary>
         /// Get frame that should be presented

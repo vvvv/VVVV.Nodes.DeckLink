@@ -32,15 +32,15 @@ namespace VVVV.DeckLink.Presenters
             return result;
         }
 
-        public void PushFrame(IDeckLinkVideoInputFrame videoFrame, bool performConvertion, int scalar = 2)
+        public void PushFrame(IDeckLinkVideoInputFrame videoFrame, bool performConvertion, int pixelFormatDivisor = 2, SlimDX.DXGI.Format pixelColorFormat = SlimDX.DXGI.Format.R8G8B8A8_UNorm)
         {
             if (performConvertion)
             {
-                this.frame.UpdateAndConvert(this.videoConverter, videoFrame, scalar);
+                this.frame.UpdateAndConvert(this.videoConverter, videoFrame, pixelFormatDivisor);
             }
             else
             {
-                this.frame.UpdateAndCopy(videoFrame, scalar);
+                this.frame.UpdateAndCopy(videoFrame, pixelFormatDivisor);
             }
             System.Runtime.InteropServices.Marshal.ReleaseComObject(videoFrame);
         }

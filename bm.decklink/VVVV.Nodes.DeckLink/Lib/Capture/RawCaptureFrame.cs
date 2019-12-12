@@ -65,11 +65,11 @@ namespace VVVV.DeckLink
 
     public static class RawCaptureFrameExtentionMethods
     {
-        public static RawFrameData UpdateRawFrame(this RawFrameData frame, IDeckLinkVideoInputFrame videoFrame, int scalar = 2)
+        public static RawFrameData UpdateRawFrame(this RawFrameData frame, IDeckLinkVideoInputFrame videoFrame, int pixelFormatDivisor = 2)
         {
             int width = videoFrame.GetWidth();
             int height = videoFrame.GetHeight();
-            int frameSize = width / scalar * 4 * height;
+            int frameSize = width / pixelFormatDivisor * 4 * height;
             if (frameSize != frame.DataLength)
             {
                 frame.Dispose();

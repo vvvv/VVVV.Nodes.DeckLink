@@ -12,14 +12,14 @@ namespace VVVV.DeckLink.Direct3D11
 {
     public class ImmutableTextureFactory
     {
-        public static DX11Texture2D CreateConvertedFrame(DX11RenderContext context, RawFrameData rawFrame)
+        public static DX11Texture2D CreateConvertedFrame(DX11RenderContext context, RawFrameData rawFrame, SlimDX.DXGI.Format pixelColorFormat = SlimDX.DXGI.Format.B8G8R8A8_UNorm)
         {
             Texture2DDescription textureDesc = new Texture2DDescription()
             {
                 ArraySize = 1,
                 BindFlags = BindFlags.ShaderResource,
                 CpuAccessFlags = CpuAccessFlags.None,
-                Format = SlimDX.DXGI.Format.B8G8R8A8_UNorm,
+                Format = pixelColorFormat,
                 Height = rawFrame.Height,
                 Width = rawFrame.Width,
                 MipLevels = 1,
@@ -33,22 +33,22 @@ namespace VVVV.DeckLink.Direct3D11
             return DX11Texture2D.FromTextureAndSRV(context, frameTexture, frameTextureView); ;
         }
 
-        public static DX11Texture2D CreateRawFrame(DX11RenderContext context, RawFrameData rawFrame, int scalar = 1)
+        public static DX11Texture2D CreateRawFrame(DX11RenderContext context, RawFrameData rawFrame, int pixelFormatDivisor = 1, SlimDX.DXGI.Format pixelColorFormat = SlimDX.DXGI.Format.R8G8B8A8_UNorm)
         {
             Texture2DDescription textureDesc = new Texture2DDescription()
             {
                 ArraySize = 1,
                 BindFlags = BindFlags.ShaderResource,
                 CpuAccessFlags = CpuAccessFlags.None,
-                Format = SlimDX.DXGI.Format.R8G8B8A8_UNorm,
+                Format = pixelColorFormat,
                 Height = rawFrame.Height,
-                Width = rawFrame.Width / scalar,
+                Width = rawFrame.Width / pixelFormatDivisor,
                 MipLevels = 1,
                 OptionFlags = ResourceOptionFlags.None,
                 SampleDescription = new SlimDX.DXGI.SampleDescription(1, 0),
                 Usage = ResourceUsage.Immutable,
             };
-            DataRectangle slice = new DataRectangle(rawFrame.Width * 4 / scalar, new DataStream(rawFrame.DataPointer, rawFrame.DataLength, true, false));
+            DataRectangle slice = new DataRectangle(rawFrame.Width * 4 / pixelFormatDivisor, new DataStream(rawFrame.DataPointer, rawFrame.DataLength, true, false));
             Texture2D frameTexture = new Texture2D(context.Device, textureDesc, slice);
             ShaderResourceView frameTextureView = new ShaderResourceView(context.Device, frameTexture);
             return DX11Texture2D.FromTextureAndSRV(context, frameTexture, frameTextureView); ;

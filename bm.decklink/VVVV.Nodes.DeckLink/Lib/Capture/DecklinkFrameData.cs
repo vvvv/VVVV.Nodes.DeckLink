@@ -47,22 +47,22 @@ namespace VVVV.DeckLink
             this.convertedFrame = new ConvertedFrame(initialWidth, initialHeight);
         }
 
-        private void Update(IDeckLinkVideoInputFrame videoFrame, int scalar = 2)
+        private void Update(IDeckLinkVideoInputFrame videoFrame, int pixelFormatDivisor = 2)
         {
-            this.rawCapturedFrame = this.rawCapturedFrame.UpdateRawFrame(videoFrame, scalar);
+            this.rawCapturedFrame = this.rawCapturedFrame.UpdateRawFrame(videoFrame, pixelFormatDivisor);
         }
 
-        public void UpdateAndCopy(IDeckLinkVideoInputFrame videoFrame, int scalar = 2)
+        public void UpdateAndCopy(IDeckLinkVideoInputFrame videoFrame, int pixelFormatDivisor = 2)
         {
             this.receivedTimeStamp = Timer.Elapsed;
-            this.Update(videoFrame, scalar);
+            this.Update(videoFrame, pixelFormatDivisor);
             this.rawCapturedFrame.Copy(videoFrame);
         }
 
-        public void UpdateAndConvert(DecklinkVideoFrameConverter converter, IDeckLinkVideoInputFrame videoFrame, int scalar = 2)
+        public void UpdateAndConvert(DecklinkVideoFrameConverter converter, IDeckLinkVideoInputFrame videoFrame, int pixelFormatDivisor = 2)
         {
             this.receivedTimeStamp = Timer.Elapsed;
-            this.Update(videoFrame, scalar);
+            this.Update(videoFrame, pixelFormatDivisor);
             this.convertedFrame.Copy(converter, videoFrame);
         }
 

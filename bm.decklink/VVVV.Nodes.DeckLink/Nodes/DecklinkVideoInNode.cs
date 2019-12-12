@@ -463,7 +463,7 @@ namespace VVVV.DeckLink.Nodes
             if (!this.FIn_IsDeviceEnabled[0])
                 return;
             /// Update input texture
-            this._rawTexture[context] = new DX11DynamicTexture2D(context, this._captureThread.Width, this._captureThread.Height, SlimDX.DXGI.Format.R8G8B8A8_UNorm);
+            //this._rawTexture[context] = new DX11DynamicTexture2D(context, this._captureThread.Width, this._captureThread.Height, SlimDX.DXGI.Format.R8G8B8A8_UNorm);
             var inputTexture = this._rawTexture.Contains(context)
                 ? this._rawTexture[context]
                 : null;

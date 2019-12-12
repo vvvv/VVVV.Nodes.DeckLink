@@ -56,44 +56,38 @@ namespace VVVV.DeckLink.Presenters
         public FrameDataResult GetPresentationFrame()
         {
             this.FlushQueue();
-
             var result = FrameDataResult.Texture2D(this.currentTexture, isNewFrame, 1);
             this.isNewFrame = false;
             this.lastFramePresented = true;
             return result;
         }
 
-        public void PushFrame(IDeckLinkVideoInputFrame videoFrame, bool performConvertion, int scalar = 2)
+        public void PushFrame(IDeckLinkVideoInputFrame videoFrame, bool performConvertion, int pixelFormatDivisor = 2, SlimDX.DXGI.Format pixelColorFormat = SlimDX.DXGI.Format.R8G8B8A8_UNorm)
         {
             if (this.renderContext.Device.Disposed)
                 return;
-
             //If queue is bigger than max size, we do nothing and also discard, as it means that mainloop is likely stuck
             if (this.pendingFramesForDeletion.Count >= maxQueueSize)
             {
                 this.discardCount++;
                 return;
             }
-
             if (this.lastFramePresented == false)
             {
                 this.discardCount++;
             }
-
             DX11Texture2D newTexture;
-
             if (performConvertion)
             {
-                this.frame.UpdateAndConvert(this.videoConverter, videoFrame, scalar);
-                newTexture = ImmutableTextureFactory.CreateConvertedFrame(this.renderContext, this.frame.ConvertedFrameData);
+                this.frame.UpdateAndConvert(this.videoConverter, videoFrame, pixelFormatDivisor);
+                newTexture = ImmutableTextureFactory.CreateConvertedFrame(this.renderContext, this.frame.ConvertedFrameData, pixelColorFormat);
             }
             else
             {
-                this.frame.UpdateAndCopy(videoFrame, scalar);
-                newTexture = ImmutableTextureFactory.CreateRawFrame(this.renderContext, this.frame.RawFrameData, scalar);
+                this.frame.UpdateAndCopy(videoFrame, pixelFormatDivisor);
+                newTexture = ImmutableTextureFactory.CreateRawFrame(this.renderContext, this.frame.RawFrameData, pixelFormatDivisor, pixelColorFormat);
             }
             System.Runtime.InteropServices.Marshal.ReleaseComObject(videoFrame);
-
             //Push current texture to dispose, since it can still be used somewhere in the patch for presentation, we flush queue during update
             lock (syncRoot)
             {
@@ -103,7 +97,6 @@ namespace VVVV.DeckLink.Presenters
                 }
                 this.currentTexture = newTexture;
             }
-
             this.isNewFrame = true;
             this.lastFramePresented = false;
         }
