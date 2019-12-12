@@ -5,4 +5,4 @@ build:
   stage: build
   script:
     - cd "bm.decklink"
-    - C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\MSBuild\Current\Bin\msbuild.exe /t:Build /p:Configuration=Release
+    - '"C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\MSBuild\Current\Bin\msbuild.exe /t:Build /p:Configuration=Release"'
