@@ -1,4 +1,4 @@
-image: mcr.microsoft.com/dotnet/framework/sdk:4.7
+image: microsoft/dotnet-framework
 
 stages:
   - build
