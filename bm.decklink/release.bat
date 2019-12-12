@@ -17,9 +17,9 @@ if [%pluginname%] == [] (
   endlocal
 
   rem /mir mirrors the given directory tree
-  xcopy /s %rootDir%Patches\* %releasePath%\%pluginname%\
+  xcopy /s %rootDir%Patches\* %releasePath%\%pluginname%\ /Y
   md %releasePath%\%pluginname%\dx11\
-  xcopy /s %rootDir%VVVV.Nodes.DeckLink\effects\* %releasePath%\%pluginname%\dx11\
+  xcopy /s %rootDir%VVVV.Nodes.DeckLink\effects\* %releasePath%\%pluginname%\dx11\ /Y
 
   @echo on
   echo Packaged release into %releasePath%
