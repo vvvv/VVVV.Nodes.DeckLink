@@ -9,5 +9,5 @@ build:
     - '".\release.bat vvvv.nodes.blackmagic"'
   artifacts:
     paths:
-    - bm.decklink/Release
+    - bm.decklink/Release/nodes
     expire_in: 1 week
