@@ -5,4 +5,4 @@ build:
   stage: build
   script:
     - cd "bm.decklink"
-    - "dotnet build"
+    - msbuild /t:Build /p:Configuration=Release
