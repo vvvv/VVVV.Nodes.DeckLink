@@ -1,0 +1,9 @@
+image: microsoft/dotnet:latest
+
+stages:
+  - build
+
+build:
+  stage: build
+  - cd "bm.decklink"
+  - "dotnet build"
