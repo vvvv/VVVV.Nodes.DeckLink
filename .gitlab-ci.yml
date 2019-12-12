@@ -6,9 +6,10 @@ build:
   script:
     - cd "bm.decklink"
     - '"C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\MSBuild\Current\Bin\msbuild.exe"'
-    - mkdir -p Release/nodes/
-    - cp -r Patches/* Release/nodes/
+    - mkdir -p nsynk/nodes/plugins/vvvv.nodes.blackmagic/
+    - cp -r Patches/* nsynk/nodes/plugins/vvvv.nodes.blackmagic/
   artifacts:
+    name: "$CI_COMMIT_REF_NAME"
     paths:
-    - bm.decklink/Release/nodes
+    - bm.decklink/nsynk
     expire_in: 1 week
