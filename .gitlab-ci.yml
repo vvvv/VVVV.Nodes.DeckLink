@@ -1,6 +1,6 @@
 stages:
   - build
-  - release
+  - deploy
 
 build:
   stage: build
@@ -16,6 +16,6 @@ build:
     expire_in: 1 week
 
 release:
-    stage: release
-    only:
-    - release
+  type: deploy
+  stage: release
+  when: manual
