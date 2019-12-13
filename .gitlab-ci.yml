@@ -1,5 +1,6 @@
 stages:
   - build
+  - release
 
 build:
   stage: build
@@ -13,3 +14,8 @@ build:
     paths:
     - bm.decklink/nsynk
     expire_in: 1 week
+
+release:
+    stage: release
+    only:
+    - release
