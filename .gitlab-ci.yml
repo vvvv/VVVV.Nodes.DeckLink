@@ -18,5 +18,8 @@ build:
 deploy:
   stage: deploy
   when: manual
+  only:
+    - release
+    - tags
   script:
     - echo "works."
