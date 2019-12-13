@@ -1,6 +1,6 @@
 stages:
   - build
-  - release
+  - deploy
 
 build:
   stage: build
@@ -15,6 +15,8 @@ build:
     - bm.decklink/nsynk
     expire_in: 1 week
 
-release:
-  stage: release
+deploy:
+  stage: deploy
   when: manual
+  script:
+    - echo "works."
