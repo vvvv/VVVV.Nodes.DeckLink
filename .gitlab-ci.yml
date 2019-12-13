@@ -2,7 +2,7 @@ stages:
   - build
   - release
 
-build_job:
+build:
   stage: build
   script:
     - cd "bm.decklink"
@@ -15,6 +15,6 @@ build_job:
     - bm.decklink/nsynk
     expire_in: 1 week
 
-deploy_job:
+release:
   stage: release
   when: manual
