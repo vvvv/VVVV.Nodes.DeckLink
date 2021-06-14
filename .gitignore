@@ -6,10 +6,10 @@
 **/*/.vs
 
 # Ignore the DeckLink SDK dir
-bm.decklink/Blackmagic_DeckLink_SDK_*/
+Blackmagic_DeckLink_SDK_*/
 
 # Ignore the release folder
-bm.decklink/Release/
+Release/
 
 # Ignore dlls and debug objects
 *.dll
