@@ -12,9 +12,7 @@
 3. Open `VVVV.Nodes.BlackMagic.sln` and build the project
 
 ## Deploy
-The solution will build the `.dll` files right into the `Patches/` folder. Use
-`release.bat vvvv.nodes.blackmagic` to copy all the files into the `Release/`
-dir for usage with the vvvv packs dir.
+The solution will build the `.dll` files right into the `Patches/` folder. 
 
 ## HDMI Input
 If a black picture is experienced, you may have to change the pixel format on the input format. This happens mostly with Nvidia cards providing the input signal. You can change the pixel color output format in the Nvidia control panel:
