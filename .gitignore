@@ -1,15 +1,10 @@
 *.suo
+*~.xml
 **/obj/
 **/bin/
 **/Deploy/
 *.user
 **/*/.vs
-
-# Ignore the DeckLink SDK dir
-Blackmagic_DeckLink_SDK_*/
-
-# Ignore the release folder
-Release/
 
 # Ignore dlls and debug objects
 *.dll
